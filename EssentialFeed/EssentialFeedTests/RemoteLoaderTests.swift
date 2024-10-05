@@ -54,7 +54,7 @@ class RemoteLoaderTests: XCTestCase {
     func test_load_deliversErrorOnHTTPError() {
         let (client, sut) = makeSUT()
         
-        let samples = [199, 201]
+        let samples = [199, 201, 300, 400, 500]
        
         samples.enumerated().forEach { index, statusCode in
             var capturedErrors = [RemoteFeedLoader.Error]()
@@ -102,7 +102,6 @@ class HTTPClientSpy: HTTPClient {
     }
     
     func complete(with statusCode: Int, at index: Int = 0) {
-        print("-> at index = \(index), messages = \(messages[index].completion)")
         let response = HTTPURLResponse(
             url: messages[index].url,
             statusCode: statusCode,
