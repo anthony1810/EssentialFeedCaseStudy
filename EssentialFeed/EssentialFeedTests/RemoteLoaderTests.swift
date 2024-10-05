@@ -40,7 +40,7 @@ class RemoteLoaderTests: XCTestCase {
     func test_load_deliversErrorOnClientError() {
         let (client, sut) = makeSUT()
         
-        expect(sut: sut, toCompleteWith: .connectivity) {
+        expect(sut: sut, toCompleteWith: .failure(.connectivity)) {
             client.complete(with: NSError(domain: "test error", code: 0))
         }
     }
@@ -51,7 +51,7 @@ class RemoteLoaderTests: XCTestCase {
         let samples = [199, 201, 300, 400, 500]
        
         samples.enumerated().forEach { index, statusCode in
-            expect(sut: sut, toCompleteWith: .invalidData) {
+            expect(sut: sut, toCompleteWith: .failure(.invalidData)) {
                 client.complete(with: statusCode, at: index)
             }
         }
@@ -60,9 +60,18 @@ class RemoteLoaderTests: XCTestCase {
     func test_load_deliversErrorOn200HTTPResponseWithInvalidJson() {
         let (client, sut) = makeSUT()
         
-        expect(sut: sut, toCompleteWith: .invalidData) {
+        expect(sut: sut, toCompleteWith: .failure(.invalidData)) {
             let invalidJson = Data("invalidJson".utf8)
             client.complete(with: 200, data: invalidJson)
+        }
+    }
+    
+    func test_load_deliversEmptyArrayOn200HTTPResponseWithEmptyValidJson() {
+        let (client, sut) = makeSUT()
+        
+        expect(sut: sut, toCompleteWith: .success([])) {
+            let emptyJsonItem = Data("{\"items\": []}".utf8)
+            client.complete(with: 200, data: emptyJsonItem)
         }
     }
 }
@@ -78,23 +87,21 @@ extension RemoteLoaderTests {
     
     func expect(
         sut: RemoteFeedLoader,
-        toCompleteWith error: RemoteFeedLoader.Error,
+        toCompleteWith result: RemoteFeedLoader.Result,
         when action: () -> Void,
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
         
-        var capturedErrors = [RemoteFeedLoader.Error]()
+        var capturedResults = [RemoteFeedLoader.Result]()
         
         sut.load(completion: {
-            if case let .error(error) = $0, let appError = error as? RemoteFeedLoader.Error {
-                capturedErrors.append(appError)
-            }
+            capturedResults.append($0)
         })
         
         action()
         
-        XCTAssertEqual(capturedErrors, [error], file: file, line: line)
+        XCTAssertEqual(capturedResults, [result], file: file, line: line)
     }
 }
 
