@@ -7,6 +7,6 @@
 import Foundation
 
 protocol HTTPClient {
-    var requestedURL: URL? { get }
+    var requestedURLs: [URL] { get }
     func get(url: URL)
 }
