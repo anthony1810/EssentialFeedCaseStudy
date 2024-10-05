@@ -8,40 +8,8 @@
 import XCTest
 @testable import EssentialFeed
 
-class RemoteFeedLoader: FeedLoader {
-    let httpClient: HTTPClient
-    let url: URL
-    
-    init(httpClient: HTTPClient, url: URL) {
-        self.httpClient = httpClient
-        self.url = url
-    }
-    
-    func load(completion: @escaping (EssentialFeed.LoadFeedResult) -> Void) {
-        httpClient.get(url: self.url)
-    }
-}
-
-protocol HTTPClient {
-    var requestedURL: URL? { get }
-    func get(url: URL)
-}
-
-class HTTPClientSpy: HTTPClient {
-    var requestedURL: URL?
-    
-    init(requestedURL: URL? = nil) {
-        self.requestedURL = requestedURL
-    }
-    
-    func get(url: URL) {
-        requestedURL = url
-    }
-}
-
-
 class RemoteLoaderTests: XCTestCase {
-    func test_init_doesNotRequestDataFromURL() {
+    func test_init_doesNotRequestDataFrçomURL() {
         
         // Given (Arrange)
         let (client, _) = makeSUT()
@@ -64,5 +32,18 @@ class RemoteLoaderTests: XCTestCase {
         let sut = RemoteFeedLoader(httpClient: client, url: url)
         
         return (client, sut)
+    }
+}
+
+
+class HTTPClientSpy: HTTPClient {
+    var requestedURL: URL?
+    
+    init(requestedURL: URL? = nil) {
+        self.requestedURL = requestedURL
+    }
+    
+    func get(url: URL) {
+        requestedURL = url
     }
 }
