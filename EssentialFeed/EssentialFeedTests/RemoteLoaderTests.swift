@@ -39,16 +39,10 @@ class RemoteLoaderTests: XCTestCase {
     
     func test_load_deliversErrorOnClientError() {
         let (client, sut) = makeSUT()
-        var capturedErrors = [RemoteFeedLoader.Error]()
         
-        sut.load(completion: {
-            if case let .error(error) = $0, let appError = error as? RemoteFeedLoader.Error {
-                capturedErrors.append(appError)
-            }
-        })
-        client.complete(with: NSError(domain: "test error", code: 0))
-        
-        XCTAssertEqual(capturedErrors, [.connectivity])
+        expect(sut: sut, toCompleteWith: .connectivity) {
+            client.complete(with: NSError(domain: "test error", code: 0))
+        }
     }
     
     func test_load_deliversErrorOnHTTPError() {
@@ -57,31 +51,19 @@ class RemoteLoaderTests: XCTestCase {
         let samples = [199, 201, 300, 400, 500]
        
         samples.enumerated().forEach { index, statusCode in
-            var capturedErrors = [RemoteFeedLoader.Error]()
-            sut.load(completion: {
-                if case let .error(error) = $0, let appError = error as? RemoteFeedLoader.Error {
-                    capturedErrors.append(appError)
-                }
-            })
-            client.complete(with: statusCode, at: index)
-            XCTAssertEqual(capturedErrors, [.invalidData])
+            expect(sut: sut, toCompleteWith: .invalidData) {
+                client.complete(with: statusCode, at: index)
+            }
         }
     }
     
     func test_load_deliversErrorOn200HTTPResponseWithInvalidJson() {
         let (client, sut) = makeSUT()
         
-        var capturedErrors = [RemoteFeedLoader.Error]()
-        sut.load(completion: {
-            if case let .error(error) = $0, let appError = error as? RemoteFeedLoader.Error {
-                capturedErrors.append(appError)
-            }
-        })
-        
-        let invalidJson = Data("invalidJson".utf8)
-        client.complete(with: 200, data: invalidJson)
-        
-        XCTAssertEqual(capturedErrors, [.invalidData])
+        expect(sut: sut, toCompleteWith: .invalidData) {
+            let invalidJson = Data("invalidJson".utf8)
+            client.complete(with: 200, data: invalidJson)
+        }
     }
 }
 
@@ -92,6 +74,27 @@ extension RemoteLoaderTests {
         let sut = RemoteFeedLoader(httpClient: client, url: url)
         
         return (client, sut)
+    }
+    
+    func expect(
+        sut: RemoteFeedLoader,
+        toCompleteWith error: RemoteFeedLoader.Error,
+        when action: () -> Void,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        
+        var capturedErrors = [RemoteFeedLoader.Error]()
+        
+        sut.load(completion: {
+            if case let .error(error) = $0, let appError = error as? RemoteFeedLoader.Error {
+                capturedErrors.append(appError)
+            }
+        })
+        
+        action()
+        
+        XCTAssertEqual(capturedErrors, [error], file: file, line: line)
     }
 }
 
