@@ -6,7 +6,12 @@
 //
 import Foundation
 
+public enum HTTPClientResult {
+    case success(HTTPURLResponse)
+    case failure(Error)
+}
+
 protocol HTTPClient {
-    var requestedURLs: [URL] { get }
-    func get(url: URL)
+    var messages : [(url: URL, completion: (HTTPClientResult) -> Void)] { get }
+    func get(url: URL, completion: @escaping (HTTPClientResult) -> Void)
 }
