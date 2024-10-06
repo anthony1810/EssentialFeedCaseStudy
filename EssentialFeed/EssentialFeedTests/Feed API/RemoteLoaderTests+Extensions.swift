@@ -25,21 +25,34 @@ extension RemoteLoaderTests {
     
     func expect(
         sut: RemoteFeedLoader,
-        toCompleteWith result: RemoteFeedLoader.Result,
+        toCompleteWith expectedResult: RemoteFeedLoader.Result,
         when action: () -> Void,
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
         
-        var capturedResults = [RemoteFeedLoader.Result]()
-        
-        sut.load(completion: {
-            capturedResults.append($0)
+        let exp = expectation(description: "wait for load completion")
+        sut.load(completion: { actualResult in
+            switch (actualResult, expectedResult) {
+            case (.success(let actualItems), .success(let expectedItems)):
+                XCTAssertEqual(actualItems, expectedItems)
+            case (.failure(let actualError), .failure(let expectedError)):
+                guard let remoteFeedActualError = actualError as? RemoteFeedLoader.Error,
+                      let remoteFeedExpectedError = expectedError as? RemoteFeedLoader.Error else  {
+                    XCTFail("Expected \(expectedError) but got \(actualError) instead")
+                    return
+                }
+                
+                XCTAssertEqual(remoteFeedActualError, remoteFeedExpectedError)
+            default:  XCTFail("Expected \(expectedResult) but got \(actualResult) instead")
+            }
+            
+            exp.fulfill()
         })
         
         action()
         
-        XCTAssertEqual(capturedResults, [result], file: file, line: line)
+        wait(for: [exp], timeout: 1.0)
     }
     
     func makeItems(

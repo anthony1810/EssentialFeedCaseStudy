@@ -6,7 +6,7 @@
 //
 import Foundation
 
-final class RemoteFeedLoader {
+final class RemoteFeedLoader: FeedLoader {
     let httpClient: HTTPClient
     let url: URL
     
@@ -15,7 +15,7 @@ final class RemoteFeedLoader {
         case invalidData
     }
     
-    public typealias Result = LoadFeedResult<Error>
+    public typealias Result = LoadFeedResult
     
     public init(httpClient: HTTPClient, url: URL) {
         self.httpClient = httpClient
