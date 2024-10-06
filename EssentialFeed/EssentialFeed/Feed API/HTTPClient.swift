@@ -11,7 +11,7 @@ public enum HTTPClientResult {
     case failure(Error)
 }
 
-protocol HTTPClient {
+public protocol HTTPClient {
     var messages : [(url: URL, completion: (HTTPClientResult) -> Void)] { get }
     func get(url: URL, completion: @escaping (HTTPClientResult) -> Void)
 }
