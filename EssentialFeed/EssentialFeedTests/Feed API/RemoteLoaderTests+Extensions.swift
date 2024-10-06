@@ -88,5 +88,9 @@ extension RemoteLoaderTests {
             XCTAssertNil(instance, "Instance should have been deallocated. Potential memory leaks", file: file, line: line)
         }
     }
+    
+    func failure(_ error: RemoteFeedLoader.Error) -> RemoteFeedLoader.Result {
+        .failure(error)
+    }
 }
 

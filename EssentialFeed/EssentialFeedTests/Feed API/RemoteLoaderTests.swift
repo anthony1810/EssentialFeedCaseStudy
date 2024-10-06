@@ -41,7 +41,7 @@ class RemoteLoaderTests: XCTestCase {
     func test_load_deliversErrorOnClientError() {
         let (client, sut) = makeSUT()
         
-        expect(sut: sut, toCompleteWith: .failure(RemoteFeedLoader.Error.connectivity)) {
+        expect(sut: sut, toCompleteWith: failure(.connectivity)) {
             client.complete(with: NSError(domain: "test error", code: 0))
         }
     }
@@ -52,7 +52,7 @@ class RemoteLoaderTests: XCTestCase {
         let samples = [199, 201, 300, 400, 500]
        
         samples.enumerated().forEach { index, statusCode in
-            expect(sut: sut, toCompleteWith: .failure(RemoteFeedLoader.Error.invalidData)) {
+            expect(sut: sut, toCompleteWith: failure(.invalidData)) {
                 let emptyData = makeData(from: [])
                 client.complete(with: statusCode, data: emptyData, at: index)
             }
@@ -62,7 +62,7 @@ class RemoteLoaderTests: XCTestCase {
     func test_load_deliversErrorOn200HTTPResponseWithInvalidJson() {
         let (client, sut) = makeSUT()
         
-        expect(sut: sut, toCompleteWith: .failure(RemoteFeedLoader.Error.invalidData)) {
+        expect(sut: sut, toCompleteWith: failure(.invalidData)) {
             let invalidJson = Data("invalidJson".utf8)
             client.complete(with: 200, data: invalidJson)
         }
