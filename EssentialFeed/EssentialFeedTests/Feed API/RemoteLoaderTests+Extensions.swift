@@ -44,7 +44,7 @@ extension RemoteLoaderTests {
                 }
                 
                 XCTAssertEqual(remoteFeedActualError, remoteFeedExpectedError)
-            default:  XCTFail("Expected \(expectedResult) but got \(actualResult) instead")
+            default:  XCTFail("Expected \(expectedResult) but got \(actualResult) instead", file: file, line: line)
             }
             
             exp.fulfill()
