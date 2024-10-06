@@ -97,4 +97,22 @@ class RemoteLoaderTests: XCTestCase {
             client.complete(with: 200, data: makeData(from: jsons))
         }
     }
+    
+    func test_load_StopDeliverItemsWhenRemoteFeedLoaderInstanceDeallocated() {
+        
+        let url = URL(string: "https://any-url.com")!
+        let client = HTTPClientSpy()
+        var sut: RemoteFeedLoader? = RemoteFeedLoader(httpClient: client, url: url)
+        var capturedResults = [RemoteFeedLoader.Result]()
+        sut?.load(completion: {
+            capturedResults.append($0)
+        })
+        
+        sut = nil
+        XCTAssertTrue(sut == nil, "Feed Loader has already been deallocated")
+        
+        client.complete(with: 200, data: makeData(from: []))
+        
+        XCTAssertTrue(capturedResults.isEmpty, "NO result should be return if Feed Loader has already been deallocated")
+    }
 }
