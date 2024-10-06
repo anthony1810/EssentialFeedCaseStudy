@@ -9,9 +9,16 @@ import XCTest
 @testable import EssentialFeed
 
 extension RemoteLoaderTests {
-    func makeSUT(url: URL = URL(string: "https://a-url.com")!) -> (HTTPClientSpy, EssentialFeed.RemoteFeedLoader) {
+    func makeSUT(
+        url: URL = URL(string: "https://a-url.com")!,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) -> (HTTPClientSpy, EssentialFeed.RemoteFeedLoader) {
         let client = HTTPClientSpy()
         let sut = RemoteFeedLoader(httpClient: client, url: url)
+        
+        trackForMemoryLeaks(client, file: file, line: line)
+        trackForMemoryLeaks(sut, file: file, line: line)
         
         return (client, sut)
     }
@@ -57,6 +64,16 @@ extension RemoteLoaderTests {
     ) -> Data {
         let json = ["items": items]
         return try! JSONSerialization.data(withJSONObject: json)
+    }
+    
+    func trackForMemoryLeaks(
+        _ instance: AnyObject,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        addTeardownBlock { [weak instance] in
+            XCTAssertNil(instance, "Instance should have been deallocated. Potential memory leaks", file: file, line: line)
+        }
     }
 }
 
