@@ -28,27 +28,13 @@ class URLSessionHTTPClient {
 
 class URLSessionHTTPClientTests: XCTestCase {
     
-//    func test_getFromURL_resumeDataTaskWithURL() {
-//        let url = URL(string: "https://any-url.com")!
-//        let task = SessionDataTaskSpy()
-//        
-//        let session = URLSessionSpy()
-//        session.stub(url: url, task: task)
-//        
-//        let sut = URLSessionHTTPClient(session: session)
-//        
-//        sut.get(from: url, completion: { _ in })
-//        
-//        XCTAssertEqual(task.resumeCount, 1)
-//    }
-    
     func test_getFromURL_failsOnRequestError() {
         URLProtocolStub.startIntercepting()
         
         let url = URL(string: "https://any-url.com")!
         let expectedError = NSError(domain: "any error", code: 1, userInfo: nil)
     
-        URLProtocolStub.stub(url: url, error: expectedError)
+        URLProtocolStub.stub(url: url, data: nil, urlResponse: nil, error: expectedError)
         
         let sut = URLSessionHTTPClient()
         
@@ -76,19 +62,19 @@ class URLSessionHTTPClientTests: XCTestCase {
         private static var stubs = [URL: Stub]()
         
         private struct Stub {
+            let data: Data?
+            let response: URLResponse?
             let error: Error?
         }
         
-        static func stub(url: URL, error: Error? = nil) {
-            print("-> stub error = \(error)")
-            stubs[url] = Stub(error: error)
+        static func stub(url: URL, data: Data?, urlResponse: URLResponse?, error: Error?) {
+            stubs[url] = Stub(data: data, response: urlResponse, error: error)
         }
         
         override class func canInit(with request: URLRequest) -> Bool {
             guard let url = request.url else { return false }
             
             let canInit = Self.stubs[url] != nil
-            print("-> canInit canInit = \(canInit)")
             return canInit
         }
         
@@ -99,8 +85,15 @@ class URLSessionHTTPClientTests: XCTestCase {
         override func startLoading() {
             guard let url = request.url, let stub = Self.stubs[url] else { return }
             
+            if let data = stub.data {
+                client?.urlProtocol(self, didLoad: data)
+            }
+            
+            if let response = stub.response {
+                client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+            }
+            
             if let error = stub.error {
-                print("-> startLoading error = \(error)")
                 client?.urlProtocol(self, didFailWithError: error)
             }
             
