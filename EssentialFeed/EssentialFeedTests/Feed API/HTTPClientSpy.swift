@@ -19,7 +19,7 @@ class HTTPClientSpy: HTTPClient {
         self.messages = []
     }
     
-    func get(url: URL, completion: @escaping (EssentialFeed.HTTPClientResult) -> Void) {
+    func get(from url: URL, completion: @escaping (EssentialFeed.HTTPClientResult) -> Void) {
         messages.append((url, completion))
     }
     
