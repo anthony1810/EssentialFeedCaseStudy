@@ -60,7 +60,7 @@ class URLSessionHTTPClientTests: XCTestCase {
     }
     
     func test_getFromURL_failsOnRequestError() {
-        let error = NSError(domain: "any error", code: 1)
+        let error = makeAnyError()
         guard let receivedError = resultErrorFor(data: nil, response: nil, error: error) else {
             XCTFail("Could not extract error from response")
             return
@@ -69,8 +69,8 @@ class URLSessionHTTPClientTests: XCTestCase {
     }
     
     func test_getFromURL_failsOnAllInvalidRepresentations() {
-        let httpURLResponse = HTTPURLResponse(url: makeAnyUrl(), statusCode: 200, httpVersion: nil, headerFields: nil)
-        let anyURLResponse = URLResponse(url: makeAnyUrl(), mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
+        let httpURLResponse = makeAnyHTTPURLResponse()
+        let anyURLResponse = makeAnyURLResponse()
         let receivedError = resultErrorFor(data: nil, response: nil, error: nil)
         
         XCTAssertNotNil(receivedError)
@@ -100,6 +100,14 @@ class URLSessionHTTPClientTests: XCTestCase {
     
     func makeAnyUrl() -> URL {
         URL(string: "https://any-url.com")!
+    }
+    
+    func makeAnyURLResponse() -> URLResponse {
+        URLResponse(url: makeAnyUrl(), mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
+    }
+    
+    func makeAnyHTTPURLResponse() -> HTTPURLResponse {
+        HTTPURLResponse(url: makeAnyUrl(), statusCode: 200, httpVersion: nil, headerFields: nil)!
     }
     
     func resultErrorFor(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> NSError? {
