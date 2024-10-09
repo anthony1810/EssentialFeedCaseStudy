@@ -79,16 +79,6 @@ extension RemoteLoaderTests {
         return try! JSONSerialization.data(withJSONObject: json)
     }
     
-    func trackForMemoryLeaks(
-        _ instance: AnyObject,
-        file: StaticString = #filePath,
-        line: UInt = #line
-    ) {
-        addTeardownBlock { [weak instance] in
-            XCTAssertNil(instance, "Instance should have been deallocated. Potential memory leaks", file: file, line: line)
-        }
-    }
-    
     func failure(_ error: RemoteFeedLoader.Error) -> RemoteFeedLoader.Result {
         .failure(error)
     }
