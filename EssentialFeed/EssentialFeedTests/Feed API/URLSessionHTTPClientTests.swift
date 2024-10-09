@@ -23,7 +23,7 @@ class URLSessionHTTPClient {
         session.dataTask(with: url) { data, urlResponse, error in
             if let error {
                 completion(.failure(error))
-            } else if let data, data.count > 0, let urlResponse = urlResponse as? HTTPURLResponse {
+            } else if let data, let urlResponse = urlResponse as? HTTPURLResponse {
                 completion(.success(urlResponse, data))
             } else {
                 completion(.failure(UnexpectedErrorRepresentation()))
@@ -77,7 +77,6 @@ class URLSessionHTTPClientTests: XCTestCase {
         
         XCTAssertNotNil(receivedError)
         XCTAssertNotNil(resultErrorFor(data: nil, response: anyURLResponse, error: nil))
-        XCTAssertNotNil(resultErrorFor(data: nil, response: httpURLResponse, error: nil))
         XCTAssertNotNil(resultErrorFor(data: Data(), response: nil, error: nil))
         XCTAssertNotNil(resultErrorFor(data: Data(), response: nil, error: receivedError))
         XCTAssertNotNil(resultErrorFor(data: nil, response: anyURLResponse, error: makeAnyError()))
@@ -93,6 +92,12 @@ class URLSessionHTTPClientTests: XCTestCase {
         let response = resultResponseFor(data: data, response: httpURLResponse, error: nil)?.0
         XCTAssertEqual(response?.url, httpURLResponse.url)
         XCTAssertEqual(response?.statusCode, httpURLResponse.statusCode)
+    }
+    
+    func test_getFromURL_succeedsWithEmptyDataOnHttpURLResponseWithNilData() {
+        let emptyData = Data()
+        let result = resultResponseFor(data: emptyData, response: makeAnyHTTPURLResponse(), error: nil)
+        XCTAssertEqual(result?.data, emptyData)
     }
     
     // MARK: - Helpers
@@ -118,7 +123,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         HTTPURLResponse(url: makeAnyUrl(), statusCode: 200, httpVersion: nil, headerFields: nil)!
     }
     
-    func resultResponseFor(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> (HTTPURLResponse, Data)? {
+    func resultResponseFor(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> (response: HTTPURLResponse, data: Data)? {
         
         URLProtocolStub.stub(data: data, response: response, error: error)
         let sut = makeSUT(file: file, line: line)
