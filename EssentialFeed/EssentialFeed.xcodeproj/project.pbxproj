@@ -40,10 +40,20 @@
 		92D45F962CB76BDD005A78A5 /* FeedAPIEndToEndTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FeedAPIEndToEndTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		92D45FA12CB77198005A78A5 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Helpers/XCTestCase+MemoryLeak.swift",
+			);
+			target = 92D45F952CB76BDD005A78A5 /* FeedAPIEndToEndTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		92C45FCA2CB0E2DD0034F8E4 /* Feed API */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Feed API"; sourceTree = "<group>"; };
 		92D45F972CB76BDD005A78A5 /* FeedAPIEndToEndTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = FeedAPIEndToEndTests; sourceTree = "<group>"; };
-		92E083452CB21A660069E8F8 /* Feed API */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Feed API"; sourceTree = "<group>"; };
+		92E083452CB21A660069E8F8 /* Feed API */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (92D45FA12CB77198005A78A5 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Feed API"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
