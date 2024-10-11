@@ -18,13 +18,13 @@ final class FeedAPIEndToEndTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    func test_endToEndFeedResult_matchesFixedTestSampleData(file: StaticString = #file, line: UInt = #line) throws {
+    func test_endToEndFeedResult_matchesFixedTestSampleData() throws {
         let url = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
         let httpclient = URLSessionHTTPClient()
         let loader = RemoteFeedLoader(httpClient: httpclient, url: url)
         
-        trackForMemoryLeaks(httpclient, file: file, line: line)
-        trackForMemoryLeaks(loader, file: file, line: line)
+        trackForMemoryLeaks(httpclient)
+        trackForMemoryLeaks(loader)
         
         var capturedResult: LoadFeedResult?
         let expectation = self.expectation(description: "Loaded")
