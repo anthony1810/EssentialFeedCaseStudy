@@ -84,22 +84,6 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         return sut
     }
     
-    func makeAnyError() -> NSError {
-        NSError(domain: "any error", code: 1, userInfo: nil)
-    }
-    
-    func makeAnyUrl() -> URL {
-        URL(string: "https://any-url.com")!
-    }
-    
-    func makeAnyURLResponse() -> URLResponse {
-        URLResponse(url: makeAnyUrl(), mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
-    }
-    
-    func makeAnyHTTPURLResponse() -> HTTPURLResponse {
-        HTTPURLResponse(url: makeAnyUrl(), statusCode: 200, httpVersion: nil, headerFields: nil)!
-    }
-    
     func resultResponseFor(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> (response: HTTPURLResponse, data: Data)? {
         let result = resultFor(data: data, response: response, error: error)
         
