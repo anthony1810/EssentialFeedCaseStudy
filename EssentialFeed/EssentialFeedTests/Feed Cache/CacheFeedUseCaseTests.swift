@@ -28,7 +28,7 @@ public class FeedStore {
         cacheDeletionCount += 1
     }
     
-    func completeDeletion(error: Error) {
+    func completeDeletion(error: Error, at index: Int) {
         
     }
 }
