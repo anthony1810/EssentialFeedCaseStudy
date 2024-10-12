@@ -22,13 +22,19 @@ public class LocalFeedLoader {
 
 public class FeedStore {
     private(set) var cacheDeletionCount: Int = 0
+    private(set) var cacheInsertionCount: Int = 0
     
     func deleteCache() {
         cacheDeletionCount += 1
     }
+    
+    func completeDeletion(error: Error) {
+        
+    }
 }
 
 class CacheFeedUseCaseTests: XCTestCase {
+    
     func test_init_doesNotDeleteCacheUponInit() {
       let (store, _) = makeSUT()
         
@@ -43,6 +49,18 @@ class CacheFeedUseCaseTests: XCTestCase {
         sut.save(items)
         
         XCTAssertEqual(store.cacheDeletionCount, 1)
+    }
+    
+    func test_save_doesNotRequestCacheInsertionOnDeletionError() {
+        let (store, sut) = makeSUT()
+        
+        let items: [FeedItem] = [uniqueItem(), uniqueItem()]
+        let deletionError = makeAnyError()
+        
+        sut.save(items)
+        store.completeDeletion(error: deletionError)
+        
+        XCTAssertEqual(store.cacheInsertionCount, 0)
     }
 }
 
