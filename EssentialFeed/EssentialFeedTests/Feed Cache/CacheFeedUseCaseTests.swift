@@ -16,12 +16,16 @@ public class LocalFeedLoader {
     }
     
     public func save(_ items: [FeedItem]) {
-        store.cacheDeletionCount += 1
+        store.deleteCache()
     }
 }
 
 public class FeedStore {
-    var cacheDeletionCount: Int = 0
+    private(set) var cacheDeletionCount: Int = 0
+    
+    func deleteCache() {
+        cacheDeletionCount += 1
+    }
 }
 
 class CacheFeedUseCaseTests: XCTestCase {
