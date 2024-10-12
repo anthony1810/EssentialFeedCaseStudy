@@ -9,7 +9,7 @@ import Foundation
 import XCTest
 import EssentialFeed
 
-class URLSessionHTTPClientTests: XCTestCase {
+class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
@@ -152,7 +152,7 @@ class URLSessionHTTPClientTests: XCTestCase {
     }
 }
 
-extension URLSessionHTTPClientTests {
+extension LoadFeedFromRemoteUseCaseTests {
     private class URLProtocolStub: URLProtocol {
            private static var stub: Stub?
            private static var requestObserver: ((URLRequest) -> Void)?
