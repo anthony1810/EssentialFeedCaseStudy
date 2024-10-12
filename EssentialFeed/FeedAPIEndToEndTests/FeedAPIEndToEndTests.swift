@@ -20,7 +20,7 @@ final class FeedAPIEndToEndTests: XCTestCase {
     
     func test_endToEndFeedResult_matchesFixedTestSampleData() throws {
         let url = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
-        let httpclient = URLSessionHTTPClient()
+        let httpclient = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
         let loader = RemoteFeedLoader(httpClient: httpclient, url: url)
         
         trackForMemoryLeaks(httpclient)
