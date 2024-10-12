@@ -17,11 +17,12 @@ public class LocalFeedLoader {
         self.timestamp = timestamp
     }
     
-    public func save(_ items: [FeedItem]) {
+    public func save(_ items: [FeedItem], completion: @escaping (Error?) -> Void) {
         store.deleteCache(completion: { [unowned self] error in
             if error == nil {
                 self.store.insertCache(items, timestamp: timestamp())
             }
+            completion(error)
         })
     }
 }
@@ -69,7 +70,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         
         let items: [FeedItem] = [uniqueItem(), uniqueItem()]
         
-        sut.save(items)
+        sut.save(items) { _ in }
         
         XCTAssertEqual(store.receivedMessages, [.deletedCache])
     }
@@ -80,7 +81,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         let items: [FeedItem] = [uniqueItem(), uniqueItem()]
         let deletionError = makeAnyError()
         
-        sut.save(items)
+        sut.save(items) { _ in }
         store.completeDeletion(error: deletionError, at: 0)
         
         XCTAssertEqual(store.receivedMessages, [.deletedCache])
@@ -92,10 +93,29 @@ class CacheFeedUseCaseTests: XCTestCase {
         
         let items: [FeedItem] = [uniqueItem(), uniqueItem()]
         
-        sut.save(items)
+        sut.save(items) { _ in }
         store.completeDeletionSuccessfully(at: 0)
         
         XCTAssertEqual(store.receivedMessages, [.deletedCache, .insertedCache(items, timestamp)])
+    }
+    
+    func test_save_saveFailsWithError() {
+        let (store, sut) = makeSUT()
+        
+        let items: [FeedItem] = [uniqueItem(), uniqueItem()]
+        let error = makeAnyError()
+        
+        var capturedError: Error?
+        let exp = expectation(description: "save completion")
+        sut.save(items) { error in
+            capturedError = error
+            exp.fulfill()
+        }
+        store.completeDeletion(error: error, at: 0)
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertEqual(capturedError as? NSError, error)
     }
 }
 
