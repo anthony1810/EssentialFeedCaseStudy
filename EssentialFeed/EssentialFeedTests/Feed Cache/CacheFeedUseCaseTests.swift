@@ -69,6 +69,9 @@ extension CacheFeedUseCaseTests {
         let store = FeedStore()
         let sut = LocalFeedLoader(store: store)
         
+        trackForMemoryLeaks(store)
+        trackForMemoryLeaks(sut)
+        
         return (store: store, feedLoader: sut)
     }
     
