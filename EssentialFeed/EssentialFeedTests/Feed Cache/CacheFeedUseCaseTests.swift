@@ -62,11 +62,11 @@ public class FeedStore {
     }
     
     func completeInsertion(error: Error, at index: Int = 0) {
-        deletionCompletions[index](error)
+        insertionCompletions[index](error)
     }
     
     func completeInsertionSuccessfully(at index: Int = 0) {
-        deletionCompletions[index](nil)
+        insertionCompletions[index](nil)
     }
 }
 
@@ -143,12 +143,12 @@ class CacheFeedUseCaseTests: XCTestCase {
             capturedError = error
             exp.fulfill()
         }
+        store.completeDeletionSuccessfully()
         store.completeInsertion(error: error)
         
         wait(for: [exp], timeout: 1.0)
         
         XCTAssertEqual(capturedError as? NSError, error)
-        XCTAssertEqual(store.receivedMessages, [.deletedCache])
     }
 }
 
