@@ -18,12 +18,22 @@ public class LocalFeedLoader {
     }
     
     public func save(_ items: [FeedItem], completion: @escaping (Error?) -> Void) {
-        store.deleteCache(completion: { [unowned self] error in
-            if error == nil {
-                self.store.insertCache(items, timestamp: timestamp(), completion: completion)
-            } else {
+        store.deleteCache(completion: { [weak self] error in
+            guard let self else { return }
+            
+            if let error {
                 completion(error)
+            } else {
+                self.insertCache(items, timestamp: timestamp(), completion: completion)
             }
+        })
+    }
+    
+    func insertCache(_ items: [FeedItem], timestamp: Date, completion: @escaping (Error?) -> Void) {
+        self.store.insertCache(items, timestamp: timestamp, completion: { [weak self] error in
+            guard self != nil else { return }
+            
+            completion(error)
         })
     }
 }
@@ -105,6 +115,34 @@ class CacheFeedUseCaseTests: XCTestCase {
             store.completeDeletionSuccessfully()
             store.completeInsertionSuccessfully()
         }
+    }
+    
+    func test_deinit_doesNotDeliverDeletionMessageAfterDeinit() {
+        let store = FeedStoreSpy()
+        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, timestamp: {Date()})
+        
+        var receiveResults = [Error?]()
+        sut?.save([uniqueItem()], completion: { receiveResults.append($0)} )
+        
+        sut = nil
+        store.completeDeletionSuccessfully()
+        
+        XCTAssertTrue(receiveResults.isEmpty)
+    }
+    
+    func test_deinit_doesNotDeliverInsertionMessageAfterDeinit() {
+        let store = FeedStoreSpy()
+        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, timestamp: {Date()})
+        
+        var receiveResults = [Error?]()
+        sut?.save([uniqueItem()], completion: { receiveResults.append($0)} )
+        
+        store.completeDeletionSuccessfully()
+        sut = nil
+        
+        store.completeInsertion(error: makeAnyError())
+        
+        XCTAssertTrue(receiveResults.isEmpty)
     }
 }
 
