@@ -121,9 +121,9 @@ extension CacheFeedUseCaseTests {
         return (store: store, feedLoader: sut)
     }
     
-    func uniqueItem() -> (domainModel: FeedItem, localModel: LocalFeedItem) {
+    func uniqueItem() -> (domainModel: FeedItem, localModel: LocalFeedImage) {
         let domain = FeedItem(id: UUID(), description: nil, location: nil, imageURL: makeAnyUrl())
-        let local = LocalFeedItem(id: domain.id, description: domain.description, location: domain.location, imageURL: domain.imageURL)
+        let local = LocalFeedImage(id: domain.id, description: domain.description, location: domain.location, imageURL: domain.imageURL)
         
         return (domain, local)
     }
@@ -149,7 +149,7 @@ extension CacheFeedUseCaseTests {
         
         enum ReceiveMessage: Equatable {
             case deletedCache
-            case insertedCache([LocalFeedItem], Date)
+            case insertedCache([LocalFeedImage], Date)
         }
         
         private(set) var deletionCompletions = [DeletionCacheCompletion]()
@@ -162,7 +162,7 @@ extension CacheFeedUseCaseTests {
             receivedMessages.append(.deletedCache)
         }
         
-        public func insertCache(_ items: [LocalFeedItem], timestamp: Date, completion: @escaping (Error?) -> Void) {
+        public func insertCache(_ items: [LocalFeedImage], timestamp: Date, completion: @escaping (Error?) -> Void) {
             insertionCompletions.append(completion)
             receivedMessages.append(.insertedCache(items, timestamp))
         }
