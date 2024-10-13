@@ -123,7 +123,7 @@ extension CacheFeedUseCaseTests {
     
     func uniqueItem() -> (domainModel: FeedItem, localModel: LocalFeedImage) {
         let domain = FeedItem(id: UUID(), description: nil, location: nil, imageURL: makeAnyUrl())
-        let local = LocalFeedImage(id: domain.id, description: domain.description, location: domain.location, imageURL: domain.imageURL)
+        let local = LocalFeedImage(id: domain.id, description: domain.description, location: domain.location, url: domain.imageURL)
         
         return (domain, local)
     }
