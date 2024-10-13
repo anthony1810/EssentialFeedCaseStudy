@@ -53,8 +53,8 @@ final class FeedAPIEndToEndTests: XCTestCase {
         }
     }
     
-    func expectItem(at index: Int) -> FeedItem {
-        FeedItem(
+    func expectItem(at index: Int) -> FeedImage {
+        FeedImage(
             id: id(at: index),
             description: description(at: index),
             location: location(at: index),

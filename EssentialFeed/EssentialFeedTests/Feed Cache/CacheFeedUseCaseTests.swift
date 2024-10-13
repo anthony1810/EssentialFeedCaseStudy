@@ -121,8 +121,8 @@ extension CacheFeedUseCaseTests {
         return (store: store, feedLoader: sut)
     }
     
-    func uniqueItem() -> (domainModel: FeedItem, localModel: LocalFeedImage) {
-        let domain = FeedItem(id: UUID(), description: nil, location: nil, imageURL: makeAnyUrl())
+    func uniqueItem() -> (domainModel: FeedImage, localModel: LocalFeedImage) {
+        let domain = FeedImage(id: UUID(), description: nil, location: nil, imageURL: makeAnyUrl())
         let local = LocalFeedImage(id: domain.id, description: domain.description, location: domain.location, url: domain.imageURL)
         
         return (domain, local)
