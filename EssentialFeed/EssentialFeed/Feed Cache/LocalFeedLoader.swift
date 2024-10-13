@@ -7,6 +7,9 @@
 import Foundation
 
 public final class LocalFeedLoader {
+    
+    public typealias SaveResult = Error?
+    
     private let store: FeedStore
     private let timestamp: () -> Date
     
@@ -15,7 +18,7 @@ public final class LocalFeedLoader {
         self.timestamp = timestamp
     }
     
-    public func save(_ items: [FeedItem], completion: @escaping (Error?) -> Void) {
+    public func save(_ items: [FeedItem], completion: @escaping (SaveResult) -> Void) {
         store.deleteCache(completion: { [weak self] error in
             guard let self else { return }
             
