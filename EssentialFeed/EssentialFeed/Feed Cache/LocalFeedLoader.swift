@@ -9,6 +9,7 @@ import Foundation
 public final class LocalFeedLoader {
     
     public typealias SaveResult = Error?
+    public typealias LoadResult = Error?
     
     private let store: FeedStore
     private let timestamp: () -> Date
@@ -38,8 +39,8 @@ public final class LocalFeedLoader {
         })
     }
     
-    public func load() {
-        store.retrieve()
+    public func load(completion: @escaping (LoadResult) -> Void) {
+        store.retrieve(completion: completion)
     }
 }
 
