@@ -40,16 +40,21 @@ public final class LocalFeedLoader {
     }
     
     public func load(completion: @escaping (LoadResult) -> Void) {
-        store.retrieve(completion: { result in
+        store.retrieve(completion: { [unowned self] result in
             switch result {
-            case .success(let items, _):
+            case let .success(items, timestamp) where self.validateTimestampt(timestamp) :
                 completion(.success(items.toFeed()))
             case .failure(let error):
                 completion(.failure(error))
-            case .empty:
+            default:
                 completion(.success([]))
             }
         })
+    }
+    
+    private func validateTimestampt(_ timestamp: Date) -> Bool {
+        let maxCacheAge = Calendar.current.date(byAdding: .day, value: 7, to: timestamp)!
+        return self.timestamp() > maxCacheAge
     }
 }
 
