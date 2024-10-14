@@ -38,6 +38,16 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
             store.completeRetrievalSuccessfully()
         }
     }
+    
+    func test_load_deliversImagesFromCacheLessThen7DaysOld() {
+        let (store, sut) = makeSUT()
+        let expectedFeed = uniqueItem()
+        let sevenDaysBeforeToday = Date().sevenDaysBeforeToday.addingSeconds(1)
+        
+        expect(sut: sut, toCompleteWith: .success([expectedFeed.domainModel])) {
+            store.completeRetrieval(with: [expectedFeed.localModel], timestamp: sevenDaysBeforeToday)
+        }
+    }
 }
 
 // MARK: - Helpers
@@ -69,5 +79,22 @@ extension LoadFeedFromCacheUseCaseTests {
         action()
         
         wait(for: [exp], timeout: 1.0)
+    }
+    
+    func uniqueItem() -> (domainModel: FeedImage, localModel: LocalFeedImage) {
+        let domain = FeedImage(id: UUID(), description: nil, location: nil, imageURL: makeAnyUrl())
+        let local = LocalFeedImage(id: domain.id, description: domain.description, location: domain.location, url: domain.imageURL)
+        
+        return (domain, local)
+    }
+}
+
+private extension Date {
+    var sevenDaysBeforeToday: Date {
+        return Calendar.current.date(byAdding: .day, value: -7, to: Date())!
+    }
+    
+    func addingSeconds(_ seconds: Int) -> Date {
+        return Calendar.current.date(byAdding: .second, value: seconds, to: self)!
     }
 }
