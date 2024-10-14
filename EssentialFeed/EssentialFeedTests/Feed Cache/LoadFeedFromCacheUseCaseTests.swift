@@ -26,55 +26,48 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     func test_load_failsOnErrorRetrieveErrorMessage() {
         let (store, sut) = makeSUT()
         let expectedError = makeAnyError()
-        let exp = expectation(description: "Load completion")
-        
-        var capturedError: Error?
-        sut.load { result in
-            if case let .failure(error) = result {
-                capturedError = error
-            } else {
-                XCTFail("Expected .failure, got \(result)")
-            }
-            exp.fulfill()
+
+        expect(sut: sut, toCompleteWith: .failure(expectedError)) {
+            store.completeRetrieval(error: expectedError)
         }
-        store.completeRetrieval(error: expectedError)
-        
-        wait(for: [exp], timeout: 1.0)
-        
-        XCTAssertEqual(capturedError as NSError?, expectedError)
     }
     
     func test_load_deliverNoImageOnEmptyCache() {
         let (store, sut) = makeSUT()
-        let exp = expectation(description: "Load completion")
-        
-        var capturedResult: [FeedImage]?
-        sut.load { result in
-            if case let .success(images) = result {
-                capturedResult = images
-            } else {
-                XCTFail("Expected .success, got \(result)")
-            }
-            exp.fulfill()
+        expect(sut: sut, toCompleteWith: .success([])) {
+            store.completeRetrievalSuccessfully()
         }
-        store.completeRetrievalSuccessfully()
-        
-        wait(for: [exp], timeout: 1.0)
-        
-        XCTAssertEqual(capturedResult, [])
     }
 }
 
 // MARK: - Helpers
 extension LoadFeedFromCacheUseCaseTests {
-    func makeSUT(timestamp: @escaping (() -> Date) = Date.init) -> (store: FeedStoreSpy, feedLoader: LocalFeedLoader) {
+    func makeSUT(timestamp: @escaping (() -> Date) = Date.init, file: StaticString = #file, line: UInt = #line) -> (store: FeedStoreSpy, feedLoader: LocalFeedLoader) {
         
         let store = FeedStoreSpy()
         let sut = LocalFeedLoader(store: store, timestamp: timestamp)
         
-        trackForMemoryLeaks(store)
-        trackForMemoryLeaks(sut)
+        trackForMemoryLeaks(store, file: file, line: line)
+        trackForMemoryLeaks(sut, file: file, line: line)
         
         return (store: store, feedLoader: sut)
+    }
+    
+    func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.LoadResult, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "Load completion")
+            
+        sut.load { actualResult in
+            switch (actualResult, expectedResult) {
+            case let (.success(feed), .success(expectedFeed)):
+                XCTAssertEqual(feed, expectedFeed, file: file, line: line)
+            case let (.failure(error as NSError), .failure(expectedError as NSError)):
+                XCTAssertEqual(error, expectedError, file: file, line: line)
+            default: XCTFail("Unexpected result: \(actualResult)", file: file, line: line)
+            }
+            exp.fulfill()
+        }
+        action()
+        
+        wait(for: [exp], timeout: 1.0)
     }
 }
