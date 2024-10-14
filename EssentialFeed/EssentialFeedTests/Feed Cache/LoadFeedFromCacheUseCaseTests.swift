@@ -67,6 +67,63 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
             store.completeRetrieval(with: [], timestamp: sevenDaysBeforeToday)
         }
     }
+    
+    func test_load_deleteCacheOnRetrieveError() {
+        let (store, sut) = makeSUT()
+        let expectedError = makeAnyError()
+        
+        expect(sut: sut, toCompleteWith: .failure(expectedError)) {
+            store.completeRetrieval(error: expectedError)
+        }
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieved, .deletedCache])
+    }
+    
+    func test_load_doesNotDeleteCacheOnRetrieveSuccess() {
+        let (store, sut) = makeSUT()
+        
+        expect(sut: sut, toCompleteWith: .success([])) {
+            store.completeRetrievalSuccessfully()
+        }
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieved])
+    }
+    
+    func test_load_doesNotDeleteCacheOnLessThen7DaysOld() {
+        let (store, sut) = makeSUT()
+        let expectedFeed = uniqueItem()
+        let sevenDaysBeforeToday = Date().sevenDaysBeforeToday.addingSeconds(-1)
+        
+        expect(sut: sut, toCompleteWith: .success([expectedFeed.domainModel])) {
+            store.completeRetrieval(with: [expectedFeed.localModel], timestamp: sevenDaysBeforeToday)
+        }
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieved])
+    }
+    
+    func test_load_deleteCacheOnMoreThan7DaysOld() {
+        let (store, sut) = makeSUT()
+        let sevenDaysBeforeToday = Date().sevenDaysBeforeToday.addingSeconds(1)
+        
+        expect(sut: sut, toCompleteWith: .success([])) {
+            store.completeRetrieval(with: [], timestamp: sevenDaysBeforeToday)
+        }
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieved, .deletedCache])
+    }
+    
+    func test_load_doesNotPerformAnyOperationAfterInstanceDeallocation() {
+        let store = FeedStoreSpy()
+        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, timestamp: Date.init)
+        
+        var captureResult = [LocalFeedLoader.LoadResult]()
+        sut?.load(completion: { captureResult.append($0) })
+        
+        sut = nil
+        store.completeRetrievalSuccessfully()
+        
+        XCTAssertTrue(captureResult.isEmpty)
+    }
 }
 
 // MARK: - Helpers
