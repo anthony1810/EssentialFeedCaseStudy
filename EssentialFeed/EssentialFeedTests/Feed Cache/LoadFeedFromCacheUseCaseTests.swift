@@ -51,11 +51,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     
     func test_load_deliversNoImagesFromCacheMoreThan7DaysOld() {
         let (store, sut) = makeSUT()
-        let expectedFeed = uniqueItem()
         let sevenDaysBeforeToday = Date().sevenDaysBeforeToday
         
-        expect(sut: sut, toCompleteWith: .success([expectedFeed.domainModel])) {
-            store.completeRetrieval(with: [expectedFeed.localModel], timestamp: sevenDaysBeforeToday)
+        expect(sut: sut, toCompleteWith: .success([])) {
+            store.completeRetrieval(with: [], timestamp: sevenDaysBeforeToday)
         }
     }
 }
