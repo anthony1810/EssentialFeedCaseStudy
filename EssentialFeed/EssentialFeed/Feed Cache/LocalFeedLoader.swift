@@ -57,6 +57,19 @@ public final class LocalFeedLoader {
         })
     }
     
+    public func validateCache() {
+        store.retrieve(completion: { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .failure:
+                store.deleteCache(completion: { _ in })
+            default:
+                break
+            }
+        })
+       
+    }
+    
     private func validateTimestampt(_ timestamp: Date) -> Bool {
         let maxCacheAge = calendar.date(byAdding: .day, value: -maxCacheDays, to: self.timestamp())!
 

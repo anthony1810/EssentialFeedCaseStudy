@@ -15,4 +15,14 @@ final class EssentialFeedTests: FeedCacheTests {
         
         XCTAssertEqual(store.receivedMessages, [])
     }
+    
+    func test_validateCache_deleteCacheOnRetrieveError() {
+        let (store, sut) = makeSUT()
+        let expectedError = makeAnyError()
+        
+        sut.validateCache()
+        store.completeRetrieval(error: expectedError)
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieved, .deletedCache])
+    }
 }
