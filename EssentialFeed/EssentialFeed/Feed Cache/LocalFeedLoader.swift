@@ -45,7 +45,6 @@ public final class LocalFeedLoader {
             guard let self else { return }
             switch result {
             case .failure(let error):
-                store.deleteCache(completion: { _ in })
                 completion(.failure(error))
             case let .success(items, timestamp) where self.validateTimestampt(timestamp) :
                 completion(.success(items.toFeed()))
