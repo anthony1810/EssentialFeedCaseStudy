@@ -31,8 +31,12 @@ class FeedCacheTests: XCTestCase {
 }
 
 extension Date {
-    var sevenDaysBeforeToday: Date {
-        return Calendar.current.date(byAdding: .day, value: -7, to: Date())!
+    var cacheExpireDate: Date {
+        return Calendar.current.date(byAdding: .day, value: daysToExpire, to: Date())!
+    }
+    
+    var daysToExpire: Int {
+        7
     }
     
     func addingSeconds(_ seconds: Int) -> Date {
