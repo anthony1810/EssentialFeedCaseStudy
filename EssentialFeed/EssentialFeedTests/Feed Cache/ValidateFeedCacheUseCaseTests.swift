@@ -35,4 +35,24 @@ final class EssentialFeedTests: FeedCacheTests {
         
         XCTAssertEqual(store.receivedMessages, [.retrieved, .deletedCache])
     }
+    
+    func test_load_doesNotDeleteCacheOnRetrieveSuccess() {
+        let (store, sut) = makeSUT()
+        
+        sut.validateCache()
+        store.completeRetrievalSuccessfully()
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieved])
+    }
+    
+    func test_load_doesNotDeleteCacheOnLessThen7DaysOld() {
+        let (store, sut) = makeSUT()
+        let expectedFeed = uniqueItem()
+        let sevenDaysBeforeToday = Date().sevenDaysBeforeToday.addingSeconds(-1)
+        
+        sut.validateCache()
+        store.completeRetrieval(with: [expectedFeed.localModel], timestamp: sevenDaysBeforeToday)
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieved])
+    }
 }

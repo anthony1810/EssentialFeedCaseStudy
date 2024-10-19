@@ -79,7 +79,7 @@ class LoadFeedFromCacheUseCaseTests: FeedCacheTests {
         XCTAssertEqual(store.receivedMessages, [.retrieved])
     }
     
-    func test_load_doesNotDeleteCacheOnRetrieveSuccess() {
+    func test_load_hasNoSideEffectOnRetrieveSuccess() {
         let (store, sut) = makeSUT()
         
         expect(sut: sut, toCompleteWith: .success([])) {
@@ -89,7 +89,7 @@ class LoadFeedFromCacheUseCaseTests: FeedCacheTests {
         XCTAssertEqual(store.receivedMessages, [.retrieved])
     }
     
-    func test_load_doesNotDeleteCacheOnLessThen7DaysOld() {
+    func test_load_hasNoSideEffectOnLessThen7DaysOld() {
         let (store, sut) = makeSUT()
         let expectedFeed = uniqueItem()
         let sevenDaysBeforeToday = Date().sevenDaysBeforeToday.addingSeconds(-1)
