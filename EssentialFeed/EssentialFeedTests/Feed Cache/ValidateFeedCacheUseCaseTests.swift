@@ -55,4 +55,15 @@ final class EssentialFeedTests: FeedCacheTests {
         
         XCTAssertEqual(store.receivedMessages, [.retrieved])
     }
+    
+    func test_load_doesNotDeleteCacheWhenInstanceDeallocated() {
+        let store = FeedStoreSpy()
+        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, timestamp: Date.init)
+        
+        sut?.validateCache()
+        sut = nil
+        store.completeRetrievalSuccessfully()
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieved])
+    }
 }
