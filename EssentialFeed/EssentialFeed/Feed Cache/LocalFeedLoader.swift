@@ -20,6 +20,18 @@ public final class LocalFeedLoader {
         self.timestamp = timestamp
     }
     
+    private func validateTimestampt(_ timestamp: Date) -> Bool {
+        let maxCacheAge = calendar.date(byAdding: .day, value: -maxCacheDays, to: self.timestamp())!
+
+        return timestamp <= maxCacheAge
+    }
+    
+    private var maxCacheDays: Int {
+        7
+    }
+}
+
+extension LocalFeedLoader {
     public func save(_ items: [FeedImage], completion: @escaping (SaveResult) -> Void) {
         store.deleteCache(completion: { [weak self] error in
             guard let self else { return }
@@ -32,14 +44,16 @@ public final class LocalFeedLoader {
         })
     }
     
-    func insertCache(_ items: [FeedImage], timestamp: Date, completion: @escaping (Error?) -> Void) {
+    private func insertCache(_ items: [FeedImage], timestamp: Date, completion: @escaping (Error?) -> Void) {
         self.store.insertCache(items.toLocal(), timestamp: timestamp, completion: { [weak self] error in
             guard self != nil else { return }
             
             completion(error)
         })
     }
-    
+}
+
+extension LocalFeedLoader {
     public func load(completion: @escaping (LoadResult) -> Void) {
         store.retrieve(completion: { [weak self] result in
             guard let self else { return }
@@ -48,14 +62,14 @@ public final class LocalFeedLoader {
                 completion(.failure(error))
             case let .success(items, timestamp) where self.validateTimestampt(timestamp) :
                 completion(.success(items.toFeed()))
-            case .success:
-                completion(.success([]))
-            default:
+            case .empty, .success:
                 completion(.success([]))
             }
         })
     }
-    
+}
+
+extension LocalFeedLoader {
     public func validateCache() {
         store.retrieve(completion: { [weak self] result in
             guard let self else { return }
@@ -64,21 +78,10 @@ public final class LocalFeedLoader {
                 store.deleteCache(completion: { _ in })
             case let .success(_, timestamp) where !self.validateTimestampt(timestamp) :
                 store.deleteCache(completion: { _ in })
-            default:
+            case .empty, .success:
                 break
             }
         })
-       
-    }
-    
-    private func validateTimestampt(_ timestamp: Date) -> Bool {
-        let maxCacheAge = calendar.date(byAdding: .day, value: -maxCacheDays, to: self.timestamp())!
-
-        return timestamp <= maxCacheAge
-    }
-    
-    private var maxCacheDays: Int {
-        7
     }
 }
 
