@@ -13,21 +13,10 @@ public final class LocalFeedLoader {
     
     private let store: FeedStore
     private let timestamp: () -> Date
-    private let calendar = Calendar(identifier: .gregorian)
     
     public init(store: FeedStore, timestamp: @escaping () -> Date) {
         self.store = store
         self.timestamp = timestamp
-    }
-    
-    private func validateTimestampt(_ timestamp: Date) -> Bool {
-        let maxCacheAge = calendar.date(byAdding: .day, value: -maxCacheDays, to: self.timestamp())!
-
-        return timestamp <= maxCacheAge
-    }
-    
-    private var maxCacheDays: Int {
-        7
     }
 }
 
@@ -60,7 +49,7 @@ extension LocalFeedLoader {
             switch result {
             case .failure(let error):
                 completion(.failure(error))
-            case let .success(items, timestamp) where self.validateTimestampt(timestamp) :
+            case let .success(items, timestamp) where FeedCachePolicy.validateTimestampt(timestamp, against: self.timestamp()) :
                 completion(.success(items.toFeed()))
             case .empty, .success:
                 completion(.success([]))
@@ -76,7 +65,7 @@ extension LocalFeedLoader {
             switch result {
             case .failure:
                 store.deleteCache(completion: { _ in })
-            case let .success(_, timestamp) where !self.validateTimestampt(timestamp) :
+            case let .success(_, timestamp) where !FeedCachePolicy.validateTimestampt(timestamp, against: self.timestamp()) :
                 store.deleteCache(completion: { _ in })
             case .empty, .success:
                 break
