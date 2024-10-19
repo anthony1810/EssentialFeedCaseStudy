@@ -62,6 +62,8 @@ public final class LocalFeedLoader {
             switch result {
             case .failure:
                 store.deleteCache(completion: { _ in })
+            case let .success(_, timestamp) where !self.validateTimestampt(timestamp) :
+                store.deleteCache(completion: { _ in })
             default:
                 break
             }

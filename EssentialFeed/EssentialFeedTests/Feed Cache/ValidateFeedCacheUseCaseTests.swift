@@ -25,4 +25,14 @@ final class EssentialFeedTests: FeedCacheTests {
         
         XCTAssertEqual(store.receivedMessages, [.retrieved, .deletedCache])
     }
+    
+    func test_validateCache_deleteCacheWithCacheOnMoreThan7DaysOld() {
+        let (store, sut) = makeSUT()
+        let sevenDaysBeforeToday = Date().sevenDaysBeforeToday.addingSeconds(1)
+    
+        sut.validateCache()
+        store.completeRetrieval(with: [], timestamp: sevenDaysBeforeToday)
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieved, .deletedCache])
+    }
 }
