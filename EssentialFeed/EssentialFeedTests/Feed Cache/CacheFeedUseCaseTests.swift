@@ -9,7 +9,7 @@ import EssentialFeed
 import Foundation
 
 
-class CacheFeedUseCaseTests: XCTestCase {
+class CacheFeedUseCaseTests: FeedCacheTests {
     
     func test_init_doesNotDeleteCacheUponInit() {
       let (store, _) = makeSUT()
@@ -110,24 +110,6 @@ class CacheFeedUseCaseTests: XCTestCase {
 }
 
 extension CacheFeedUseCaseTests {
-    func makeSUT(timestamp: @escaping (() -> Date) = Date.init) -> (store: FeedStoreSpy, feedLoader: LocalFeedLoader) {
-        
-        let store = FeedStoreSpy()
-        let sut = LocalFeedLoader(store: store, timestamp: timestamp)
-        
-        trackForMemoryLeaks(store)
-        trackForMemoryLeaks(sut)
-        
-        return (store: store, feedLoader: sut)
-    }
-    
-    func uniqueItem() -> (domainModel: FeedImage, localModel: LocalFeedImage) {
-        let domain = FeedImage(id: UUID(), description: nil, location: nil, imageURL: makeAnyUrl())
-        let local = LocalFeedImage(id: domain.id, description: domain.description, location: domain.location, url: domain.imageURL)
-        
-        return (domain, local)
-    }
-    
     func expect(sut: LocalFeedLoader, toCompleteWith error: Error?, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
         let items = [uniqueItem(), uniqueItem()]
         
