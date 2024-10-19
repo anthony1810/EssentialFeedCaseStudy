@@ -89,14 +89,6 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
         clearUpState()
     }
     
-    func setUpState() {
-        try? FileManager.default.removeItem(at: testSpecificStoreURL)
-    }
-    
-    func clearUpState() {
-        try? FileManager.default.removeItem(at: testSpecificStoreURL)
-    }
-    
     func test_retrieve_deliversEmptyOnEmptyCache() {
        
         let sut = makeSUT()
@@ -177,5 +169,13 @@ extension CodableStoreCacheUseCaseTests {
     
     var testSpecificStoreURL: URL {
         FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("\(type(of: self))")
+    }
+    
+    func setUpState() {
+        try? FileManager.default.removeItem(at: testSpecificStoreURL)
+    }
+    
+    func clearUpState() {
+        try? FileManager.default.removeItem(at: testSpecificStoreURL)
     }
 }
