@@ -33,4 +33,26 @@ class CodableStoreCacheUseCaseTests: XCTestCase {
         default: XCTFail("expected empty cache, got result: \(capturedResult!)")
         }
     }
+    
+    func test_retrieve_hasNoSideEffectsOnEmptyCache() {
+        let sut = CodableFeedStore()
+        
+        let exp = expectation(description: "Wait for cache retrieval")
+        var firstCapturedResult: RetrievalResult?
+        var secondCapturedResult: RetrievalResult?
+        sut.retrieve { firstResult in
+            firstCapturedResult = firstResult
+            sut.retrieve { secondResult in
+                secondCapturedResult = secondResult
+                exp.fulfill()
+            }
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        switch (firstCapturedResult, secondCapturedResult) {
+        case (.empty, .empty): break
+        default: XCTFail("expected empty cache, got different result)")
+        }
+    }
 }
