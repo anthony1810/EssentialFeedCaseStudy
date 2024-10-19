@@ -101,7 +101,7 @@ class LoadFeedFromCacheUseCaseTests: FeedCacheTests {
         XCTAssertEqual(store.receivedMessages, [.retrieved])
     }
     
-    func test_load_deleteCacheOnMoreThan7DaysOld() {
+    func test_load_hasNoSideEffectWithCacheOnMoreThan7DaysOld() {
         let (store, sut) = makeSUT()
         let sevenDaysBeforeToday = Date().sevenDaysBeforeToday.addingSeconds(1)
         
@@ -109,7 +109,7 @@ class LoadFeedFromCacheUseCaseTests: FeedCacheTests {
             store.completeRetrieval(with: [], timestamp: sevenDaysBeforeToday)
         }
         
-        XCTAssertEqual(store.receivedMessages, [.retrieved, .deletedCache])
+        XCTAssertEqual(store.receivedMessages, [.retrieved])
     }
     
     func test_load_doesNotPerformAnyOperationAfterInstanceDeallocation() {
