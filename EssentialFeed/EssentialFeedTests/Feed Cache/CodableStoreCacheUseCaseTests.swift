@@ -171,6 +171,7 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
 extension CodableStoreCacheUseCaseTests {
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> CodableFeedStore {
         let sut = CodableFeedStore(storeURL: storeURL)
+        trackForMemoryLeaks(sut, file: file, line: line)
         return sut
     }
     
