@@ -61,7 +61,7 @@ class CodableFeedStore {
         } catch {
             completion(.failure(error))
         }
-       
+        
     }
     
     func insertCache(_ items: [LocalFeedImage], timestamp: Date, completion: @escaping FeedStore.InsertionCacheCompletion) {
@@ -90,7 +90,7 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
     }
     
     func test_retrieve_deliversEmptyOnEmptyCache() {
-       
+        
         let sut = makeSUT()
         
         let exp = expectation(description: "Wait for cache retrieval")
@@ -138,7 +138,7 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
         var capturedInsertedError: Error?
         var capturedRetrievedResult: RetrievalResult?
         let exp = expectation(description: "Wait for cache retrieval")
-      
+        
         sut.insertCache([expectedItem], timestamp: timeStamp) { insertedError in
             capturedInsertedError = insertedError
             sut.retrieve { result in
@@ -163,32 +163,8 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
         let expectedItem = uniqueItem().localModel
         let expectedTimeStamp = Date()
         
-        var capturedInsertedError: Error?
-        var capturedRetrievedResult: RetrievalResult?
-        var capturedRetrievedResult2: RetrievalResult?
-        let exp = expectation(description: "Wait for cache retrieval")
-        sut.insertCache([expectedItem], timestamp: expectedTimeStamp) { insertedError in
-            capturedInsertedError = insertedError
-            sut.retrieve { result in
-                capturedRetrievedResult = result
-                sut.retrieve { result in
-                    capturedRetrievedResult2 = result
-                    exp.fulfill()
-                }
-            }
-        }
-        
-        wait(for: [exp], timeout: 1.0)
-        
-        XCTAssertNil(capturedInsertedError)
-        switch (capturedRetrievedResult, capturedRetrievedResult2) {
-        case let (.success(feedItems,  timeStamp1), .success(feedItems2,  timeStamp2)):
-            XCTAssertEqual(feedItems, [expectedItem])
-            XCTAssertEqual(feedItems2, [expectedItem])
-            XCTAssertEqual(timeStamp1, expectedTimeStamp)
-            XCTAssertEqual(timeStamp2, expectedTimeStamp)
-        default: XCTFail("expected \(capturedRetrievedResult!) equal to \(capturedRetrievedResult2!), got different result)")
-        }
+        expect(sut: sut, toInsertFeed: [expectedItem], timestamp: expectedTimeStamp, WithError: nil)
+        expect(sut: sut, toRetrieve: .success([expectedItem], expectedTimeStamp))
     }
 }
 
@@ -199,6 +175,41 @@ extension CodableStoreCacheUseCaseTests {
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
     }
+    
+    func expect(sut: CodableFeedStore, toRetrieve expectedResult: RetrievalResult, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "Wait for cache retrieval")
+        var capturedResult: RetrievalResult?
+        
+        sut.retrieve { result in
+            capturedResult = result
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        switch (capturedResult, expectedResult) {
+        case (.empty, .empty): break
+        case let (.success(actualFeedItems, actualTimestamp), (.success(expectedFeedItems, expectedTimestamp))):
+            XCTAssertEqual(actualFeedItems, expectedFeedItems, file: file, line: line)
+            XCTAssertEqual(actualTimestamp, expectedTimestamp, file: file, line: line)
+        default: XCTFail("expected empty cache, got result: \(capturedResult!)", file: file, line: line)
+        }
+    }
+    
+    func expect(sut: CodableFeedStore, toInsertFeed feeds: [LocalFeedImage], timestamp: Date, WithError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "Wait for cache retrieval")
+      
+        var capturedError: Error?
+        sut.insertCache(feeds, timestamp: timestamp) { error in
+            capturedError = error
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertEqual(capturedError as NSError?, expectedError as NSError?, file: file, line: line)
+    }
+    
     
     var testSpecificStoreURL: URL {
         FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("\(type(of: self))")
