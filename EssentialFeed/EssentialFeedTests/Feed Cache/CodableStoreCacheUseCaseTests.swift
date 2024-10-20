@@ -120,6 +120,15 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
         expect(sut: sut, toInsertFeed: [expectedItem], timestamp: expectedTimeStamp, WithError: nil)
         expect(sut: sut, toRetrieve: .success([expectedItem], expectedTimeStamp))
     }
+    
+    func test_retrieve_deliversFailureOnRetrievalError() {
+        let sut = makeSUT()
+        let expectedError = makeAnyError()
+        
+        try! "invalidData".write(to: testSpecificStoreURL, atomically: false, encoding: .utf8)
+        
+        expect(sut: sut, toRetrieve: .failure(expectedError))
+    }
 }
 
 // MARK: - Helpers
@@ -142,11 +151,15 @@ extension CodableStoreCacheUseCaseTests {
         wait(for: [exp], timeout: 1.0)
         
         switch (capturedResult, expectedResult) {
-        case (.empty, .empty): break
+        case (.empty, .empty):
+            break
         case let (.success(actualFeedItems, actualTimestamp), (.success(expectedFeedItems, expectedTimestamp))):
             XCTAssertEqual(actualFeedItems, expectedFeedItems, file: file, line: line)
             XCTAssertEqual(actualTimestamp, expectedTimestamp, file: file, line: line)
-        default: XCTFail("expected empty cache, got result: \(capturedResult!)", file: file, line: line)
+        case (.failure, (.failure)):
+            break
+        default:
+            XCTFail("expected \(expectedResult), got result: \(capturedResult!)", file: file, line: line)
         }
     }
     
