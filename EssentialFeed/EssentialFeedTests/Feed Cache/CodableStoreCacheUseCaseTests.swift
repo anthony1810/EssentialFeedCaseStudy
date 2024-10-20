@@ -91,20 +91,20 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
     
     func test_retrieve_deliversEmptyOnEmptyCache() {
         
-        let sut = makeSUT()
+        let sut = makeSUT(storeURL: nil)
         
         expect(sut: sut, toRetrieve: .empty)
     }
     
     func test_retrieve_hasNoSideEffectsOnEmptyCache() {
-        let sut = makeSUT()
+        let sut = makeSUT(storeURL: nil)
     
         expect(sut: sut, toRetrieve: .empty)
         expect(sut: sut, toRetrieve: .empty)
     }
     
     func test_retrieve_insertThenRetrieveExpectedvalue() {
-        let sut = makeSUT()
+        let sut = makeSUT(storeURL: nil)
         let expectedItem = uniqueItem().localModel
         let timeStamp = Date()
         
@@ -113,7 +113,7 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
     }
     
     func test_retrieve_hasNoSideEffectsOnNonEmptyCache() {
-        let sut = makeSUT()
+        let sut = makeSUT(storeURL: nil)
         let expectedItem = uniqueItem().localModel
         let expectedTimeStamp = Date()
         
@@ -122,10 +122,11 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
     }
     
     func test_retrieve_deliversFailureOnRetrievalError() {
-        let sut = makeSUT()
+        let testStoreURL = testSpecificStoreURL
+        let sut = makeSUT(storeURL: testStoreURL)
         let expectedError = makeAnyError()
         
-        try! "invalidData".write(to: testSpecificStoreURL, atomically: false, encoding: .utf8)
+        try! "invalidData".write(to: testStoreURL, atomically: false, encoding: .utf8)
         
         expect(sut: sut, toRetrieve: .failure(expectedError))
     }
@@ -133,8 +134,8 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
 
 // MARK: - Helpers
 extension CodableStoreCacheUseCaseTests {
-    func makeSUT(file: StaticString = #file, line: UInt = #line) -> CodableFeedStore {
-        let sut = CodableFeedStore(storeURL: testSpecificStoreURL)
+    private func makeSUT(storeURL: URL? = nil, file: StaticString = #file, line: UInt = #line) -> CodableFeedStore {
+        let sut = CodableFeedStore(storeURL: storeURL ?? testSpecificStoreURL)
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
     }
