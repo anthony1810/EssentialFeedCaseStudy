@@ -9,90 +9,6 @@ import Foundation
 import XCTest
 import EssentialFeed
 
-class CodableFeedStore {
-    
-    private struct CodableFeedImage: Equatable, Codable {
-        public let id: UUID
-        public let description: String?
-        public let location: String?
-        public let url: URL
-        
-        public init(id: UUID, description: String?, location: String?, url: URL) {
-            self.id = id
-            self.description = description
-            self.location = location
-            self.url = url
-        }
-        
-        init(feedImage: LocalFeedImage) {
-            self.id = feedImage.id
-            self.description = feedImage.description
-            self.location = feedImage.location
-            self.url = feedImage.url
-        }
-        
-        func toLocalFeedImage() -> LocalFeedImage {
-            LocalFeedImage(id: id, description: description, location: location, url: url)
-        }
-    }
-    
-    let storeURL: URL
-    
-    init(storeURL: URL) {
-        self.storeURL = storeURL
-    }
-    
-    private struct Cache: Codable {
-        let items: [CodableFeedImage]
-        let timestamp: Date
-        
-        var feedImages: [LocalFeedImage] {
-            items.map { $0.toLocalFeedImage() }
-        }
-    }
-    
-    func retrieve(completion: @escaping FeedStore.RetrievalCompletion) {
-        do {
-            guard let data = try? Data(contentsOf: storeURL) else {
-                return completion(.empty)
-            }
-            let cache = try JSONDecoder().decode(Cache.self, from: data)
-            completion(.success(cache.feedImages, cache.timestamp))
-        } catch {
-            completion(.failure(error))
-        }
-        
-    }
-    
-    func insertCache(_ items: [LocalFeedImage], timestamp: Date, completion: @escaping FeedStore.InsertionCacheCompletion) {
-        
-        do {
-            let encoder = JSONEncoder()
-            let cache = Cache(items: items.map { CodableFeedImage(feedImage: $0) }, timestamp: timestamp)
-            let encoded = try encoder.encode(cache)
-            try encoded.write(to: storeURL)
-            
-            completion(nil)
-        } catch {
-            completion(error)
-        }
-        
-    }
-    
-    func deleteCache(completion: @escaping FeedStore.DeletionCacheCompletion) {
-        do {
-            guard FileManager.default.fileExists(atPath: storeURL.path) else {
-                return completion(nil)
-            }
-            
-            try FileManager.default.removeItem(at: storeURL)
-            completion(nil)
-        } catch {
-            completion(error)
-        }
-    }
-}
-
 class CodableStoreCacheUseCaseTests: FeedCacheTests {
     
     override func setUp() {
@@ -208,13 +124,13 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
 
 // MARK: - Helpers
 extension CodableStoreCacheUseCaseTests {
-    private func makeSUT(storeURL: URL? = nil, file: StaticString = #file, line: UInt = #line) -> CodableFeedStore {
+    private func makeSUT(storeURL: URL? = nil, file: StaticString = #file, line: UInt = #line) -> FeedStore {
         let sut = CodableFeedStore(storeURL: storeURL ?? testSpecificStoreURL)
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
     }
     
-    func expect(sut: CodableFeedStore, toRetrieve expectedResult: RetrievalResult, file: StaticString = #file, line: UInt = #line) {
+    func expect(sut: FeedStore, toRetrieve expectedResult: RetrievalResult, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for cache retrieval")
         var capturedResult: RetrievalResult?
         
@@ -238,7 +154,7 @@ extension CodableStoreCacheUseCaseTests {
         }
     }
     
-    func expect(sut: CodableFeedStore, toInsertFeed feeds: [LocalFeedImage], timestamp: Date, WithError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
+    func expect(sut: FeedStore, toInsertFeed feeds: [LocalFeedImage], timestamp: Date, WithError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for cache retrieval")
       
         var capturedError: Error?
@@ -255,7 +171,7 @@ extension CodableStoreCacheUseCaseTests {
         }
     }
     
-    func expect(sut: CodableFeedStore, toDeleteWithError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
+    func expect(sut: FeedStore, toDeleteWithError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for cache retrieval")
       
         var capturedError: Error?
