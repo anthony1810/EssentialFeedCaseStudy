@@ -78,6 +78,19 @@ class CodableFeedStore {
         }
         
     }
+    
+    func deleteCache(completion: @escaping FeedStore.DeletionCacheCompletion) {
+        do {
+            guard FileManager.default.fileExists(atPath: storeURL.path) else {
+                return completion(nil)
+            }
+            
+            try FileManager.default.removeItem(at: storeURL)
+            completion(nil)
+        } catch {
+            completion(error)
+        }
+    }
 }
 
 class CodableStoreCacheUseCaseTests: FeedCacheTests {
@@ -166,6 +179,31 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
         
         expect(sut: sut, toInsertFeed: [], timestamp: Date(), WithError: expectedError)
     }
+    
+    func test_delete_hasNoSideEffectsOnEmptyCache() {
+        let sut = makeSUT(storeURL: nil)
+        
+        expect(sut: sut, toDeleteWithError: nil)
+        expect(sut: sut, toDeleteWithError: nil)
+    }
+    
+    func test_delete_emptiesPreviouslyInsertedCache() {
+        let sut = makeSUT(storeURL: nil)
+        let timestamp = Date()
+        let expectedItem = uniqueItem().localModel
+        
+        expect(sut: sut, toInsertFeed: [expectedItem], timestamp: timestamp, WithError: nil)
+        expect(sut: sut, toDeleteWithError: nil)
+        expect(sut: sut, toRetrieve: .empty)
+    }
+    
+    func test_delete_deliversErrorOnDeletionFailure() {
+        let invalidStoreURL = readOnlyStoreURL
+        let sut = makeSUT(storeURL: invalidStoreURL)
+        let expectedError = makeAnyError()
+        
+        expect(sut: sut, toDeleteWithError: expectedError)
+    }
 }
 
 // MARK: - Helpers
@@ -217,9 +255,29 @@ extension CodableStoreCacheUseCaseTests {
         }
     }
     
+    func expect(sut: CodableFeedStore, toDeleteWithError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "Wait for cache retrieval")
+      
+        var capturedError: Error?
+        sut.deleteCache { error in
+            capturedError = error
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+        if expectedError != nil {
+            XCTAssertNotNil(capturedError, file: file, line: line)
+        } else {
+            XCTAssertNil(capturedError, file: file, line: line)
+        }
+    }
     
     var testSpecificStoreURL: URL {
         FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("\(type(of: self))")
+    }
+    
+    var readOnlyStoreURL: URL {
+        FileManager.default.urls(for: .adminApplicationDirectory, in: .systemDomainMask).first!
     }
     
     func setUpState() {
