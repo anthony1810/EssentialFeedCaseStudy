@@ -32,7 +32,9 @@ class CoreDataFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore {
     }
     
     func test_retrieve_hasNoSideEffectsOnEmptyCache() {
-        
+        let sut = makeSUT()
+        expect(sut: sut, toRetrieve: .empty)
+        expect(sut: sut, toRetrieve: .empty)
     }
     
     func test_retrieve_insertThenRetrieveExpectedvalue() {
