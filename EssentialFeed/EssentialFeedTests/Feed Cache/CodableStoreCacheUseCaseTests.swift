@@ -130,6 +130,17 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
         
         expect(sut: sut, toRetrieve: .failure(expectedError))
     }
+    
+    func test_retrieve_hasNoSideEffectsOnRetrievalError() {
+        let testStoreURL = testSpecificStoreURL
+        let sut = makeSUT(storeURL: testStoreURL)
+        let expectedError = makeAnyError()
+        
+        try! "invalidData".write(to: testStoreURL, atomically: false, encoding: .utf8)
+        
+        expect(sut: sut, toRetrieve: .failure(expectedError))
+        expect(sut: sut, toRetrieve: .failure(expectedError))
+    }
 }
 
 // MARK: - Helpers
