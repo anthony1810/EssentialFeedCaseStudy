@@ -120,6 +120,41 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
         
         expect(sut: sut, toDeleteWithError: expectedError)
     }
+    
+    func test_runSerially_executesTasksInOrder() {
+        let sut = makeSUT(storeURL: nil)
+        let timestamp = Date()
+        let expectedItem = uniqueItem().localModel
+        
+        var completionExpectations = [XCTestExpectation]()
+        
+        let op1 = expectation(description: "inserted")
+        sut.insertCache([expectedItem], timestamp: timestamp) { _ in
+            completionExpectations.append(op1)
+            op1.fulfill()
+        }
+        
+        let op2 = expectation(description: "deleted")
+        sut.deleteCache(completion: { _ in
+            completionExpectations.append(op2)
+            op2.fulfill()
+        })
+        
+        let op3 = expectation(description: "inserted 2")
+        sut.insertCache([expectedItem], timestamp: timestamp) { _ in
+            completionExpectations.append(op3)
+            op3.fulfill()
+        }
+        
+        let op4 = expectation(description: "retrieved")
+        sut.retrieve { _ in
+            completionExpectations.append(op4)
+            op4.fulfill()
+        }
+        waitForExpectations(timeout: 5.0)
+        
+        XCTAssertEqual(completionExpectations, [op1, op2, op3, op4])
+    }
 }
 
 // MARK: - Helpers
