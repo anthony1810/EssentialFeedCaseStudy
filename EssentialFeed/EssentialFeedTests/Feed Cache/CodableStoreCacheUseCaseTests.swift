@@ -93,41 +93,14 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
         
         let sut = makeSUT()
         
-        let exp = expectation(description: "Wait for cache retrieval")
-        var capturedResult: RetrievalResult?
-        sut.retrieve { result in
-            capturedResult = result
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
-        
-        switch capturedResult {
-        case .empty: break
-        default: XCTFail("expected empty cache, got result: \(capturedResult!)")
-        }
+        expect(sut: sut, toRetrieve: .empty)
     }
     
     func test_retrieve_hasNoSideEffectsOnEmptyCache() {
         let sut = makeSUT()
-        
-        let exp = expectation(description: "Wait for cache retrieval")
-        var firstCapturedResult: RetrievalResult?
-        var secondCapturedResult: RetrievalResult?
-        sut.retrieve { firstResult in
-            firstCapturedResult = firstResult
-            sut.retrieve { secondResult in
-                secondCapturedResult = secondResult
-                exp.fulfill()
-            }
-        }
-        
-        wait(for: [exp], timeout: 1.0)
-        
-        switch (firstCapturedResult, secondCapturedResult) {
-        case (.empty, .empty): break
-        default: XCTFail("expected empty cache, got different result)")
-        }
+    
+        expect(sut: sut, toRetrieve: .empty)
+        expect(sut: sut, toRetrieve: .empty)
     }
     
     func test_retrieve_insertThenRetrieveExpectedvalue() {
@@ -135,27 +108,8 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
         let expectedItem = uniqueItem().localModel
         let timeStamp = Date()
         
-        var capturedInsertedError: Error?
-        var capturedRetrievedResult: RetrievalResult?
-        let exp = expectation(description: "Wait for cache retrieval")
-        
-        sut.insertCache([expectedItem], timestamp: timeStamp) { insertedError in
-            capturedInsertedError = insertedError
-            sut.retrieve { result in
-                capturedRetrievedResult = result
-                exp.fulfill()
-            }
-        }
-        
-        wait(for: [exp], timeout: 1.0)
-        
-        XCTAssertNil(capturedInsertedError)
-        
-        switch capturedRetrievedResult {
-        case .success(let feedItems,  _):
-            XCTAssertEqual(feedItems, [expectedItem])
-        default: XCTFail("expected success, got different result)")
-        }
+        expect(sut: sut, toInsertFeed: [expectedItem], timestamp: timeStamp, WithError: nil)
+        expect(sut: sut, toRetrieve: .success([expectedItem], timeStamp))
     }
     
     func test_retrieve_hasNoSideEffectsOnNonEmptyCache() {
