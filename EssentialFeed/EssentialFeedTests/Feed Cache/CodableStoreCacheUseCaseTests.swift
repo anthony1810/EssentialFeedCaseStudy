@@ -66,12 +66,17 @@ class CodableFeedStore {
     
     func insertCache(_ items: [LocalFeedImage], timestamp: Date, completion: @escaping FeedStore.InsertionCacheCompletion) {
         
-        let encoder = JSONEncoder()
-        let cache = Cache(items: items.map { CodableFeedImage(feedImage: $0) }, timestamp: timestamp)
-        let encoded = try! encoder.encode(cache)
-        try! encoded.write(to: storeURL)
+        do {
+            let encoder = JSONEncoder()
+            let cache = Cache(items: items.map { CodableFeedImage(feedImage: $0) }, timestamp: timestamp)
+            let encoded = try encoder.encode(cache)
+            try encoded.write(to: storeURL)
+            
+            completion(nil)
+        } catch {
+            completion(error)
+        }
         
-        completion(nil)
     }
 }
 
@@ -153,6 +158,14 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
         expect(sut: sut, toInsertFeed: [expectedItem2], timestamp: expectedTimeStamp, WithError: nil)
         expect(sut: sut, toInsertFeed: [expectedItem2], timestamp: expectedTimeStamp, WithError: nil)
     }
+    
+    func test_insert_deliversErrorWhenEncounterFailure() {
+        let invalidStoreURL = URL(fileURLWithPath: "/invalid/path")
+        let sut = makeSUT(storeURL: invalidStoreURL)
+        let expectedError = makeAnyError()
+        
+        expect(sut: sut, toInsertFeed: [], timestamp: Date(), WithError: expectedError)
+    }
 }
 
 // MARK: - Helpers
@@ -197,8 +210,11 @@ extension CodableStoreCacheUseCaseTests {
         }
         
         wait(for: [exp], timeout: 1.0)
-        
-        XCTAssertEqual(capturedError as NSError?, expectedError as NSError?, file: file, line: line)
+        if expectedError != nil {
+            XCTAssertNotNil(capturedError, file: file, line: line)
+        } else {
+            XCTAssertNil(capturedError, file: file, line: line)
+        }
     }
     
     
