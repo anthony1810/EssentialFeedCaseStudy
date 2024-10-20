@@ -141,6 +141,18 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
         expect(sut: sut, toRetrieve: .failure(expectedError))
         expect(sut: sut, toRetrieve: .failure(expectedError))
     }
+    
+    func test_insert_overridePreviousValue() {
+        let sut = makeSUT(storeURL: nil)
+        
+        let expectedItem = uniqueItem().localModel
+        let expectedItem2 = uniqueItem().localModel
+        let expectedTimeStamp = Date()
+        
+        expect(sut: sut, toInsertFeed: [expectedItem], timestamp: expectedTimeStamp, WithError: nil)
+        expect(sut: sut, toInsertFeed: [expectedItem2], timestamp: expectedTimeStamp, WithError: nil)
+        expect(sut: sut, toInsertFeed: [expectedItem2], timestamp: expectedTimeStamp, WithError: nil)
+    }
 }
 
 // MARK: - Helpers
