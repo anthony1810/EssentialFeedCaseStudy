@@ -157,6 +157,39 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests {
         default: XCTFail("expected success, got different result)")
         }
     }
+    
+    func test_retrieve_hasNoSideEffectsOnNonEmptyCache() {
+        let sut = makeSUT()
+        let expectedItem = uniqueItem().localModel
+        let expectedTimeStamp = Date()
+        
+        var capturedInsertedError: Error?
+        var capturedRetrievedResult: RetrievalResult?
+        var capturedRetrievedResult2: RetrievalResult?
+        let exp = expectation(description: "Wait for cache retrieval")
+        sut.insertCache([expectedItem], timestamp: expectedTimeStamp) { insertedError in
+            capturedInsertedError = insertedError
+            sut.retrieve { result in
+                capturedRetrievedResult = result
+                sut.retrieve { result in
+                    capturedRetrievedResult2 = result
+                    exp.fulfill()
+                }
+            }
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertNil(capturedInsertedError)
+        switch (capturedRetrievedResult, capturedRetrievedResult2) {
+        case let (.success(feedItems,  timeStamp1), .success(feedItems2,  timeStamp2)):
+            XCTAssertEqual(feedItems, [expectedItem])
+            XCTAssertEqual(feedItems2, [expectedItem])
+            XCTAssertEqual(timeStamp1, expectedTimeStamp)
+            XCTAssertEqual(timeStamp2, expectedTimeStamp)
+        default: XCTFail("expected \(capturedRetrievedResult!) equal to \(capturedRetrievedResult2!), got different result)")
+        }
+    }
 }
 
 // MARK: - Helpers
