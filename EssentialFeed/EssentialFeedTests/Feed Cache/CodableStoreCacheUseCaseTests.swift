@@ -9,7 +9,7 @@ import Foundation
 import XCTest
 import EssentialFeed
 
-class CodableStoreCacheUseCaseTests: FeedCacheTests, FeedStoreTestSpecs, FailableFeedStore {
+class CodableStoreCacheUseCaseTests: FeedCacheTests, FailableFeedStore {
     
     override func setUp() {
         super.setUp()
@@ -159,78 +159,6 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests, FeedStoreTestSpecs, Failabl
 
 // MARK: - Helpers
 extension CodableStoreCacheUseCaseTests {
-    private func makeSUT(storeURL: URL? = nil, file: StaticString = #file, line: UInt = #line) -> FeedStore {
-        let sut = CodableFeedStore(storeURL: storeURL ?? testSpecificStoreURL)
-        trackForMemoryLeaks(sut, file: file, line: line)
-        return sut
-    }
-    
-    func expect(sut: FeedStore, toRetrieve expectedResult: RetrievalResult, file: StaticString = #file, line: UInt = #line) {
-        let exp = expectation(description: "Wait for cache retrieval")
-        var capturedResult: RetrievalResult?
-        
-        sut.retrieve { result in
-            capturedResult = result
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
-        
-        switch (capturedResult, expectedResult) {
-        case (.empty, .empty):
-            break
-        case let (.success(actualFeedItems, actualTimestamp), (.success(expectedFeedItems, expectedTimestamp))):
-            XCTAssertEqual(actualFeedItems, expectedFeedItems, file: file, line: line)
-            XCTAssertEqual(actualTimestamp, expectedTimestamp, file: file, line: line)
-        case (.failure, (.failure)):
-            break
-        default:
-            XCTFail("expected \(expectedResult), got result: \(capturedResult!)", file: file, line: line)
-        }
-    }
-    
-    func expect(sut: FeedStore, toInsertFeed feeds: [LocalFeedImage], timestamp: Date, WithError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
-        let exp = expectation(description: "Wait for cache retrieval")
-      
-        var capturedError: Error?
-        sut.insertCache(feeds, timestamp: timestamp) { error in
-            capturedError = error
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
-        if expectedError != nil {
-            XCTAssertNotNil(capturedError, file: file, line: line)
-        } else {
-            XCTAssertNil(capturedError, file: file, line: line)
-        }
-    }
-    
-    func expect(sut: FeedStore, toDeleteWithError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
-        let exp = expectation(description: "Wait for cache retrieval")
-      
-        var capturedError: Error?
-        sut.deleteCache { error in
-            capturedError = error
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
-        if expectedError != nil {
-            XCTAssertNotNil(capturedError, file: file, line: line)
-        } else {
-            XCTAssertNil(capturedError, file: file, line: line)
-        }
-    }
-    
-    var testSpecificStoreURL: URL {
-        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("\(type(of: self))")
-    }
-    
-    var readOnlyStoreURL: URL {
-        FileManager.default.urls(for: .adminApplicationDirectory, in: .systemDomainMask).first!
-    }
-    
     func setUpState() {
         try? FileManager.default.removeItem(at: testSpecificStoreURL)
     }
