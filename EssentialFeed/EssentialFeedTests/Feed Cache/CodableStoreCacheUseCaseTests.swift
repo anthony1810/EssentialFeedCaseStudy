@@ -159,6 +159,12 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests, FailableFeedStore {
 
 // MARK: - Helpers
 extension CodableStoreCacheUseCaseTests {
+    func makeSUT(storeURL: URL? = nil, file: StaticString = #file, line: UInt = #line) -> FeedStoreProtocol {
+        let sut = CodableFeedStore(storeURL: storeURL ?? testSpecificStoreURL)
+        trackForMemoryLeaks(sut, file: file, line: line)
+        return sut
+    }
+    
     func setUpState() {
         try? FileManager.default.removeItem(at: testSpecificStoreURL)
     }

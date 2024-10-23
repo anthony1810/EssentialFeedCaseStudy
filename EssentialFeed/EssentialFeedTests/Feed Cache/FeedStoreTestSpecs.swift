@@ -38,12 +38,6 @@ protocol FailableDeleteFeedStoreSpec: FeedStoreTestSpecs {
 }
 
 extension FeedStoreTestSpecs where Self: XCTestCase {
-    func makeSUT(storeURL: URL? = nil, file: StaticString = #file, line: UInt = #line) -> FeedStoreProtocol {
-        let sut = CodableFeedStore(storeURL: storeURL ?? testSpecificStoreURL)
-        trackForMemoryLeaks(sut, file: file, line: line)
-        return sut
-    }
-    
     func expect(sut: FeedStoreProtocol, toRetrieve expectedResult: RetrievalResult, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for cache retrieval")
         var capturedResult: RetrievalResult?
