@@ -44,7 +44,7 @@ public final class CoreDataFeedStore {
     }
 }
 
-extension CoreDataFeedStore: FeedStore {
+extension CoreDataFeedStore: FeedStoreProtocol {
     public func deleteCache(completion: @escaping DeletionCacheCompletion) {
         
     }

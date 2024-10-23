@@ -9,7 +9,7 @@ import Foundation
 import XCTest
 import EssentialFeed
 
-class CoreDataFeedStore: FeedStore {
+class CoreDataFeedStore: FeedStoreProtocol {
     func deleteCache(completion: @escaping DeletionCacheCompletion) {
         
     }
@@ -79,7 +79,7 @@ class CoreDataFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore {
 }
 
 extension CoreDataFeedStoreUseCaseTests {
-    func makeSUT() -> FeedStore {
+    func makeSUT() -> FeedStoreProtocol {
         let sut = CoreDataFeedStore()
         
         return sut

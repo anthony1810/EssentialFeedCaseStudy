@@ -38,13 +38,13 @@ protocol FailableDeleteFeedStoreSpec: FeedStoreTestSpecs {
 }
 
 extension FeedStoreTestSpecs where Self: XCTestCase {
-    func makeSUT(storeURL: URL? = nil, file: StaticString = #file, line: UInt = #line) -> FeedStore {
+    func makeSUT(storeURL: URL? = nil, file: StaticString = #file, line: UInt = #line) -> FeedStoreProtocol {
         let sut = CodableFeedStore(storeURL: storeURL ?? testSpecificStoreURL)
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
     }
     
-    func expect(sut: FeedStore, toRetrieve expectedResult: RetrievalResult, file: StaticString = #file, line: UInt = #line) {
+    func expect(sut: FeedStoreProtocol, toRetrieve expectedResult: RetrievalResult, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for cache retrieval")
         var capturedResult: RetrievalResult?
         
@@ -68,7 +68,7 @@ extension FeedStoreTestSpecs where Self: XCTestCase {
         }
     }
     
-    func expect(sut: FeedStore, toInsertFeed feeds: [LocalFeedImage], timestamp: Date, WithError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
+    func expect(sut: FeedStoreProtocol, toInsertFeed feeds: [LocalFeedImage], timestamp: Date, WithError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for cache retrieval")
       
         var capturedError: Error?
@@ -85,7 +85,7 @@ extension FeedStoreTestSpecs where Self: XCTestCase {
         }
     }
     
-    func expect(sut: FeedStore, toDeleteWithError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
+    func expect(sut: FeedStoreProtocol, toDeleteWithError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for cache retrieval")
       
         var capturedError: Error?

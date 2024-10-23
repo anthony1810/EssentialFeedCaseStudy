@@ -6,7 +6,7 @@
 //
 import Foundation
 
-public class CodableFeedStore: FeedStore {
+public class CodableFeedStore: FeedStoreProtocol {
     
     private struct CodableFeedImage: Equatable, Codable {
         public let id: UUID

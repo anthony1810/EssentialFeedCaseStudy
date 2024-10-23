@@ -7,10 +7,10 @@
 import Foundation
 
 public final class LocalFeedLoader: FeedLoader {
-    private let store: FeedStore
+    private let store: FeedStoreProtocol
     private let timestamp: () -> Date
     
-    public init(store: FeedStore, timestamp: @escaping () -> Date) {
+    public init(store: FeedStoreProtocol, timestamp: @escaping () -> Date) {
         self.store = store
         self.timestamp = timestamp
     }

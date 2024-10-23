@@ -12,7 +12,7 @@ public enum RetrievalResult {
     case success([LocalFeedImage], Date)
 }
 
-public protocol FeedStore {
+public protocol FeedStoreProtocol {
     typealias DeletionCacheCompletion = (Error?) -> Void
     typealias InsertionCacheCompletion = (Error?) -> Void
     typealias RetrievalCompletion = (RetrievalResult) -> Void
