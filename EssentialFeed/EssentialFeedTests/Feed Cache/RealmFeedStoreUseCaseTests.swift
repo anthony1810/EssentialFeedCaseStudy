@@ -10,7 +10,7 @@ import XCTest
 import EssentialFeed
 
 
-class CoreDataFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTestSpecs {
+class RealmFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTestSpecs {
 
     func test_retrieve_deliversEmptyOnEmptyCache() {
         let sut = makeSUT()
@@ -24,7 +24,12 @@ class CoreDataFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStor
     }
     
     func test_retrieve_insertThenRetrieveExpectedvalue() {
+        let sut = makeSUT()
+        let expectedItem = uniqueItem().localModel
+        let timeStamp = Date()
         
+        expect(sut: sut, toInsertFeed: [expectedItem], timestamp: timeStamp, WithError: nil)
+        expect(sut: sut, toRetrieve: .success([expectedItem], timeStamp))
     }
     
     func test_retrieve_hasNoSideEffectsOnNonEmptyCache() {
@@ -64,13 +69,10 @@ class CoreDataFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStor
     
 }
 
-extension CoreDataFeedStoreUseCaseTests {
+extension RealmFeedStoreUseCaseTests {
     func makeSUT() -> FeedStoreProtocol {
-        do {
-            let sut = try CoreDataFeedStore(storeURL: testSpecificStoreURL)
-            return sut
-        } catch {
-            fatalError(error.localizedDescription)
-        }
+        let sut = RealmFeedStore()
+        trackForMemoryLeaks(sut)
+        return sut
     }
 }

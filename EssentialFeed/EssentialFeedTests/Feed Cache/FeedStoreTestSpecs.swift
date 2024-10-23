@@ -103,7 +103,7 @@ extension FeedStoreTestSpecs where Self: XCTestCase {
     }
     
     var testSpecificStoreURL: URL {
-        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("\(type(of: self))")
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("\(type(of: self))")
     }
     
     var readOnlyStoreURL: URL {
