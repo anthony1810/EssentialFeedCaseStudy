@@ -50,7 +50,11 @@ class RealmFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTe
     }
     
     func test_retrieve_hasNoSideEffectsOnRetrievalError() {
+        let invalidConfig = Realm.Configuration(fileURL: URL(string: "/dev/null"))
+        let sut = makeSUT(configuration: invalidConfig)
         
+        expect(sut: sut, toRetrieve: .failure(makeAnyError()))
+        expect(sut: sut, toRetrieve: .failure(makeAnyError()))
     }
 
     func test_insert_overridePreviousValue() {

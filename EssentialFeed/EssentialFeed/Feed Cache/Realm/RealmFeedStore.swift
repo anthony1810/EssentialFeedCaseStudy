@@ -26,7 +26,7 @@ public class RealmFeedStore {
 extension RealmFeedStore: FeedStoreProtocol {
     public func deleteCache(completion: @escaping DeletionCacheCompletion) {
         do {
-            let realm = try! Realm(configuration: realmConfig)
+            let realm = try Realm(configuration: realmConfig)
             try realm.write {
                 realm.deleteAll()
                 completion(nil)
