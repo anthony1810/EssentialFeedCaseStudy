@@ -16,8 +16,8 @@ public class RealmFeedStore {
     }
     
     deinit {
-        let realm = try! Realm(configuration: realmConfig)
-        try! realm.write {
+        guard let realm = try? Realm(configuration: realmConfig) else { return }
+        try? realm.write {
             realm.deleteAll()
         }
     }
@@ -25,7 +25,15 @@ public class RealmFeedStore {
 
 extension RealmFeedStore: FeedStoreProtocol {
     public func deleteCache(completion: @escaping DeletionCacheCompletion) {
-        
+        do {
+            let realm = try! Realm(configuration: realmConfig)
+            try realm.write {
+                realm.deleteAll()
+                completion(nil)
+            }
+        } catch {
+            completion(error)
+        }
     }
     
     public func insertCache(_ items: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCacheCompletion) {

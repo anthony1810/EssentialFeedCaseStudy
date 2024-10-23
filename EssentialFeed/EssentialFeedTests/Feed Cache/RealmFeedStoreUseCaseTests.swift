@@ -8,6 +8,7 @@
 import Foundation
 import XCTest
 import EssentialFeed
+import RealmSwift
 
 
 class RealmFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTestSpecs {
@@ -33,11 +34,19 @@ class RealmFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTe
     }
     
     func test_retrieve_hasNoSideEffectsOnNonEmptyCache() {
+        let sut = makeSUT()
+        let expectedItem = uniqueItem().localModel
+        let timeStamp = Date()
         
+        expect(sut: sut, toRetrieve: .success([expectedItem], timeStamp))
+        expect(sut: sut, toRetrieve: .success([expectedItem], timeStamp))
     }
     
     func test_retrieve_deliversFailureOnRetrievalError() {
+        let invalidConfig = Realm.Configuration(fileURL: URL(string: "/dev/null"))
+        let sut = makeSUT(configuration: invalidConfig)
         
+        expect(sut: sut, toRetrieve: .failure(makeAnyError()))
     }
     
     func test_retrieve_hasNoSideEffectsOnRetrievalError() {
@@ -70,8 +79,8 @@ class RealmFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTe
 }
 
 extension RealmFeedStoreUseCaseTests {
-    func makeSUT() -> FeedStoreProtocol {
-        let sut = RealmFeedStore()
+    func makeSUT(configuration: Realm.Configuration = .defaultConfiguration) -> FeedStoreProtocol {
+        let sut = RealmFeedStore(realmConfig: configuration)
         trackForMemoryLeaks(sut)
         return sut
     }
