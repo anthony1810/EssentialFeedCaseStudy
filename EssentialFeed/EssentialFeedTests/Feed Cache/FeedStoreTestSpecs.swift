@@ -64,7 +64,7 @@ extension FeedStoreTestSpecs where Self: XCTestCase {
         case (.failure, (.failure)):
             break
         default:
-            XCTFail("expected \(expectedResult), got result: \(capturedResult!)", file: file, line: line)
+            XCTAssertNotNil(capturedResult, "expected \(expectedResult)", file: file, line: line)
         }
     }
     

@@ -9,23 +9,9 @@ import Foundation
 import XCTest
 import EssentialFeed
 
-class CoreDataFeedStore: FeedStoreProtocol {
-    func deleteCache(completion: @escaping DeletionCacheCompletion) {
-        
-    }
-    
-    func insertCache(_ items: [EssentialFeed.LocalFeedImage], timestamp: Date, completion: @escaping InsertionCacheCompletion) {
-        
-    }
-    
-    func retrieve(completion: @escaping RetrievalCompletion) {
-        completion(.empty)
-    }
-}
 
-class CoreDataFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore {
-   
-    
+class CoreDataFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTestSpecs {
+
     func test_retrieve_deliversEmptyOnEmptyCache() {
         let sut = makeSUT()
         expect(sut: sut, toRetrieve: .empty)
@@ -80,8 +66,11 @@ class CoreDataFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore {
 
 extension CoreDataFeedStoreUseCaseTests {
     func makeSUT() -> FeedStoreProtocol {
-        let sut = CoreDataFeedStore()
-        
-        return sut
+        do {
+            let sut = try CoreDataFeedStore(storeURL: testSpecificStoreURL)
+            return sut
+        } catch {
+            fatalError(error.localizedDescription)
+        }
     }
 }

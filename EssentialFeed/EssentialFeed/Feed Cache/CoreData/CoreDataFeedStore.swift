@@ -54,7 +54,7 @@ extension CoreDataFeedStore: FeedStoreProtocol {
     }
     
     public func retrieve(completion: @escaping RetrievalCompletion) {
-        
+        completion(.empty)
     }
 }
 
