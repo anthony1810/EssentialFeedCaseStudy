@@ -23,6 +23,15 @@ final class FeedCacheIntegrationTests: XCTestCase {
 
     func test_load_deliversNoItemsOnEmptyCache() throws {
         let sut = makeSUT()
+        
+        expect(sut: sut, toCompleteWith: .success([]))
+    }
+
+}
+
+extension FeedCacheIntegrationTests {
+    
+    private func expect(sut: FeedLoader, toCompleteWith expectedResult: LoadFeedResult) {
         let exp = expectation(description: "Wait for load completion")
         
         var actualResult: LoadFeedResult?
@@ -33,19 +42,16 @@ final class FeedCacheIntegrationTests: XCTestCase {
         
         wait(for: [exp], timeout: 1.0)
         
-        switch actualResult {
-        case .success(let feeds):
-            XCTAssertEqual(feeds, [])
-        case .failure(let error):
-            XCTFail("Expected success, got \(error)")
+        switch (actualResult, expectedResult) {
+        case (.success(let actualFeeds), .success(let expectedFeed)):
+            XCTAssertEqual(actualFeeds, expectedFeed)
+        case (.failure(let actualError), .failure):
+            XCTAssertNotNil(actualError)
         default:
             XCTFail("Expected success or failure, got nothing")
         }
     }
-
-}
-
-extension FeedCacheIntegrationTests {
+    
     private func makeSUT() -> FeedLoader {
         let cacheStore = RealmFeedStore()
         let feedloader = LocalFeedLoader(store: cacheStore, timestamp: Date.init)
