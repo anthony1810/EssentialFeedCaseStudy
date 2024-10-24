@@ -15,7 +15,7 @@ public class RealmFeedStore {
         self.realmConfig = realmConfig
     }
     
-    deinit {
+    public func clearCache() {
         guard let realm = try? Realm(configuration: realmConfig) else { return }
         try? realm.write {
             realm.deleteAll()

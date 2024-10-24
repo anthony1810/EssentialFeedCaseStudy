@@ -12,6 +12,18 @@ import RealmSwift
 
 
 class RealmFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTestSpecs {
+    
+    override func setUp() {
+        super.setUp()
+        
+        clearCache()
+    }
+    
+    override func tearDown() {
+        super.tearDown()
+        
+        clearCache()
+    }
 
     func test_retrieve_deliversEmptyOnEmptyCache() {
         let sut = makeSUT()
@@ -136,9 +148,16 @@ class RealmFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTe
 }
 
 extension RealmFeedStoreUseCaseTests {
-    func makeSUT(configuration: Realm.Configuration = .defaultConfiguration) -> FeedStoreProtocol {
+    private func makeSUT(configuration: Realm.Configuration = .defaultConfiguration) -> FeedStoreProtocol {
         let sut = RealmFeedStore(realmConfig: configuration)
         trackForMemoryLeaks(sut)
+       
         return sut
+    }
+    
+    private func clearCache() {
+        try? Realm().write {
+            try? Realm().deleteAll()
+        }
     }
 }
