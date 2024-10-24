@@ -56,6 +56,9 @@ extension FeedCacheIntegrationTests {
         let cacheStore = RealmFeedStore()
         let feedloader = LocalFeedLoader(store: cacheStore, timestamp: Date.init)
         
+        trackForMemoryLeaks(cacheStore)
+        trackForMemoryLeaks(feedloader)
+        
         return feedloader
     }
 }
