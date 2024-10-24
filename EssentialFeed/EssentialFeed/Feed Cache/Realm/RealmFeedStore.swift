@@ -27,9 +27,18 @@ extension RealmFeedStore: FeedStoreProtocol {
     public func deleteCache(completion: @escaping DeletionCacheCompletion) {
         do {
             let realm = try Realm(configuration: realmConfig)
-            try realm.write {
+           
+            let deleteAction = {
                 realm.deleteAll()
                 completion(nil)
+            }
+            
+            if realm.isInWriteTransaction {
+                deleteAction()
+            } else {
+                try realm.write {
+                    deleteAction()
+                }
             }
         } catch {
             completion(error)
@@ -44,10 +53,19 @@ extension RealmFeedStore: FeedStoreProtocol {
             cache.timestamp = timestamp
             cache.feeds.append(objectsIn: RealmFeedImage.realmImages(from: items))
             
-            try realm.write {
+            let insertAction = {
                 realm.add(cache, update: .all)
                 completion(nil)
             }
+            
+            if realm.isInWriteTransaction {
+                insertAction()
+            } else {
+                try realm.write {
+                    insertAction()
+                }
+            }
+            
         } catch {
             completion(error)
         }

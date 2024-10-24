@@ -27,8 +27,8 @@ final class EssentialFeedTests: FeedCacheTests {
     }
     
     func test_validateCache_deleteCacheWithCacheOnMoreThanExpireDate() {
-        let (store, sut) = makeSUT()
-        let sevenDaysBeforeToday = Date().cacheExpireDate.addingSeconds(-1)
+        let sevenDaysBeforeToday = Date().minusCacheMaxAgeInDays.addingSeconds(-1)
+        let (store, sut) = makeSUT(timestamp: Date.init)
     
         sut.validateCache()
         store.completeRetrieval(with: [], timestamp: sevenDaysBeforeToday)
@@ -48,7 +48,7 @@ final class EssentialFeedTests: FeedCacheTests {
     func test_load_doesNotDeleteCacheOnLessThenExpireDate() {
         let (store, sut) = makeSUT()
         let expectedFeed = uniqueItem()
-        let sevenDaysBeforeToday = Date().cacheExpireDate.addingSeconds(1)
+        let sevenDaysBeforeToday = Date().minusCacheMaxAgeInDays.addingSeconds(1)
         
         sut.validateCache()
         store.completeRetrieval(with: [expectedFeed.localModel], timestamp: sevenDaysBeforeToday)

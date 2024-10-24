@@ -31,8 +31,8 @@ class FeedCacheTests: XCTestCase {
 }
 
 extension Date {
-    var cacheExpireDate: Date {
-        return Calendar.current.date(byAdding: .day, value: daysToExpire, to: Date())!
+    var minusCacheMaxAgeInDays: Date {
+        return Calendar.current.date(byAdding: .day, value: -daysToExpire, to: Date())!
     }
     
     var daysToExpire: Int {
@@ -41,5 +41,9 @@ extension Date {
     
     func addingSeconds(_ seconds: Int) -> Date {
         return Calendar.current.date(byAdding: .second, value: seconds, to: self)!
+    }
+    
+    func addingDay(_ day: Int) -> Date {
+        return Calendar.current.date(byAdding: .day, value: day, to: Date())!
     }
 }

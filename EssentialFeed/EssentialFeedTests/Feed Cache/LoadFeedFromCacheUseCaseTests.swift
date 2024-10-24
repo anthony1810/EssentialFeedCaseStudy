@@ -42,7 +42,7 @@ class LoadFeedFromCacheUseCaseTests: FeedCacheTests {
     func test_load_deliversImagesFromCacheLessThenExpireDate() {
         let (store, sut) = makeSUT()
         let expectedFeed = uniqueItem()
-        let sevenDaysBeforeToday = Date().cacheExpireDate.addingSeconds(1)
+        let sevenDaysBeforeToday = Date().minusCacheMaxAgeInDays.addingSeconds(1)
         
         expect(sut: sut, toCompleteWith: .success([expectedFeed.domainModel])) {
             store.completeRetrieval(with: [expectedFeed.localModel], timestamp: sevenDaysBeforeToday)
@@ -50,9 +50,10 @@ class LoadFeedFromCacheUseCaseTests: FeedCacheTests {
     }
     
     func test_load_deliversNoImagesFromCacheEqualExpireDate() {
-        let (store, sut) = makeSUT()
+       
         let expectedFeed = uniqueItem()
-        let sevenDaysBeforeToday = Date().cacheExpireDate
+        let sevenDaysBeforeToday = Date().addingDay(-7)
+        let (store, sut) = makeSUT(timestamp: Date.init)
         
         expect(sut: sut, toCompleteWith: .success([])) {
             store.completeRetrieval(with: [expectedFeed.localModel], timestamp: sevenDaysBeforeToday)
@@ -61,7 +62,7 @@ class LoadFeedFromCacheUseCaseTests: FeedCacheTests {
     
     func test_load_deliversNoImagesFromCacheMoreThanExpireDate() {
         let (store, sut) = makeSUT()
-        let sevenDaysBeforeToday = Date().cacheExpireDate.addingSeconds(1)
+        let sevenDaysBeforeToday = Date().minusCacheMaxAgeInDays.addingSeconds(1)
         
         expect(sut: sut, toCompleteWith: .success([])) {
             store.completeRetrieval(with: [], timestamp: sevenDaysBeforeToday)
@@ -92,7 +93,7 @@ class LoadFeedFromCacheUseCaseTests: FeedCacheTests {
     func test_load_hasNoSideEffectOnLessThenExpireDate() {
         let (store, sut) = makeSUT()
         let expectedFeed = uniqueItem()
-        let sevenDaysBeforeToday = Date().cacheExpireDate.addingSeconds(1)
+        let sevenDaysBeforeToday = Date().minusCacheMaxAgeInDays.addingSeconds(1)
         
         expect(sut: sut, toCompleteWith: .success([expectedFeed.domainModel])) {
             store.completeRetrieval(with: [expectedFeed.localModel], timestamp: sevenDaysBeforeToday)
@@ -103,7 +104,7 @@ class LoadFeedFromCacheUseCaseTests: FeedCacheTests {
     
     func test_load_hasNoSideEffectWithCacheOnMoreThanExpireDate() {
         let (store, sut) = makeSUT()
-        let sevenDaysBeforeToday = Date().cacheExpireDate.addingSeconds(1)
+        let sevenDaysBeforeToday = Date().minusCacheMaxAgeInDays.addingSeconds(1)
         
         expect(sut: sut, toCompleteWith: .success([])) {
             store.completeRetrieval(with: [], timestamp: sevenDaysBeforeToday)
