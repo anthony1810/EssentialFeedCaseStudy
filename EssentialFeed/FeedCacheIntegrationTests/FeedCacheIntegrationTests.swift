@@ -37,6 +37,18 @@ final class FeedCacheIntegrationTests: XCTestCase {
         expect(sut: sutToSave, withExpectedItems: [expectedItem], toCompleteSaveWith: nil)
         expect(sut: sutToLoad, toCompleteLoadWith: .success([expectedItem]))
     }
+    
+    func test_save_overridesItemsSavedOnSeperateInstance() {
+        let sutToPerformFirstSave = makeSUT()
+        let sutToPerformSecondSave = makeSUT()
+        let sutToLoad = makeSUT()
+        let expectedItem = uniqueItem().domainModel
+        let latestFeed = uniqueItem().domainModel
+        
+        expect(sut: sutToPerformFirstSave, withExpectedItems: [expectedItem], toCompleteSaveWith: nil)
+        expect(sut: sutToPerformSecondSave, withExpectedItems: [latestFeed], toCompleteSaveWith: nil)
+        expect(sut: sutToLoad, toCompleteLoadWith: .success([latestFeed]))
+    }
 
 }
 
