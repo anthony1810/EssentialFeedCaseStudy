@@ -10,7 +10,7 @@ public final class RemoteFeedLoader: FeedLoader {
     let httpClient: HTTPClient
     let url: URL
     
-    typealias Result = LoadFeedResult
+    typealias Result = FeedLoader.Result
     
     public enum Error: Swift.Error {
         case connectivity
@@ -22,7 +22,7 @@ public final class RemoteFeedLoader: FeedLoader {
         self.url = url
     }
     
-    public func load(completion: @escaping (LoadFeedResult) -> Void) {
+    public func load(completion: @escaping (FeedLoader.Result) -> Void) {
         httpClient.get(from: self.url, completion: { [weak self] httpCompletion in
             guard let self else { return }
             switch httpCompletion {

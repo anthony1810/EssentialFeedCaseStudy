@@ -25,7 +25,7 @@ extension RemoteLoaderTests {
     
     func expect(
         sut: RemoteFeedLoader,
-        toCompleteWith expectedResult: LoadFeedResult,
+        toCompleteWith expectedResult: FeedLoader.Result,
         when action: () -> Void,
         file: StaticString = #filePath,
         line: UInt = #line
@@ -79,7 +79,7 @@ extension RemoteLoaderTests {
         return try! JSONSerialization.data(withJSONObject: json)
     }
     
-    func failure(_ error: RemoteFeedLoader.Error) -> LoadFeedResult {
+    func failure(_ error: RemoteFeedLoader.Error) -> FeedLoader.Result {
         .failure(error)
     }
 }
