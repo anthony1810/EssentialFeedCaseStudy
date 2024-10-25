@@ -117,13 +117,13 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         }
     }
     
-    func resultFor(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> HTTPClientResult {
+    func resultFor(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> HTTPClient.Result {
         
         URLProtocolStub.stub(data: data, response: response, error: error)
         let sut = makeSUT(file: file, line: line)
         
         let exp = expectation(description: "Wait for completion")
-        var receiveResult: HTTPClientResult!
+        var receiveResult: HTTPClient.Result!
         
         sut.get(from: makeAnyUrl()) { result in
             receiveResult = result

@@ -26,7 +26,7 @@ final class FeedAPIEndToEndTests: XCTestCase {
         trackForMemoryLeaks(httpclient)
         trackForMemoryLeaks(loader)
         
-        var capturedResult: LoadFeedResult?
+        var capturedResult: FeedLoader.Result?
         let expectation = self.expectation(description: "Loaded")
         loader.load { result in
             capturedResult = result
