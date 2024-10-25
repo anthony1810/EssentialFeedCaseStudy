@@ -75,9 +75,9 @@ extension RealmFeedStore: FeedStoreProtocol {
         do {
             let realm = try Realm(configuration: realmConfig)
             if let cache = realm.objects(RealmCache.self).first {
-                completion(.success(cache.feeds.map(\.local), cache.timestamp))
+                completion(.success(.found(cache.feeds.map(\.local), cache.timestamp)))
             } else {
-                completion(.empty)
+                completion(.success(.empty))
             }
         } catch {
             completion(.failure(error))

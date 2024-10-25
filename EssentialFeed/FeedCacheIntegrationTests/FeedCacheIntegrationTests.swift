@@ -54,10 +54,10 @@ final class FeedCacheIntegrationTests: XCTestCase {
 
 extension FeedCacheIntegrationTests {
     
-    private func expect(sut: FeedLoader, toCompleteLoadWith expectedResult: LoadFeedResult, file: StaticString = #file, line: UInt = #line) {
+    private func expect(sut: FeedLoader, toCompleteLoadWith expectedResult: FeedLoader.Result, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for load completion")
         
-        var actualResult: LoadFeedResult?
+        var actualResult: FeedLoader.Result?
         sut.load { result in
             actualResult = result
             exp.fulfill()

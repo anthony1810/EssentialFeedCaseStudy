@@ -38,9 +38,9 @@ protocol FailableDeleteFeedStoreSpec: FeedStoreTestSpecs {
 }
 
 extension FeedStoreTestSpecs where Self: XCTestCase {
-    func expect(sut: FeedStoreProtocol, toRetrieve expectedResult: RetrievalResult, file: StaticString = #file, line: UInt = #line) {
+    func expect(sut: FeedStoreProtocol, toRetrieve expectedResult: FeedStoreProtocol.Result, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for cache retrieval")
-        var capturedResult: RetrievalResult?
+        var capturedResult: FeedStoreProtocol.Result?
         
         sut.retrieve { result in
             capturedResult = result
@@ -50,9 +50,7 @@ extension FeedStoreTestSpecs where Self: XCTestCase {
         wait(for: [exp], timeout: 1.0)
         
         switch (capturedResult, expectedResult) {
-        case (.empty, .empty):
-            break
-        case let (.success(actualFeedItems, actualTimestamp), (.success(expectedFeedItems, expectedTimestamp))):
+        case let (.success(.found(actualFeedItems, actualTimestamp)), (.success(.found(expectedFeedItems, expectedTimestamp)))):
             XCTAssertEqual(actualFeedItems, expectedFeedItems, file: file, line: line)
             XCTAssertEqual(actualTimestamp, expectedTimestamp, file: file, line: line)
         case (.failure, (.failure)):

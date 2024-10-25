@@ -27,14 +27,14 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests, FailableFeedStore {
         
         let sut = makeSUT(storeURL: nil)
         
-        expect(sut: sut, toRetrieve: .empty)
+        expect(sut: sut, toRetrieve: .success(.empty))
     }
     
     func test_retrieve_hasNoSideEffectsOnEmptyCache() {
         let sut = makeSUT(storeURL: nil)
     
-        expect(sut: sut, toRetrieve: .empty)
-        expect(sut: sut, toRetrieve: .empty)
+        expect(sut: sut, toRetrieve: .success(.empty))
+        expect(sut: sut, toRetrieve: .success(.empty))
     }
     
     func test_retrieve_insertThenRetrieveExpectedvalue() {
@@ -43,7 +43,7 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests, FailableFeedStore {
         let timeStamp = Date()
         
         expect(sut: sut, toInsertFeed: [expectedItem], timestamp: timeStamp, WithError: nil)
-        expect(sut: sut, toRetrieve: .success([expectedItem], timeStamp))
+        expect(sut: sut, toRetrieve: .success(.found([expectedItem], timeStamp)))
     }
     
     func test_retrieve_hasNoSideEffectsOnNonEmptyCache() {
@@ -52,7 +52,7 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests, FailableFeedStore {
         let expectedTimeStamp = Date()
         
         expect(sut: sut, toInsertFeed: [expectedItem], timestamp: expectedTimeStamp, WithError: nil)
-        expect(sut: sut, toRetrieve: .success([expectedItem], expectedTimeStamp))
+        expect(sut: sut, toRetrieve: .success(.found([expectedItem], expectedTimeStamp)))
     }
     
     func test_retrieve_deliversFailureOnRetrievalError() {
@@ -110,7 +110,7 @@ class CodableStoreCacheUseCaseTests: FeedCacheTests, FailableFeedStore {
         
         expect(sut: sut, toInsertFeed: [expectedItem], timestamp: timestamp, WithError: nil)
         expect(sut: sut, toDeleteWithError: nil)
-        expect(sut: sut, toRetrieve: .empty)
+        expect(sut: sut, toRetrieve: .success(.empty))
     }
     
     func test_delete_deliversErrorOnDeletionFailure() {

@@ -27,13 +27,13 @@ class RealmFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTe
 
     func test_retrieve_deliversEmptyOnEmptyCache() {
         let sut = makeSUT()
-        expect(sut: sut, toRetrieve: .empty)
+        expect(sut: sut, toRetrieve: .success(.empty))
     }
     
     func test_retrieve_hasNoSideEffectsOnEmptyCache() {
         let sut = makeSUT()
-        expect(sut: sut, toRetrieve: .empty)
-        expect(sut: sut, toRetrieve: .empty)
+        expect(sut: sut, toRetrieve: .success(.empty))
+        expect(sut: sut, toRetrieve: .success(.empty))
     }
     
     func test_retrieve_insertThenRetrieveExpectedvalue() {
@@ -42,7 +42,7 @@ class RealmFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTe
         let timeStamp = Date()
         
         expect(sut: sut, toInsertFeed: [expectedItem], timestamp: timeStamp, WithError: nil)
-        expect(sut: sut, toRetrieve: .success([expectedItem], timeStamp))
+        expect(sut: sut, toRetrieve: .success(.found([expectedItem], timeStamp)))
     }
     
     func test_retrieve_hasNoSideEffectsOnNonEmptyCache() {
@@ -50,8 +50,8 @@ class RealmFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTe
         let expectedItem = uniqueItem().localModel
         let timeStamp = Date()
         
-        expect(sut: sut, toRetrieve: .success([expectedItem], timeStamp))
-        expect(sut: sut, toRetrieve: .success([expectedItem], timeStamp))
+        expect(sut: sut, toRetrieve: .success(.found([expectedItem], timeStamp)))
+        expect(sut: sut, toRetrieve: .success(.found([expectedItem], timeStamp)))
     }
     
     func test_retrieve_deliversFailureOnRetrievalError() {
@@ -75,7 +75,7 @@ class RealmFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTe
         let timeStamp = Date()
         
         expect(sut: sut, toInsertFeed: [expectedItem], timestamp: timeStamp, WithError: nil)
-        expect(sut: sut, toRetrieve: .success([expectedItem], timeStamp))
+        expect(sut: sut, toRetrieve: .success(.found([expectedItem], timeStamp)))
     }
     
     func test_insert_deliversErrorWhenEncounterFailure() {
@@ -99,7 +99,7 @@ class RealmFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTe
         
         expect(sut: sut, toInsertFeed: [expectedItem], timestamp: timestamp, WithError: nil)
         expect(sut: sut, toDeleteWithError: nil)
-        expect(sut: sut, toRetrieve: .empty)
+        expect(sut: sut, toRetrieve: .success(.empty))
     }
     
     func test_delete_deliversErrorOnDeletionFailure() {

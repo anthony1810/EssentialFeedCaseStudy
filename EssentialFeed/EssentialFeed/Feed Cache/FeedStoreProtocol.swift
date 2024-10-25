@@ -6,16 +6,18 @@
 //
 import Foundation
 
-public enum RetrievalResult {
+
+public enum Cache {
     case empty
-    case failure(Error)
-    case success([LocalFeedImage], Date)
+    case found([LocalFeedImage], Date)
 }
 
 public protocol FeedStoreProtocol {
+    typealias Result =  Swift.Result<Cache, Error>
+    
     typealias DeletionCacheCompletion = (Error?) -> Void
     typealias InsertionCacheCompletion = (Error?) -> Void
-    typealias RetrievalCompletion = (RetrievalResult) -> Void
+    typealias RetrievalCompletion = (Result) -> Void
     
     /// the completion handler can be involked in any thread.
     ///  Clients are responsible to dispatch to approriate, thread if need
