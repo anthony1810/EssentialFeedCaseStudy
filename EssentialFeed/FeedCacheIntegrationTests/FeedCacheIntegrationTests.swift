@@ -10,10 +10,20 @@ import EssentialFeed
 import RealmSwift
 
 final class FeedCacheIntegrationTests: XCTestCase {
-
-    func test_load_deliversNoItemsOnEmptyCache() throws {
+    
+    override func setUp() {
+        super.tearDown()
         
         clearStoreArtifacts()
+    }
+    
+    override func tearDown() {
+        super.tearDown()
+        
+        clearStoreArtifacts()
+    }
+
+    func test_load_deliversNoItemsOnEmptyCache() throws {
         let sut = makeSUT()
         
         expect(sut: sut, toCompleteLoadWith: .success([]))
