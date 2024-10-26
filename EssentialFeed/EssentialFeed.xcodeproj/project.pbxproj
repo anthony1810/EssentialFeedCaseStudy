@@ -93,6 +93,14 @@
 			);
 			target = 92796E482CCCAED000123106 /* EssentialFeediOS */;
 		};
+		92796F0C2CCCF1F400123106 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"XCTestCase+Any.swift",
+				"XCTestCase+MemoryLeak.swift",
+			);
+			target = 92796E512CCCAED000123106 /* EssentialFeediOSTests */;
+		};
 		92D45FA62CB77791005A78A5 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -119,7 +127,7 @@
 		92E083452CB21A660069E8F8 /* Feed API */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Feed API"; sourceTree = "<group>"; };
 		92EAA27A2CC9E01F002A828E /* FeedCacheIntegrationTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = FeedCacheIntegrationTests; sourceTree = "<group>"; };
 		92EEE5352CBA22A800AE47C1 /* Feed Cache */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Feed Cache"; sourceTree = "<group>"; };
-		92EEE53A2CBA260800AE47C1 /* Helpers */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (92EEE53D2CBA260800AE47C1 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Helpers; sourceTree = "<group>"; };
+		92EEE53A2CBA260800AE47C1 /* Helpers */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (92EEE53D2CBA260800AE47C1 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 92796F0C2CCCF1F400123106 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Helpers; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
