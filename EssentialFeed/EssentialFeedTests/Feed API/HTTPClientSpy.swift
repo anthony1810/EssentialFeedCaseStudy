@@ -13,13 +13,13 @@ class HTTPClientSpy: HTTPClient {
         messages.map(\.url)
     }
     
-    var messages : [(url: URL, completion: (HTTPClientResult) -> Void)]
+    var messages : [(url: URL, completion: (HTTPClient.Result) -> Void)]
     
     init() {
         self.messages = []
     }
     
-    func get(from url: URL, completion: @escaping (EssentialFeed.HTTPClientResult) -> Void) {
+    func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) {
         messages.append((url, completion))
     }
     
@@ -34,6 +34,6 @@ class HTTPClientSpy: HTTPClient {
             httpVersion: nil,
             headerFields: nil
         )!
-        messages[index].completion(.success(response, data))
+        messages[index].completion(.success((response, data)))
     }
 }

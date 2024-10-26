@@ -26,7 +26,7 @@ final class FeedAPIEndToEndTests: XCTestCase {
         trackForMemoryLeaks(httpclient)
         trackForMemoryLeaks(loader)
         
-        var capturedResult: LoadFeedResult?
+        var capturedResult: FeedLoader.Result?
         let expectation = self.expectation(description: "Loaded")
         loader.load { result in
             capturedResult = result
@@ -53,8 +53,8 @@ final class FeedAPIEndToEndTests: XCTestCase {
         }
     }
     
-    func expectItem(at index: Int) -> FeedItem {
-        FeedItem(
+    func expectItem(at index: Int) -> FeedImage {
+        FeedImage(
             id: id(at: index),
             description: description(at: index),
             location: location(at: index),

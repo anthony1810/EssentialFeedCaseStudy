@@ -25,7 +25,7 @@ extension RemoteLoaderTests {
     
     func expect(
         sut: RemoteFeedLoader,
-        toCompleteWith expectedResult: RemoteFeedLoader.Result,
+        toCompleteWith expectedResult: FeedLoader.Result,
         when action: () -> Void,
         file: StaticString = #filePath,
         line: UInt = #line
@@ -39,7 +39,7 @@ extension RemoteLoaderTests {
             case (.failure(let actualError), .failure(let expectedError)):
                 guard let remoteFeedActualError = actualError as? RemoteFeedLoader.Error,
                       let remoteFeedExpectedError = expectedError as? RemoteFeedLoader.Error else  {
-                    XCTFail("Expected \(expectedError) but got \(actualError) instead")
+                    XCTFail("Expected \(expectedError) but got \(actualError) instead", file: file, line: line)
                     return
                 }
                 
@@ -60,8 +60,8 @@ extension RemoteLoaderTests {
         description: String? = nil,
         location: String? = nil,
         imageURL: URL
-    ) -> (model: FeedItem, json: [String: Any]) {
-        let model = FeedItem(id: id, description: description, location: location, imageURL: imageURL)
+    ) -> (model: FeedImage, json: [String: Any]) {
+        let model = FeedImage(id: id, description: description, location: location, imageURL: imageURL)
         let json = [
             "id": id.uuidString,
             "description": description,
@@ -79,7 +79,7 @@ extension RemoteLoaderTests {
         return try! JSONSerialization.data(withJSONObject: json)
     }
     
-    func failure(_ error: RemoteFeedLoader.Error) -> RemoteFeedLoader.Result {
+    func failure(_ error: RemoteFeedLoader.Error) -> FeedLoader.Result {
         .failure(error)
     }
 }
