@@ -26,7 +26,7 @@ public final class RemoteFeedLoader: FeedLoader {
         httpClient.get(from: self.url, completion: { [weak self] httpCompletion in
             guard let self else { return }
             switch httpCompletion {
-            case .success(let res, let data):
+            case .success((let res, let data)):
                 completion(self.toRemoteFeedItemResult(from: res, data: data))
             case .failure:
                 completion(.failure(Self.Error.connectivity))
