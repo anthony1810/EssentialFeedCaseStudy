@@ -20,7 +20,7 @@ class RealmFeedImage: Object, ObjectKeyIdentifiable {
     
     static func realmImages(from localFeeds: [LocalFeedImage]) -> [RealmFeedImage] {
         localFeeds.map {
-            var realmImage = RealmFeedImage()
+            let realmImage = RealmFeedImage()
             realmImage.id = $0.id
             realmImage.imageDescription = $0.description
             realmImage.location = $0.location
