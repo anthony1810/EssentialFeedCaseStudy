@@ -95,7 +95,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
                 line: line
             )
             return nil
-        case let .success(response, data):
+        case let .success((response, data)):
            return (response, data)
         }
     }
