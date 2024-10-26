@@ -9,7 +9,7 @@ import XCTest
 import UIKit
 import EssentialFeed
 
-final class FeedViewController: UIViewController {
+final class FeedViewController: UITableViewController {
     private var loader: FeedLoader
     
     init(loader: FeedViewControllerTests.LoaderSpy) {
@@ -25,6 +25,14 @@ final class FeedViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        refreshControl = UIRefreshControl()
+        refreshControl?.addTarget(self, action: #selector(loadFeeds), for: .valueChanged)
+        
+        loadFeeds()
+    }
+    
+    @objc
+    func loadFeeds() {
         loader.load(completion: { _ in })
     }
 }
@@ -45,13 +53,22 @@ final class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.loadCallCount, 1)
     }
     
+    func test_pullToRefresh_loadsFeed() throws {
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        
+        sut.refreshControl?.simulatePullToRefresh()
+        
+        XCTAssertEqual(loader.loadCallCount, 2)
+    }
     
 }
 
 extension FeedViewControllerTests {
     
     class LoaderSpy: FeedLoader {
-    
+        
         var loadCallCount: Int = 0
         
         func load(completion: @escaping (FeedLoader.Result) -> Void) {
@@ -69,4 +86,15 @@ extension FeedViewControllerTests {
         return (sut, loader)
     }
     
+}
+
+extension UIRefreshControl {
+    
+    func simulatePullToRefresh() {
+        allTargets.forEach { target in
+            actions(forTarget: target, forControlEvent: .valueChanged)?.forEach {
+                (target as NSObject).perform(Selector($0))
+            }
+        }
+    }
 }
