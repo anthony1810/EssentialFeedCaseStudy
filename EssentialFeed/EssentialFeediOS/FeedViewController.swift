@@ -10,6 +10,7 @@ import EssentialFeed
 
 public final class FeedViewController: UITableViewController {
     private var loader: FeedLoader
+    private var onViewFirstAppear: (() -> Void)?
     
     public init(loader: FeedLoader) {
         self.loader = loader
@@ -27,12 +28,16 @@ public final class FeedViewController: UITableViewController {
         self.refreshControl = UIRefreshControl()
         self.refreshControl?.addTarget(self, action: #selector(loadFeeds), for: .valueChanged)
         
+        onViewFirstAppear = { [weak self] in
+            self?.loadFeeds()
+            self?.onViewFirstAppear = nil
+        }
     }
     
     public override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
         
-        loadFeeds()
+        onViewFirstAppear?()
     }
     
     @objc

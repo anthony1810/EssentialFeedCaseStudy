@@ -17,9 +17,8 @@ final class FeedViewControllerTests: XCTestCase {
         
         XCTAssertEqual(loader.loadCompletionResult.count, 0)
         
-        sut.loadViewIfNeeded()
-        sut.beginAppearanceTransition(true, animated: false)
-        sut.endAppearanceTransition()
+        sut.triggerViewDidLoad()
+        sut.triggerViewWillAppear()
         
         sut.replaceRefreshControlWithFakeForiOS17Support()
         XCTAssertEqual(loader.loadCompletionResult.count, 1)
@@ -34,12 +33,11 @@ final class FeedViewControllerTests: XCTestCase {
     func test_loadFeeds_showHideIndicatorCorrectly() throws {
         let (sut, loader) = makeSUT()
         
-        sut.loadViewIfNeeded() // viewDidLoad
+        sut.triggerViewDidLoad()
         sut.replaceRefreshControlWithFakeForiOS17Support()
         XCTAssertEqual(sut.isShowingLoadingIndicator(), false)
         
-        sut.beginAppearanceTransition(true, animated: false)
-        sut.endAppearanceTransition()
+        sut.triggerViewWillAppear()
         XCTAssertEqual(sut.isShowingLoadingIndicator(), true)
         
         loader.completeFeedLoadingSuccess(at: 0)
@@ -49,6 +47,9 @@ final class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(sut.isShowingLoadingIndicator(), true)
         
         loader.completeFeedLoadingSuccess(at: 1)
+        XCTAssertEqual(sut.isShowingLoadingIndicator(), false)
+        
+        sut.triggerViewWillAppear()
         XCTAssertEqual(sut.isShowingLoadingIndicator(), false)
     }
     
@@ -103,6 +104,15 @@ private extension FeedViewController {
         }
         
         refreshControl = fake
+    }
+    
+    func triggerViewDidLoad() {
+        self.loadViewIfNeeded()
+    }
+    
+    func triggerViewWillAppear() {
+        self.beginAppearanceTransition(true, animated: false) //view appear again
+        self.endAppearanceTransition()
     }
 }
 
