@@ -26,6 +26,12 @@ public final class FeedViewController: UITableViewController {
         
         self.refreshControl = UIRefreshControl()
         self.refreshControl?.addTarget(self, action: #selector(loadFeeds), for: .valueChanged)
+        
+    }
+    
+    public override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+        
         loadFeeds()
     }
     
