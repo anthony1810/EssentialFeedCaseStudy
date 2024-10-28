@@ -9,7 +9,7 @@ import EssentialFeed
 import EssentialFeediOS
 
 final class LoaderSpy: FeedLoader, FeedImageLoaderProtocol {
-    
+
     private(set) var feedRequests = [(FeedLoader.Result) -> Void]()
     
     func load(completion: @escaping (FeedLoader.Result) -> Void) {
@@ -28,11 +28,15 @@ final class LoaderSpy: FeedLoader, FeedImageLoaderProtocol {
     private(set) var loadedImageURLs = [URL]()
     private(set) var cancelLoadedImageURLs = [URL]()
     
-    func loadImageData(from url: URL) {
-        loadedImageURLs.append(url)
+    private struct LoadingImageTaskSpy: ImageLoadingDataTaskProtocol {
+        let cancelCallBack: () -> Void
+        func cancel() {
+            cancelCallBack()
+        }
     }
     
-    func cancelImageLoad(for url: URL) {
-        cancelLoadedImageURLs.append(url)
+    func loadImageData(from url: URL) -> ImageLoadingDataTaskProtocol {
+        loadedImageURLs.append(url)
+        return LoadingImageTaskSpy(cancelCallBack: { [weak self] in self?.cancelLoadedImageURLs.append(url) })
     }
 }

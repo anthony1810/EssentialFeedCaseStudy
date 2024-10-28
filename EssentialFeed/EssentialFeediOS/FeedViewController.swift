@@ -8,9 +8,12 @@ import Foundation
 import UIKit
 import EssentialFeed
 
+public protocol ImageLoadingDataTaskProtocol {
+    func cancel()
+}
+
 public protocol FeedImageLoaderProtocol {
-    func loadImageData(from url: URL)
-    func cancelImageLoad(for url: URL)
+    func loadImageData(from url: URL) -> ImageLoadingDataTaskProtocol
 }
 
 public final class FeedImageCell: UITableViewCell {
@@ -24,6 +27,7 @@ public final class FeedViewController: UITableViewController {
     private var imageLoader: FeedImageLoaderProtocol
     
     private var feeds: [FeedImage] = []
+    private var loadingImageTasks: [IndexPath: ImageLoadingDataTaskProtocol] = [:]
     
     private var onViewFirstAppear: (() -> Void)?
     
@@ -71,14 +75,15 @@ public final class FeedViewController: UITableViewController {
         cell.descrtipionLabel.text = feed.description
         cell.url = feed.imageURL
         
-        imageLoader.loadImageData(from: cell.url)
+        loadingImageTasks[indexPath] = imageLoader.loadImageData(from: cell.url)
         
         return cell
     }
     
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard let cell = cell as? FeedImageCell else { return }
-        imageLoader.cancelImageLoad(for: cell.url)
+      
+        loadingImageTasks[indexPath]?.cancel()
+        loadingImageTasks[indexPath] = nil
     }
     
     @objc
