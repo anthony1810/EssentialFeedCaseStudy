@@ -112,41 +112,7 @@ final class FeedViewControllerTests: XCTestCase {
     
 }
 
-extension FeedViewController {
-    func userInitiatedRefresh() {
-        self.refreshControl?.simulatePullToRefresh()
-    }
-    
-    func isShowingLoadingIndicator() -> Bool {
-        self.refreshControl?.isRefreshing ?? false
-    }
-}
-
 extension FeedViewControllerTests {
-    
-    class LoaderSpy: FeedLoader, FeedImageLoaderProtocol {
-        
-        var loadCompletionResult = [(FeedLoader.Result) -> Void]()
-        
-        func load(completion: @escaping (FeedLoader.Result) -> Void) {
-            loadCompletionResult.append(completion)
-        }
-        
-        func completeFeedLoadingSuccess(at index: Int = 0, with images: [FeedImage] = []) {
-            loadCompletionResult[index](.success(images))
-        }
-        
-        func completeFeedLoadingWithFailure(at index: Int, error: Error) {
-            loadCompletionResult[index](.failure(error))
-        }
-        
-        // MARK: - Image Loader
-        var loadedImageURLs = [URL]()
-        func loadImageData(from url: URL) {
-            loadedImageURLs.append(url)
-        }
-    }
-    
     func assert(sut: FeedViewController, rendering images: [FeedImage], file: StaticString = #file, line: UInt = #line) {
         XCTAssertEqual(sut.numberOfRenderedFeedImageViews(), images.count)
         
@@ -176,86 +142,6 @@ extension FeedViewControllerTests {
     func makeFeedImage(location: String?, description: String?, imageURL: URL) -> FeedImage {
         FeedImage(id: UUID(), description: description, location: location, imageURL: imageURL)
     }
-    
 }
 
-private extension FeedViewController {
-    
-    func replaceRefreshControlWithFakeForiOS17Support() {
-        let fake = FakeRefreshControl()
-        
-        refreshControl?.allTargets.forEach { target in
-            refreshControl?.actions(forTarget: target, forControlEvent: .valueChanged)?.forEach({ action in
-                fake.addTarget(target, action: Selector(action), for: .valueChanged)
-            })
-        }
-        
-        refreshControl = fake
-    }
-    
-    func triggerViewDidLoad() {
-        self.loadViewIfNeeded()
-    }
-    
-    func triggerViewWillAppear() {
-        self.beginAppearanceTransition(true, animated: false) //view appear again
-        self.endAppearanceTransition()
-    }
-    
-    func stimulateVisibleView(at index: Int) {
-        _ = feedImageView(at: index)
-    }
-    
-    func numberOfRenderedFeedImageViews() -> Int {
-        tableView.numberOfRows(inSection: feedImageSection)
-    }
-    
-    func feedImageView(at index: Int) -> UITableViewCell? {
-        let ds = tableView.dataSource
-        let indexPath = IndexPath(row: index, section: feedImageSection)
-        let view = ds?.tableView(tableView, cellForRowAt: indexPath)
-        
-        return view
-    }
-    
-    var feedImageSection: Int { 0 }
-}
 
-private extension FeedImageCell {
-    var isShowingLocation: Bool {
-        locationLabel.isHidden == false
-    }
-    
-    var locationText: String? {
-        locationLabel.text
-    }
-    
-    var descriptionText: String? {
-        descrtipionLabel.text
-    }
-}
-
-class FakeRefreshControl: UIRefreshControl {
-    
-    var _isRefreshing: Bool = false
-    override var isRefreshing: Bool { _isRefreshing }
-    
-    override func beginRefreshing() {
-        _isRefreshing = true
-    }
-    
-    override func endRefreshing() {
-        _isRefreshing = false
-    }
-}
-
-extension UIRefreshControl {
-    
-    func simulatePullToRefresh() {
-        allTargets.forEach { target in
-            actions(forTarget: target, forControlEvent: .valueChanged)?.forEach {
-                (target as NSObject).perform(Selector($0))
-            }
-        }
-    }
-}
