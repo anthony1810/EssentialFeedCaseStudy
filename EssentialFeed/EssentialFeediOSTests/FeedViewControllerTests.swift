@@ -251,6 +251,26 @@ final class FeedViewControllerTests: XCTestCase {
         
     }
     
+    func test_loadFeed_prefetchImagesWhenNearVisible() throws {
+        let image0 = makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
+        let image1 = makeFeedImage(location: nil, description: "any description", imageURL: makeAnyUrl())
+        let (sut, loader) = makeSUT()
+        
+        sut.triggerViewDidLoad()
+        
+        sut.userInitiatedRefresh()
+        loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
+        XCTAssertEqual(loader.loadedImageURLs, [], "Expect no images to be loaded")
+        
+        sut.stimulateNearVisibleView(at: 0)
+        loader.completeImageLoadingSuccessfully(at: 0)
+        XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL], "Expect one images to be loaded")
+        
+        sut.stimulateNearVisibleView(at: 1)
+        loader.completeImageLoadingSuccessfully(at: 1)
+        XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL, image1.imageURL], "Expect one images to be loaded")
+    }
+    
 }
 
 // MARK: - Helpers

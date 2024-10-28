@@ -58,6 +58,12 @@ extension FeedViewController {
     }
     
     var feedImageSection: Int { 0 }
+    
+    func stimulateNearVisibleView(at index: Int) {
+        let ds = tableView.prefetchDataSource
+        let indexPath = IndexPath(row: index, section: feedImageSection)
+       ds?.tableView(tableView, prefetchRowsAt: [indexPath])
+    }
 }
 
 public extension FeedViewController {
