@@ -6,6 +6,7 @@
 //
 import Foundation
 import EssentialFeediOS
+import UIKit
 
 extension FeedImageCell {
     var isShowingLocation: Bool {
@@ -22,5 +23,10 @@ extension FeedImageCell {
     
     func isShowingImageLoadingIndicator() -> Bool {
         imageContainer.isShimmering
+    }
+    
+    var renderedImage: Data? {
+        let imageData = feedImageView.image?.pngData()
+        return imageData
     }
 }

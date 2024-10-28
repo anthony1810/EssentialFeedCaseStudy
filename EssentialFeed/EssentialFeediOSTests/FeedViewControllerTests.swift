@@ -156,6 +156,32 @@ final class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.cancelLoadedImageURLs, [image0.imageURL, image1.imageURL], "Expect two image are loaded when one more view is visible")
     }
     
+    func test_feedImageView_rendersImageLoadedFromURL() throws {
+        let image0 = makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
+        let image1 = makeFeedImage(location: nil, description: "any description", imageURL: makeAnyUrl())
+        let (sut, loader) = makeSUT()
+        
+        sut.triggerViewDidLoad()
+        
+        sut.userInitiatedRefresh()
+        loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
+        
+        let imageView0 = sut.stimulateVisibleView(at: 0) as? FeedImageCell
+        let imageView1 = sut.stimulateVisibleView(at: 1) as? FeedImageCell
+        XCTAssertEqual(imageView0?.renderedImage, .none, "Expect no image data while loading at 0 index")
+        XCTAssertEqual(imageView1?.renderedImage, .none, "Expect no image data while loading at 1 index")
+        
+        let image0Data = UIImage.make(withColor: .red).pngData()!
+        loader.completeImageLoadingSuccessfully(at: 0, with: image0Data)
+        XCTAssertEqual(imageView0?.renderedImage, image0Data, "Expect loading image indicator at 0 index")
+        XCTAssertEqual(imageView1?.renderedImage, .none, "Expect loading image indicator at 1 index")
+        
+        let image1Data = UIImage.make(withColor: .blue).pngData()!
+        loader.completeImageLoadingSuccessfully(at: 1, with: image1Data)
+        XCTAssertEqual(imageView0?.renderedImage, image0Data, "Expect data at 0 index")
+        XCTAssertEqual(imageView1?.renderedImage, image1Data, "Expect data at 1 index")
+    }
+    
 }
 
 // MARK: - Helpers

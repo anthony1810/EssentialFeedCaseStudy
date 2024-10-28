@@ -22,6 +22,7 @@ public final class FeedImageCell: UITableViewCell {
     public let descrtipionLabel: UILabel = .init()
     public var url: URL!
     public let imageContainer: UIView = .init()
+    public var feedImageView: UIImageView = .init()
 }
 
 public final class FeedViewController: UITableViewController {
@@ -77,9 +78,13 @@ public final class FeedViewController: UITableViewController {
         cell.descrtipionLabel.text = feed.description
         cell.url = feed.imageURL
         cell.imageContainer.isShimmering = true
+        cell.feedImageView.image = nil
         
         loadingImageTasks[indexPath] = imageLoader.loadImageData(from: cell.url, completion: { [cell] result in
             cell.imageContainer.isShimmering = false
+            if let imageData = try? result.get() {
+                cell.feedImageView.image = UIImage(data: imageData)
+            }
         })
         
         return cell
