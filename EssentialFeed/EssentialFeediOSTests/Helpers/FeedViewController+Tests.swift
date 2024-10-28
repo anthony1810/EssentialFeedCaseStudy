@@ -62,7 +62,15 @@ extension FeedViewController {
     func stimulateNearVisibleView(at index: Int) {
         let ds = tableView.prefetchDataSource
         let indexPath = IndexPath(row: index, section: feedImageSection)
-       ds?.tableView(tableView, prefetchRowsAt: [indexPath])
+        ds?.tableView(tableView, prefetchRowsAt: [indexPath])
+    }
+    
+    func stimulateBecomeNotVisibleView(at index: Int) {
+        stimulateVisibleView(at: index)
+        
+        let ds = tableView.prefetchDataSource
+        let indexPath = IndexPath(row: index, section: feedImageSection)
+        ds?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
     }
 }
 

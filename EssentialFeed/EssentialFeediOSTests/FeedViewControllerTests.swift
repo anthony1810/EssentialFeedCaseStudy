@@ -271,6 +271,26 @@ final class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL, image1.imageURL], "Expect one images to be loaded")
     }
     
+    func test_loadFeed_cancelPrefetchImagesWhenBecomeInVisible() throws {
+        let image0 = makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
+        let image1 = makeFeedImage(location: nil, description: "any description", imageURL: makeAnyUrl())
+        let (sut, loader) = makeSUT()
+        
+        sut.triggerViewDidLoad()
+        
+        sut.userInitiatedRefresh()
+        loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
+        XCTAssertEqual(loader.cancelLoadedImageURLs, [], "Expect no cancelLoadedImageURLs until not visible")
+        
+        sut.stimulateBecomeNotVisibleView(at: 0)
+        loader.completeImageLoadingSuccessfully(at: 0)
+        XCTAssertEqual(loader.cancelLoadedImageURLs, [image0.imageURL], "Expect one images to be cancel")
+        
+        sut.stimulateBecomeNotVisibleView(at: 1)
+        loader.completeImageLoadingSuccessfully(at: 1)
+        XCTAssertEqual(loader.cancelLoadedImageURLs, [image0.imageURL, image1.imageURL], "Expect one more images to be cancel")
+    }
+    
 }
 
 // MARK: - Helpers
