@@ -84,6 +84,19 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
         feeds.count
     }
     
+    fileprivate func startTask(forCell cell: FeedImageCell, at indexPath: IndexPath) {
+        self.loadingImageTasks[indexPath] = self.imageLoader.loadImageData(from: cell.url, completion: { [cell] result in
+            
+            let imageData = try? result.get()
+            let convertedImage = imageData.map(UIImage.init) ?? nil
+            cell.feedImageView.image = convertedImage
+            
+            cell.retryButton.isHidden = convertedImage != nil
+            
+            cell.imageContainer.isShimmering = false
+        })
+    }
+    
     public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let feed = feeds[indexPath.row]
         let cell = FeedImageCell()
@@ -94,19 +107,10 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
         cell.feedImageView.image = nil
         cell.retryButton.isHidden = true
         
-        let loadImage = { [weak cell, weak self] in
+        let loadImage = { [weak self, weak cell] in
             guard let self, let cell else { return }
             
-            self.loadingImageTasks[indexPath] = self.imageLoader.loadImageData(from: cell.url, completion: { [cell] result in
-              
-                let imageData = try? result.get()
-                let convertedImage = imageData.map(UIImage.init) ?? nil
-                cell.feedImageView.image = convertedImage
-                
-                cell.retryButton.isHidden = convertedImage != nil
-                
-                cell.imageContainer.isShimmering = false
-            })
+            startTask(forCell: cell, at: indexPath)
         }
         
         cell.onRetryButtonTapped = loadImage
@@ -118,6 +122,12 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
       
         cancelLoading(at: indexPath)
+    }
+    
+    public override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell =  cell as? FeedImageCell else { return }
+        
+        startTask(forCell: cell, at: indexPath)
     }
     
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
