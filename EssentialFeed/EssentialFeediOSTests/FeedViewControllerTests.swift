@@ -15,19 +15,19 @@ final class FeedViewControllerTests: XCTestCase {
     func test_userInitiatedRefresh_loadFeedCorrectAsExepcted() throws {
         let (sut, loader) = makeSUT()
         
-        XCTAssertEqual(loader.loadCompletionResult.count, 0)
+        XCTAssertEqual(loader.feedRequests.count, 0)
         
         sut.triggerViewDidLoad()
         sut.triggerViewWillAppear()
         
         sut.replaceRefreshControlWithFakeForiOS17Support()
-        XCTAssertEqual(loader.loadCompletionResult.count, 1)
+        XCTAssertEqual(loader.feedRequests.count, 1)
         
         sut.userInitiatedRefresh()
-        XCTAssertEqual(loader.loadCompletionResult.count, 2)
+        XCTAssertEqual(loader.feedRequests.count, 2)
         
         sut.userInitiatedRefresh()
-        XCTAssertEqual(loader.loadCompletionResult.count, 3)
+        XCTAssertEqual(loader.feedRequests.count, 3)
     }
     
     func test_loadFeeds_showHideIndicatorCorrectly() throws {
@@ -111,6 +111,8 @@ final class FeedViewControllerTests: XCTestCase {
     }
     
 }
+
+// MARK: - Helpers
 
 extension FeedViewControllerTests {
     func assert(sut: FeedViewController, rendering images: [FeedImage], file: StaticString = #file, line: UInt = #line) {
