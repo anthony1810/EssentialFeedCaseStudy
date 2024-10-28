@@ -16,6 +16,10 @@ extension XCTestCase {
         URL(string: "https://any-url.com")!
     }
     
+    func makeAnyData() -> Data {
+        Data("anydata".utf8)
+    }
+    
     func makeAnyURLResponse() -> URLResponse {
         URLResponse(url: makeAnyUrl(), mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
     }

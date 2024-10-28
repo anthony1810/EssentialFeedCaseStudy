@@ -110,6 +110,30 @@ final class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL, image1.imageURL], "Expect two image are loaded when one more view is visible")
     }
     
+    func test_feedImageLoadingIndicator_isVisibleWhileLoadingImage() throws {
+        let image0 = makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
+        let image1 = makeFeedImage(location: nil, description: "any description", imageURL: makeAnyUrl())
+        let (sut, loader) = makeSUT()
+        
+        sut.triggerViewDidLoad()
+        
+        sut.userInitiatedRefresh()
+        loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
+        
+        let imageView0 = sut.stimulateVisibleView(at: 0) as? FeedImageCell
+        let imageView1 = sut.stimulateVisibleView(at: 1) as? FeedImageCell
+        XCTAssertEqual(imageView0?.isShowingImageLoadingIndicator(), true, "Expect loading image indicator at 0 index")
+        XCTAssertEqual(imageView1?.isShowingImageLoadingIndicator(), true, "Expect loading image indicator at 1 index")
+        
+        loader.completeImageLoadingSuccessfully(at: 0)
+        XCTAssertEqual(imageView0?.isShowingImageLoadingIndicator(), false, "Expect loading image indicator at 0 index")
+        XCTAssertEqual(imageView1?.isShowingImageLoadingIndicator(), true, "Expect loading image indicator at 1 index")
+        
+        loader.completeImageLoadingWithFailure(at: 1, error: makeAnyError())
+        XCTAssertEqual(imageView0?.isShowingImageLoadingIndicator(), false, "Expect loading image indicator at 0 index")
+        XCTAssertEqual(imageView1?.isShowingImageLoadingIndicator(), false, "Expect loading image indicator at 1 index")
+    }
+    
     func test_loadFeedCompletion_cancelRendersImageWhenImageViewIsNotVisible() throws {
         let image0 = makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
         let image1 = makeFeedImage(location: nil, description: "any description", imageURL: makeAnyUrl())

@@ -25,7 +25,8 @@ final class LoaderSpy: FeedLoader, FeedImageLoaderProtocol {
     }
     
     // MARK: - Image Loader
-    private(set) var loadedImageURLs = [URL]()
+    private(set) var imageRequests = [(url: URL, completion: (FeedImageLoaderProtocol.Result) -> Void)]()
+    var loadedImageURLs: [URL] { imageRequests.map(\.url) }
     private(set) var cancelLoadedImageURLs = [URL]()
     
     private struct LoadingImageTaskSpy: ImageLoadingDataTaskProtocol {
@@ -35,8 +36,18 @@ final class LoaderSpy: FeedLoader, FeedImageLoaderProtocol {
         }
     }
     
-    func loadImageData(from url: URL) -> ImageLoadingDataTaskProtocol {
-        loadedImageURLs.append(url)
+    func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void ) -> ImageLoadingDataTaskProtocol {
+        
+        imageRequests.append((url, completion))
+        
         return LoadingImageTaskSpy(cancelCallBack: { [weak self] in self?.cancelLoadedImageURLs.append(url) })
+    }
+    
+    func completeImageLoadingSuccessfully(at index: Int, with imageData: Data = Data("anyData".utf8)) {
+        imageRequests[index].completion(.success(imageData))
+    }
+    
+    func completeImageLoadingWithFailure(at index: Int, error: Error) {
+        imageRequests[index].completion(.failure(error))
     }
 }

@@ -13,13 +13,15 @@ public protocol ImageLoadingDataTaskProtocol {
 }
 
 public protocol FeedImageLoaderProtocol {
-    func loadImageData(from url: URL) -> ImageLoadingDataTaskProtocol
+    typealias Result = Swift.Result<Data, Error>
+    func loadImageData(from url: URL, completion: @escaping (Result) -> Void) -> ImageLoadingDataTaskProtocol
 }
 
 public final class FeedImageCell: UITableViewCell {
     public let locationLabel: UILabel = .init()
     public let descrtipionLabel: UILabel = .init()
     public var url: URL!
+    public let imageContainer: UIView = .init()
 }
 
 public final class FeedViewController: UITableViewController {
@@ -74,8 +76,11 @@ public final class FeedViewController: UITableViewController {
         cell.locationLabel.text = feed.location
         cell.descrtipionLabel.text = feed.description
         cell.url = feed.imageURL
+        cell.imageContainer.isShimmering = true
         
-        loadingImageTasks[indexPath] = imageLoader.loadImageData(from: cell.url)
+        loadingImageTasks[indexPath] = imageLoader.loadImageData(from: cell.url, completion: { [cell] result in
+            cell.imageContainer.isShimmering = false
+        })
         
         return cell
     }
