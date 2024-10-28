@@ -88,6 +88,28 @@ final class FeedViewControllerTests: XCTestCase {
         assert(sut: sut, rendering: [image0])
     }
     
+    func test_loadFeedCompletion_redersImageWhenImageViewIsVisible() throws {
+        let image0 = makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
+        let image1 = makeFeedImage(location: nil, description: "any description", imageURL: makeAnyUrl())
+        let image2 = makeFeedImage(location: "any location", description: nil, imageURL: makeAnyUrl())
+        let (sut, loader) = makeSUT()
+        
+        sut.triggerViewDidLoad()
+        
+        sut.userInitiatedRefresh()
+        loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1, image2])
+        
+        XCTAssertEqual(loader.loadedImageURLs, [], "Expect no image when view is not visible")
+        
+        sut.stimulateVisibleView(at: 0)
+        XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL], "Expect one image when one view is visible")
+        
+        sut.userInitiatedRefresh()
+        sut.stimulateVisibleView(at: 1)
+        
+        XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL, image1.imageURL], "Expect two image are loaded when one more view is visible")
+    }
+    
 }
 
 extension FeedViewController {
@@ -102,7 +124,7 @@ extension FeedViewController {
 
 extension FeedViewControllerTests {
     
-    class LoaderSpy: FeedLoader {
+    class LoaderSpy: FeedLoader, FeedImageLoaderProtocol {
         
         var loadCompletionResult = [(FeedLoader.Result) -> Void]()
         
@@ -116,6 +138,12 @@ extension FeedViewControllerTests {
         
         func completeFeedLoadingWithFailure(at index: Int, error: Error) {
             loadCompletionResult[index](.failure(error))
+        }
+        
+        // MARK: - Image Loader
+        var loadedImageURLs = [URL]()
+        func loadImageData(from url: URL) {
+            loadedImageURLs.append(url)
         }
     }
     
@@ -137,7 +165,7 @@ extension FeedViewControllerTests {
     
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
-        let sut = FeedViewController(loader: loader)
+        let sut = FeedViewController(loader: loader, imageLoader: loader)
         
         trackForMemoryLeaks(loader, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
@@ -172,6 +200,10 @@ private extension FeedViewController {
     func triggerViewWillAppear() {
         self.beginAppearanceTransition(true, animated: false) //view appear again
         self.endAppearanceTransition()
+    }
+    
+    func stimulateVisibleView(at index: Int) {
+        _ = feedImageView(at: index)
     }
     
     func numberOfRenderedFeedImageViews() -> Int {

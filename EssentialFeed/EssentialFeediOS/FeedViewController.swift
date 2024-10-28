@@ -8,20 +8,27 @@ import Foundation
 import UIKit
 import EssentialFeed
 
+public protocol FeedImageLoaderProtocol {
+    func loadImageData(from url: URL)
+}
+
 public final class FeedImageCell: UITableViewCell {
     public let locationLabel: UILabel = .init()
     public let descrtipionLabel: UILabel = .init()
-    public var url: URL?
+    public var url: URL!
 }
 
 public final class FeedViewController: UITableViewController {
     private var loader: FeedLoader
+    private var imageLoader: FeedImageLoaderProtocol
+    
     private var feeds: [FeedImage] = []
     
     private var onViewFirstAppear: (() -> Void)?
     
-    public init(loader: FeedLoader) {
+    public init(loader: FeedLoader, imageLoader: FeedImageLoaderProtocol) {
         self.loader = loader
+        self.imageLoader = imageLoader
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -62,6 +69,8 @@ public final class FeedViewController: UITableViewController {
         cell.locationLabel.text = feed.location
         cell.descrtipionLabel.text = feed.description
         cell.url = feed.imageURL
+        
+        imageLoader.loadImageData(from: cell.url)
         
         return cell
     }
