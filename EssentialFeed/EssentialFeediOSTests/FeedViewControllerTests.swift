@@ -46,7 +46,7 @@ final class FeedViewControllerTests: XCTestCase {
         sut.userInitiatedRefresh()
         XCTAssertEqual(sut.isShowingLoadingIndicator(), true)
         
-        loader.completeFeedLoadingSuccess(at: 1)
+        loader.completeFeedLoadingWithFailure(at: 1, error: makeAnyError())
         XCTAssertEqual(sut.isShowingLoadingIndicator(), false)
         
         sut.triggerViewWillAppear()
@@ -70,6 +70,22 @@ final class FeedViewControllerTests: XCTestCase {
         sut.userInitiatedRefresh()
         loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1, image2, image3])
         assert(sut: sut, rendering: [image0, image1, image2, image3])
+    }
+    
+    func test_loadFeedCompletion_rendersErrorDoesNotAlterCurrentState() throws {
+        let image0 = makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
+        let (sut, loader) = makeSUT()
+        
+        sut.triggerViewDidLoad()
+        
+        sut.triggerViewWillAppear()
+        loader.completeFeedLoadingSuccess(at: 0, with: [image0])
+        assert(sut: sut, rendering: [image0])
+        
+        let error = makeAnyError()
+        sut.userInitiatedRefresh()
+        loader.completeFeedLoadingWithFailure(at: 1, error: error)
+        assert(sut: sut, rendering: [image0])
     }
     
 }
@@ -96,6 +112,10 @@ extension FeedViewControllerTests {
         
         func completeFeedLoadingSuccess(at index: Int = 0, with images: [FeedImage] = []) {
             loadCompletionResult[index](.success(images))
+        }
+        
+        func completeFeedLoadingWithFailure(at index: Int, error: Error) {
+            loadCompletionResult[index](.failure(error))
         }
     }
     

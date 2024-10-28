@@ -70,9 +70,11 @@ public final class FeedViewController: UITableViewController {
     public func loadFeeds() {
         self.refreshControl?.beginRefreshing()
         loader.load(completion: { [weak self] result in
-            self?.feeds = (try? result.get()) ?? []
+            if case let .success(feeds) = result {
+                self?.feeds = feeds
+                self?.tableView.reloadData()
+            }
             self?.refreshControl?.endRefreshing()
-            self?.tableView.reloadData()
         })
     }
 }
