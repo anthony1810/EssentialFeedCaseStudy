@@ -182,6 +182,32 @@ final class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(imageView1?.renderedImage, image1Data, "Expect data at 1 index")
     }
     
+    func test_feedImageView_showingRetryActionWhenLoadingImageFail() throws {
+        let image0 = makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
+        let image1 = makeFeedImage(location: nil, description: "any description", imageURL: makeAnyUrl())
+        let (sut, loader) = makeSUT()
+        
+        sut.triggerViewDidLoad()
+        
+        sut.userInitiatedRefresh()
+        loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
+        
+        let imageView0 = sut.stimulateVisibleView(at: 0) as? FeedImageCell
+        let imageView1 = sut.stimulateVisibleView(at: 1) as? FeedImageCell
+        XCTAssertEqual(imageView0?.showingRetryButton, false, "Expect hidden retrieve button while loading")
+        XCTAssertEqual(imageView1?.showingRetryButton, false, "Expect hidden retrieve button while loading")
+        
+        let image0Data = UIImage.make(withColor: .red).pngData()!
+        loader.completeImageLoadingSuccessfully(at: 0, with: image0Data)
+        XCTAssertEqual(imageView0?.showingRetryButton, false, "Expect hidden retrieve button while loading complete successully")
+        XCTAssertEqual(imageView1?.showingRetryButton, false, "Expect hidden retrieve button while not loading")
+        
+        let image1Data = UIImage.make(withColor: .blue).pngData()!
+        loader.completeImageLoadingWithFailure(at: 1, error: makeAnyError())
+        XCTAssertEqual(imageView0?.showingRetryButton, false, "Expect hidden retrieve button while loading complete successully")
+        XCTAssertEqual(imageView1?.showingRetryButton, true, "Expect showing retrieve button while loading failed")
+    }
+    
 }
 
 // MARK: - Helpers

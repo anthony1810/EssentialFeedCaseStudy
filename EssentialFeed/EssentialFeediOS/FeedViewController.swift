@@ -23,6 +23,7 @@ public final class FeedImageCell: UITableViewCell {
     public var url: URL!
     public let imageContainer: UIView = .init()
     public var feedImageView: UIImageView = .init()
+    public var retryButton: UIButton = .init()
 }
 
 public final class FeedViewController: UITableViewController {
@@ -79,11 +80,14 @@ public final class FeedViewController: UITableViewController {
         cell.url = feed.imageURL
         cell.imageContainer.isShimmering = true
         cell.feedImageView.image = nil
+        cell.retryButton.isHidden = true
         
         loadingImageTasks[indexPath] = imageLoader.loadImageData(from: cell.url, completion: { [cell] result in
             cell.imageContainer.isShimmering = false
             if let imageData = try? result.get() {
                 cell.feedImageView.image = UIImage(data: imageData)
+            } else {
+                cell.retryButton.isHidden = false
             }
         })
         

@@ -29,4 +29,8 @@ extension FeedImageCell {
         let imageData = feedImageView.image?.pngData()
         return imageData
     }
+    
+    var showingRetryButton: Bool {
+        retryButton.isHidden == false
+    }
 }
