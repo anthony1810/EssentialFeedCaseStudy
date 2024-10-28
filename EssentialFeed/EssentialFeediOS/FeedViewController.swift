@@ -83,12 +83,14 @@ public final class FeedViewController: UITableViewController {
         cell.retryButton.isHidden = true
         
         loadingImageTasks[indexPath] = imageLoader.loadImageData(from: cell.url, completion: { [cell] result in
+          
+            let imageData = try? result.get()
+            let convertedImage = imageData.map(UIImage.init) ?? nil
+            cell.feedImageView.image = convertedImage
+            
+            cell.retryButton.isHidden = convertedImage != nil
+            
             cell.imageContainer.isShimmering = false
-            if let imageData = try? result.get() {
-                cell.feedImageView.image = UIImage(data: imageData)
-            } else {
-                cell.retryButton.isHidden = false
-            }
         })
         
         return cell
