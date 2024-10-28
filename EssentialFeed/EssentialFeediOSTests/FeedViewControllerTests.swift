@@ -110,6 +110,28 @@ final class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL, image1.imageURL], "Expect two image are loaded when one more view is visible")
     }
     
+    func test_loadFeedCompletion_cancelRendersImageWhenImageViewIsNotVisible() throws {
+        let image0 = makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
+        let image1 = makeFeedImage(location: nil, description: "any description", imageURL: makeAnyUrl())
+        let image2 = makeFeedImage(location: "any location", description: nil, imageURL: makeAnyUrl())
+        let (sut, loader) = makeSUT()
+        
+        sut.triggerViewDidLoad()
+        
+        sut.userInitiatedRefresh()
+        loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1, image2])
+        
+        XCTAssertEqual(loader.cancelLoadedImageURLs, [], "Expect no image when view is not visible")
+        
+        sut.stimulateViewDisappear(at: 0)
+        XCTAssertEqual(loader.cancelLoadedImageURLs, [image0.imageURL], "Expect one image when one view is visible")
+        
+        sut.userInitiatedRefresh()
+        sut.stimulateViewDisappear(at: 1)
+        
+        XCTAssertEqual(loader.cancelLoadedImageURLs, [image0.imageURL, image1.imageURL], "Expect two image are loaded when one more view is visible")
+    }
+    
 }
 
 // MARK: - Helpers

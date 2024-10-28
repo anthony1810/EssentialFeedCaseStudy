@@ -26,7 +26,13 @@ final class LoaderSpy: FeedLoader, FeedImageLoaderProtocol {
     
     // MARK: - Image Loader
     private(set) var loadedImageURLs = [URL]()
+    private(set) var cancelLoadedImageURLs = [URL]()
+    
     func loadImageData(from url: URL) {
         loadedImageURLs.append(url)
+    }
+    
+    func cancelImageLoad(for url: URL) {
+        cancelLoadedImageURLs.append(url)
     }
 }

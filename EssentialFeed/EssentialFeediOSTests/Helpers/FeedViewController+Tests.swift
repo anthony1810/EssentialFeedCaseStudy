@@ -32,8 +32,17 @@ extension FeedViewController {
         self.endAppearanceTransition()
     }
     
-    func stimulateVisibleView(at index: Int) {
-        _ = feedImageView(at: index)
+    @discardableResult
+    func stimulateVisibleView(at index: Int) -> UITableViewCell {
+        let cell = feedImageView(at: index)
+        return cell ?? UITableViewCell()
+    }
+    
+    func stimulateViewDisappear(at index: Int, file: StaticString = #file, line: UInt = #line) {
+        let cell = stimulateVisibleView(at: index)
+        let delegate = tableView.delegate
+        let indexPath = IndexPath(row: index, section: feedImageSection)
+        delegate?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
     }
     
     func numberOfRenderedFeedImageViews() -> Int {
