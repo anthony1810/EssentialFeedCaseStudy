@@ -225,6 +225,32 @@ final class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(imageView0?.retryButton.isHidden, false)
     }
     
+    func test_feedImageViewRetryAction_reloadsFeed() throws {
+        let image0 = makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
+        let image1 = makeFeedImage(location: nil, description: "any description", imageURL: makeAnyUrl())
+        let (sut, loader) = makeSUT()
+        
+        sut.triggerViewDidLoad()
+        
+        sut.userInitiatedRefresh()
+        loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
+        
+        let imageView0 = sut.stimulateVisibleView(at: 0) as? FeedImageCell
+        let imageView1 = sut.stimulateVisibleView(at: 1) as? FeedImageCell
+        XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL, image1.imageURL], "expect only two images url request fired when two cell visible")
+        
+        loader.completeImageLoadingWithFailure(at: 0, error: makeAnyError())
+        loader.completeImageLoadingWithFailure(at: 1, error: makeAnyError())
+        XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL, image1.imageURL], "expect still only two images url request fired when two cell isn't retrying")
+        
+        imageView0?.triggerRetryAction()
+        XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL, image1.imageURL, image0.imageURL], "expect oen more image url request fired when two cell retrying")
+        
+        imageView1?.triggerRetryAction()
+        XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL, image1.imageURL, image0.imageURL, image1.imageURL], "expect two more images url request fired when two cell retrying")
+        
+    }
+    
 }
 
 // MARK: - Helpers

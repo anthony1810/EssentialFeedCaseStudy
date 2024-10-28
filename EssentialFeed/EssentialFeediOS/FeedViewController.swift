@@ -23,7 +23,18 @@ public final class FeedImageCell: UITableViewCell {
     public var url: URL!
     public let imageContainer: UIView = .init()
     public var feedImageView: UIImageView = .init()
-    public var retryButton: UIButton = .init()
+    public lazy var retryButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.addTarget(self, action: #selector(retryButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    var onRetryButtonTapped: (() -> Void)?
+    
+    @objc
+    func retryButtonTapped() {
+        onRetryButtonTapped?()
+    }
 }
 
 public final class FeedViewController: UITableViewController {
@@ -82,16 +93,23 @@ public final class FeedViewController: UITableViewController {
         cell.feedImageView.image = nil
         cell.retryButton.isHidden = true
         
-        loadingImageTasks[indexPath] = imageLoader.loadImageData(from: cell.url, completion: { [cell] result in
-          
-            let imageData = try? result.get()
-            let convertedImage = imageData.map(UIImage.init) ?? nil
-            cell.feedImageView.image = convertedImage
+        let loadImage = { [weak cell, weak self] in
+            guard let self, let cell else { return }
             
-            cell.retryButton.isHidden = convertedImage != nil
-            
-            cell.imageContainer.isShimmering = false
-        })
+            self.loadingImageTasks[indexPath] = self.imageLoader.loadImageData(from: cell.url, completion: { [cell] result in
+              
+                let imageData = try? result.get()
+                let convertedImage = imageData.map(UIImage.init) ?? nil
+                cell.feedImageView.image = convertedImage
+                
+                cell.retryButton.isHidden = convertedImage != nil
+                
+                cell.imageContainer.isShimmering = false
+            })
+        }
+        
+        cell.onRetryButtonTapped = loadImage
+        loadImage()
         
         return cell
     }

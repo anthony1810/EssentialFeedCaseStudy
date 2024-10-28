@@ -33,4 +33,8 @@ extension FeedImageCell {
     var showingRetryButton: Bool {
         retryButton.isHidden == false
     }
+    
+    func triggerRetryAction() {
+        retryButton.simulateTap()
+    }
 }
