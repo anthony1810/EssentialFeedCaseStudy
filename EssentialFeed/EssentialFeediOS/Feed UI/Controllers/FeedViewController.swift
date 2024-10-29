@@ -8,6 +8,32 @@ import Foundation
 import UIKit
 import EssentialFeed
 
+final class FeedRefreshController: NSObject {
+    
+    private(set) var view: UIRefreshControl
+    private let loader: FeedLoader
+    
+    var onRefreshComplete: (([FeedImage]) -> Void)?
+    
+    init(loader: FeedLoader) {
+        self.loader = loader
+        self.view = UIRefreshControl()
+        
+        super.init()
+        self.view.addTarget(self, action: #selector(refresh), for: .valueChanged)
+    }
+    
+    @objc func refresh() {
+        self.view.beginRefreshing()
+        loader.load(completion: { [weak self] result in
+            if case let .success(feeds) = result {
+                self?.onRefreshComplete?(feeds)
+            }
+            self?.view.endRefreshing()
+        })
+    }
+}
+
 public protocol ImageLoadingDataTaskProtocol {
     func cancel()
 }
@@ -20,16 +46,18 @@ public protocol FeedImageLoaderProtocol {
 
 
 public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
-    private var loader: FeedLoader
+    private var refreshController: FeedRefreshController
     private var imageLoader: FeedImageLoaderProtocol
     
-    private var feeds: [FeedImage] = []
+    private var feeds: [FeedImage] = [] {
+        didSet { tableView.reloadData() }
+    }
     private var loadingImageTasks: [IndexPath: ImageLoadingDataTaskProtocol] = [:]
     
     private var onViewFirstAppear: (() -> Void)?
     
     public init(loader: FeedLoader, imageLoader: FeedImageLoaderProtocol) {
-        self.loader = loader
+        self.refreshController = FeedRefreshController(loader: loader)
         self.imageLoader = imageLoader
         
         super.init(nibName: nil, bundle: nil)
@@ -42,8 +70,11 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.refreshControl = UIRefreshControl()
-        self.refreshControl?.addTarget(self, action: #selector(loadFeeds), for: .valueChanged)
+        self.refreshControl = refreshController.view
+        refreshController.onRefreshComplete = { [weak self] feeds in
+            self?.feeds = feeds
+        }
+        
         tableView.prefetchDataSource = self
         
         onViewFirstAppear = { [weak self] in
@@ -130,13 +161,6 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     
     @objc
     public func loadFeeds() {
-        self.refreshControl?.beginRefreshing()
-        loader.load(completion: { [weak self] result in
-            if case let .success(feeds) = result {
-                self?.feeds = feeds
-                self?.tableView.reloadData()
-            }
-            self?.refreshControl?.endRefreshing()
-        })
+        refreshController.refresh()
     }
 }
