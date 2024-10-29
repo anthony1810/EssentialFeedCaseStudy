@@ -17,25 +17,7 @@ public protocol FeedImageLoaderProtocol {
     func loadImageData(from url: URL, completion: @escaping (Result) -> Void) -> ImageLoadingDataTaskProtocol
 }
 
-public final class FeedImageCell: UITableViewCell {
-    public let locationLabel: UILabel = .init()
-    public let descrtipionLabel: UILabel = .init()
-    public var url: URL!
-    public let imageContainer: UIView = .init()
-    public var feedImageView: UIImageView = .init()
-    public lazy var retryButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.addTarget(self, action: #selector(retryButtonTapped), for: .touchUpInside)
-        return button
-    }()
-    
-    var onRetryButtonTapped: (() -> Void)?
-    
-    @objc
-    func retryButtonTapped() {
-        onRetryButtonTapped?()
-    }
-}
+
 
 public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
     private var loader: FeedLoader
