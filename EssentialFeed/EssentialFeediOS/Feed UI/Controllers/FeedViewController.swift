@@ -8,23 +8,19 @@ import Foundation
 import UIKit
 import EssentialFeed
 
-public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
-    private var refreshController: FeedRefreshController
-    private var imageLoader: FeedImageLoaderProtocol
+public final class FeedViewController: UITableViewController {
+    private var refreshController: FeedRefreshController?
     
-    private var feeds: [FeedImage] = [] {
+    var tableModels: [FeedImageCellController] = [] {
         didSet { tableView.reloadData() }
     }
-    private var loadingImageTasks: [IndexPath: ImageLoadingDataTaskProtocol] = [:]
-    private var cellControllers: [IndexPath: FeedImageCellController] = [:]
-    
+
     private var onViewFirstAppear: (() -> Void)?
     
-    public init(loader: FeedLoader, imageLoader: FeedImageLoaderProtocol) {
-        self.refreshController = FeedRefreshController(loader: loader)
-        self.imageLoader = imageLoader
-        
+    init(refreshController: FeedRefreshController) {
         super.init(nibName: nil, bundle: nil)
+        
+        self.refreshController = refreshController
     }
     
     required init?(coder: NSCoder) {
@@ -34,10 +30,7 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.refreshControl = refreshController.view
-        refreshController.onRefreshComplete = { [weak self] feeds in
-            self?.feeds = feeds
-        }
+        self.refreshControl = refreshController?.view
         
         tableView.prefetchDataSource = self
         
@@ -52,34 +45,20 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
         
         onViewFirstAppear?()
     }
-    
+}
+
+// MARK: - UITableViewDatasource
+extension FeedViewController {
     public override func numberOfSections(in tableView: UITableView) -> Int {
         1
     }
     
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        feeds.count
-    }
-    
-    fileprivate func startTask(forCell cell: FeedImageCell, at indexPath: IndexPath) {
-        self.loadingImageTasks[indexPath] = self.imageLoader.loadImageData(from: cell.url, completion: { [cell] result in
-            
-            let imageData = try? result.get()
-            let convertedImage = imageData.map(UIImage.init) ?? nil
-            cell.feedImageView.image = convertedImage
-            
-            cell.retryButton.isHidden = convertedImage != nil
-            
-            cell.imageContainer.isShimmering = false
-        })
+        tableModels.count
     }
     
     public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cellController = FeedImageCellController(feed: feeds[indexPath.row], imageLoader: self.imageLoader)
-        cellControllers[indexPath] = cellController
-        
-        return cellController.view()
+        cellController(at: indexPath).view()
     }
     
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -88,33 +67,36 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     }
     
     public override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard let cell =  cell as? FeedImageCell else { return }
-        
-        startTask(forCell: cell, at: indexPath)
+        cellController(at: indexPath).prefetch()
     }
-    
+}
+
+// MARK: - UITableViewDataSourcePrefetching
+extension FeedViewController: UITableViewDataSourcePrefetching {
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
-            if let cellController = cellControllers[indexPath] {
-                cellController.prefetch()
-            } else {
-                let cellController = FeedImageCellController(feed: feeds[indexPath.row], imageLoader: self.imageLoader)
-                cellControllers[indexPath] = cellController
-                cellController.prefetch()
-            }
+            cellController(at: indexPath).prefetch()
         }
     }
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach(cancelLoading(at:))
     }
-    
+}
+
+// MARK: - Helpers
+extension FeedViewController {
     func cancelLoading(at indexPath: IndexPath) {
-        cellControllers[indexPath] = nil
+        cellController(at: indexPath).cancelLoading()
+    }
+    
+    @discardableResult
+    func cellController(at indexPath: IndexPath) -> FeedImageCellController {
+        tableModels[indexPath.row]
     }
     
     @objc
     public func loadFeeds() {
-        refreshController.refresh()
+        refreshController?.refresh()
     }
 }

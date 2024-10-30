@@ -20,6 +20,10 @@ final class FeedImageCellController {
         self.feed = feed
     }
     
+    deinit {
+        cancelLoading()
+    }
+    
     func view() -> UITableViewCell {
         let cell = FeedImageCell()
         cell.locationLabel.text = feed.location
@@ -58,10 +62,11 @@ final class FeedImageCellController {
         self.loadingImageTask = self.imageLoader.loadImageData(from: feed.imageURL) { _ in }
     }
     
-    deinit {
+    func cancelLoading() {
         loadingImageTask?.cancel()
         loadingImageTask = nil
     }
+   
 }
 
 final class FeedRefreshController: NSObject {
