@@ -20,7 +20,6 @@ final class FeedViewControllerTests: XCTestCase {
         sut.triggerViewDidLoad()
         sut.triggerViewWillAppear()
         
-        sut.replaceRefreshControlWithFakeForiOS17Support()
         XCTAssertEqual(loader.feedRequests.count, 1)
         
         sut.userInitiatedRefresh()
@@ -31,26 +30,25 @@ final class FeedViewControllerTests: XCTestCase {
     }
     
     func test_loadFeeds_showHideIndicatorCorrectly() throws {
-//        let (sut, loader) = makeSUT()
+        let (sut, loader) = makeSUT()
         
-//        sut.triggerViewDidLoad()
-//        sut.replaceRefreshControlWithFakeForiOS17Support()
-//        XCTAssertEqual(sut.isShowingLoadingIndicator(), false)
-//        
-//        sut.triggerViewWillAppear()
-//        XCTAssertEqual(sut.isShowingLoadingIndicator(), true)
-//        
-//        loader.completeFeedLoadingSuccess(at: 0)
-//        XCTAssertEqual(sut.isShowingLoadingIndicator(), false)
-//        
-//        sut.userInitiatedRefresh()
-//        XCTAssertEqual(sut.isShowingLoadingIndicator(), true)
-//
-//        loader.completeFeedLoadingWithFailure(at: 1, error: makeAnyError())
-//        XCTAssertEqual(sut.isShowingLoadingIndicator(), false)
-//        
-//        sut.triggerViewWillAppear()
-//        XCTAssertEqual(sut.isShowingLoadingIndicator(), false)
+        sut.triggerViewDidLoad()
+        XCTAssertEqual(sut.isShowingLoadingIndicator(), false)
+        
+        sut.triggerViewWillAppear()
+        XCTAssertEqual(sut.isShowingLoadingIndicator(), true)
+        
+        loader.completeFeedLoadingSuccess(at: 0)
+        XCTAssertEqual(sut.isShowingLoadingIndicator(), false)
+        
+        sut.userInitiatedRefresh()
+        XCTAssertEqual(sut.isShowingLoadingIndicator(), true)
+
+        loader.completeFeedLoadingWithFailure(at: 1, error: makeAnyError())
+        XCTAssertEqual(sut.isShowingLoadingIndicator(), false)
+        
+        sut.triggerViewWillAppear()
+        XCTAssertEqual(sut.isShowingLoadingIndicator(), false)
     }
     
     func test_loadFeedCompletion_rendersSuccessfullyLoadedFeed() throws {
@@ -314,7 +312,7 @@ extension FeedViewControllerTests {
     
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
-        let sut = FeedUIComposer.composeFeedViewController(loader: loader, imageLoader: loader)
+        let sut = FeedUIComposer.composeFeedViewController(loader: loader, imageLoader: loader, refreshControl: FakeRefreshControl())
         
         trackForMemoryLeaks(loader, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)

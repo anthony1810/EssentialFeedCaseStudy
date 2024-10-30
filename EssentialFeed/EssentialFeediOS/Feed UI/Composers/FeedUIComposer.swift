@@ -10,9 +10,13 @@ import UIKit
 import EssentialFeed
 
 public enum FeedUIComposer {
-    public static func composeFeedViewController(loader: FeedLoader, imageLoader: FeedImageLoaderProtocol) -> FeedViewController {
+    public static func composeFeedViewController(
+        loader: FeedLoader,
+        imageLoader: FeedImageLoaderProtocol,
+        refreshControl: UIRefreshControl = .init()
+    ) -> FeedViewController {
         
-        let refreshController = FeedRefreshController(loader: loader)
+        let refreshController = FeedRefreshController(loader: loader, refreshController: refreshControl)
         let feedViewController = FeedViewController(refreshController: refreshController)
         
         refreshController.onRefreshComplete = adaptFeedToCellControllers(forwardingTo: feedViewController, imageLoader: imageLoader)

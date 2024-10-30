@@ -76,9 +76,9 @@ final class FeedRefreshController: NSObject {
     
     var onRefreshComplete: (([FeedImage]) -> Void)?
     
-    init(loader: FeedLoader) {
+    init(loader: FeedLoader, refreshController: UIRefreshControl) {
         self.loader = loader
-        self.view = UIRefreshControl()
+        self.view = refreshController
         
         super.init()
         self.view.addTarget(self, action: #selector(refresh), for: .valueChanged)
