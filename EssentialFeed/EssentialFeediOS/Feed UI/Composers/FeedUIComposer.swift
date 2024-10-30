@@ -13,15 +13,18 @@ public enum FeedUIComposer {
     public static func composeFeedViewController(loader: FeedLoader, imageLoader: FeedImageLoaderProtocol) -> FeedViewController {
         
         let refreshController = FeedRefreshController(loader: loader)
-        let feedViewControllers = FeedViewController(refreshController: refreshController)
+        let feedViewController = FeedViewController(refreshController: refreshController)
         
-        refreshController.onRefreshComplete = { [weak feedViewControllers] feeds in
-            guard let feedViewControllers else { return }
-            feedViewControllers.tableModels = feeds.map {
+        refreshController.onRefreshComplete = adaptFeedToCellControllers(forwardingTo: feedViewController, imageLoader: imageLoader)
+        
+        return feedViewController
+    }
+    
+    private static func adaptFeedToCellControllers(forwardingTo feedViewController: FeedViewController, imageLoader: FeedImageLoaderProtocol) -> (([FeedImage]) -> Void) {
+        return { [weak feedViewController] feeds in
+            feedViewController?.tableModels = feeds.map {
                 FeedImageCellController(feed: $0, imageLoader: imageLoader)
             }
         }
-        
-        return feedViewControllers
     }
 }
