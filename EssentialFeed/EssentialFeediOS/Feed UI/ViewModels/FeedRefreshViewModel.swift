@@ -9,13 +9,16 @@ import UIKit
 import EssentialFeed
 
 final class FeedRefreshViewModel {
+    
+    typealias Observer<T> = (T) -> Void
+    
     private let feedsLoader: FeedLoader
     private(set) var isLoading: Bool = false {
-        didSet { onChange?(self) }
+        didSet { onChange?(isLoading) }
     }
     
-    var onChange: ((FeedRefreshViewModel) -> Void)?
-    var onLoadFeedCompletion: (([FeedImage]) -> Void)?
+    var onChange: Observer<Bool>?
+    var onLoadFeedCompletion: Observer<[FeedImage]>?
     
     init(loader: FeedLoader) {
         self.feedsLoader = loader
