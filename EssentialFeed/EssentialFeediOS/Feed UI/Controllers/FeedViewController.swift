@@ -8,43 +8,6 @@ import Foundation
 import UIKit
 import EssentialFeed
 
-final class FeedRefreshController: NSObject {
-    
-    private(set) var view: UIRefreshControl
-    private let loader: FeedLoader
-    
-    var onRefreshComplete: (([FeedImage]) -> Void)?
-    
-    init(loader: FeedLoader) {
-        self.loader = loader
-        self.view = UIRefreshControl()
-        
-        super.init()
-        self.view.addTarget(self, action: #selector(refresh), for: .valueChanged)
-    }
-    
-    @objc func refresh() {
-        self.view.beginRefreshing()
-        loader.load(completion: { [weak self] result in
-            if case let .success(feeds) = result {
-                self?.onRefreshComplete?(feeds)
-            }
-            self?.view.endRefreshing()
-        })
-    }
-}
-
-public protocol ImageLoadingDataTaskProtocol {
-    func cancel()
-}
-
-public protocol FeedImageLoaderProtocol {
-    typealias Result = Swift.Result<Data, Error>
-    func loadImageData(from url: URL, completion: @escaping (Result) -> Void) -> ImageLoadingDataTaskProtocol
-}
-
-
-
 public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
     private var refreshController: FeedRefreshController
     private var imageLoader: FeedImageLoaderProtocol
@@ -53,6 +16,7 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
         didSet { tableView.reloadData() }
     }
     private var loadingImageTasks: [IndexPath: ImageLoadingDataTaskProtocol] = [:]
+    private var cellControllers: [IndexPath: FeedImageCellController] = [:]
     
     private var onViewFirstAppear: (() -> Void)?
     
@@ -111,25 +75,11 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     }
     
     public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let feed = feeds[indexPath.row]
-        let cell = FeedImageCell()
-        cell.locationLabel.text = feed.location
-        cell.descrtipionLabel.text = feed.description
-        cell.url = feed.imageURL
-        cell.imageContainer.isShimmering = true
-        cell.feedImageView.image = nil
-        cell.retryButton.isHidden = true
         
-        let loadImage = { [weak self, weak cell] in
-            guard let self, let cell else { return }
-            
-            startTask(forCell: cell, at: indexPath)
-        }
+        let cellController = FeedImageCellController(feed: feeds[indexPath.row], imageLoader: self.imageLoader)
+        cellControllers[indexPath] = cellController
         
-        cell.onRetryButtonTapped = loadImage
-        loadImage()
-        
-        return cell
+        return cellController.view()
     }
     
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -145,8 +95,13 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
-            let feed = feeds[indexPath.row]
-            _ = self.imageLoader.loadImageData(from: feed.imageURL, completion: { _ in })
+            if let cellController = cellControllers[indexPath] {
+                cellController.prefetch()
+            } else {
+                let cellController = FeedImageCellController(feed: feeds[indexPath.row], imageLoader: self.imageLoader)
+                cellControllers[indexPath] = cellController
+                cellController.prefetch()
+            }
         }
     }
     
@@ -155,8 +110,7 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     }
     
     func cancelLoading(at indexPath: IndexPath) {
-        loadingImageTasks[indexPath]?.cancel()
-        loadingImageTasks[indexPath] = nil
+        cellControllers[indexPath] = nil
     }
     
     @objc
