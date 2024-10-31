@@ -9,8 +9,12 @@ import Foundation
 import UIKit
 import EssentialFeed
 
+struct FeedLoadingViewModel {
+    let isLoading: Bool
+}
+
 protocol FeedLoadingViewProtocol {
-    func display(isLoading: Bool)
+    func display(viewModel: FeedLoadingViewModel)
 }
 
 protocol FeedFetchingViewProtocol {
@@ -23,7 +27,7 @@ final class FeedPresenter {
     
     private let feedsLoader: FeedLoader
     private(set) var isLoading: Bool = false {
-        didSet { loadingView?.display(isLoading: isLoading) }
+        didSet { loadingView?.display(viewModel: FeedLoadingViewModel(isLoading: isLoading)) }
     }
     
     var loadingView: FeedLoadingViewProtocol?

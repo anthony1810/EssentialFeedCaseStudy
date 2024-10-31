@@ -20,8 +20,8 @@ final class FeedRefreshController: NSObject, FeedLoadingViewProtocol {
         view.addTarget(self, action: #selector(refresh), for: .valueChanged)
     }
     
-    func display(isLoading: Bool) {
-        if isLoading {
+    func display(viewModel: FeedLoadingViewModel) {
+        if viewModel.isLoading {
             self.view.beginRefreshing()
         } else {
             self.view.endRefreshing()

@@ -46,8 +46,8 @@ private final class WeakRefVirtualProxy<T: AnyObject> {
 }
 
 extension WeakRefVirtualProxy: FeedLoadingViewProtocol where T: FeedLoadingViewProtocol {
-    func display(isLoading: Bool) {
-        target?.display(isLoading: isLoading)
+    func display(viewModel: FeedLoadingViewModel) {
+        target?.display(viewModel: viewModel)
     }
 }
 
