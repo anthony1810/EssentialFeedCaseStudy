@@ -6,11 +6,14 @@
 //
 
 import Foundation
-import UIKit
 import EssentialFeed
 
 struct FeedLoadingViewModel {
     let isLoading: Bool
+}
+
+struct FeedFetchingViewModel {
+    let feeds: [FeedImage]
 }
 
 protocol FeedLoadingViewProtocol {
@@ -18,7 +21,7 @@ protocol FeedLoadingViewProtocol {
 }
 
 protocol FeedFetchingViewProtocol {
-    func display(feeds: [FeedImage])
+    func display(viewModel: FeedFetchingViewModel)
 }
 
 final class FeedPresenter {
@@ -41,7 +44,7 @@ final class FeedPresenter {
         isLoading = true
         feedsLoader.load { [weak self] result in
             if let feeds = try? result.get() {
-                self?.fetchingView?.display(feeds: feeds)
+                self?.fetchingView?.display(viewModel: FeedFetchingViewModel(feeds: feeds))
             }
             self?.isLoading = false
         }

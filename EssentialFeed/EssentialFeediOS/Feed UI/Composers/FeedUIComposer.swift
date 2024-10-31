@@ -60,8 +60,8 @@ final class FeedFetchView: FeedFetchingViewProtocol {
         self.imageLoader = imageLoader
     }
     
-    func display(feeds: [EssentialFeed.FeedImage]) {
-        feedViewController?.tableModels = feeds.map {
+    func display(viewModel: FeedFetchingViewModel) {
+        feedViewController?.tableModels = viewModel.feeds.map {
             let viewModel = FeedImageCellViewModel(feed: $0, imageLoader: imageLoader, imageTransformer: UIImage.init)
             return FeedImageCellController(viewModel: viewModel)
         }
