@@ -16,11 +16,13 @@ public enum FeedUIComposer {
         refreshControl: UIRefreshControl = .init()
     ) -> FeedViewController {
         
-        let refreshViewModel = FeedRefreshViewModel(loader: loader)
-        let refreshController = FeedRefreshController(viewModel: refreshViewModel, refreshController: refreshControl)
+        let feedPresenter = FeedPresenter(loader: loader)
+        let refreshController = FeedRefreshController(presenter: feedPresenter, refreshController: refreshControl)
         let feedViewController = FeedViewController(refreshController: refreshController)
         
-        refreshViewModel.onLoadFeedCompletion = adaptFeedToCellControllers(forwardingTo: feedViewController, imageLoader: imageLoader)
+        let fetchingView = FeedFetchView(feedViewController: feedViewController, imageLoader: imageLoader)
+        feedPresenter.loadingView = refreshController
+        feedPresenter.fetchingView = fetchingView
         
         return feedViewController
     }
@@ -31,6 +33,23 @@ public enum FeedUIComposer {
                 let viewModel = FeedImageCellViewModel(feed: $0, imageLoader: imageLoader, imageTransformer: UIImage.init)
                 return FeedImageCellController(viewModel: viewModel)
             }
+        }
+    }
+}
+
+final class FeedFetchView: FeedFetchingViewProtocol {
+    private weak var feedViewController: FeedViewController?
+    private var imageLoader: FeedImageLoaderProtocol
+    
+    init(feedViewController: FeedViewController, imageLoader: FeedImageLoaderProtocol) {
+        self.feedViewController = feedViewController
+        self.imageLoader = imageLoader
+    }
+    
+    func display(feeds: [EssentialFeed.FeedImage]) {
+        feedViewController?.tableModels = feeds.map {
+            let viewModel = FeedImageCellViewModel(feed: $0, imageLoader: imageLoader, imageTransformer: UIImage.init)
+            return FeedImageCellController(viewModel: viewModel)
         }
     }
 }

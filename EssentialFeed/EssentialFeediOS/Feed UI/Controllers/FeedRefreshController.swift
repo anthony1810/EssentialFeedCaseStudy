@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  FeedRefreshController.swift
 //  EssentialFeed
 //
 //  Created by Anthony on 30/10/24.
@@ -7,32 +7,28 @@
 import Foundation
 import UIKit
 
-final class FeedRefreshController: NSObject {
-    
+final class FeedRefreshController: NSObject, FeedLoadingViewProtocol {
+
     private(set) var view: UIRefreshControl
-    private let viewModel: FeedRefreshViewModel
+    private let presenter: FeedPresenter
     
-    init(viewModel: FeedRefreshViewModel, refreshController: UIRefreshControl) {
-        self.viewModel = viewModel
+    init(presenter: FeedPresenter, refreshController: UIRefreshControl) {
+        self.presenter = presenter
         self.view = refreshController
         super.init()
-        
-        bind(to: view)
-    }
-    
-    func bind(to view: UIRefreshControl) {
-        viewModel.onChange = { [weak self] isLoading in
-            if isLoading {
-                self?.view.beginRefreshing()
-            } else {
-                self?.view.endRefreshing()
-            }
-        }
         
         view.addTarget(self, action: #selector(refresh), for: .valueChanged)
     }
     
+    func display(isLoading: Bool) {
+        if isLoading {
+            self.view.beginRefreshing()
+        } else {
+            self.view.endRefreshing()
+        }
+    }
+    
     @objc func refresh() {
-        viewModel.loadFeeds()
+        presenter.loadFeeds()
     }
 }
