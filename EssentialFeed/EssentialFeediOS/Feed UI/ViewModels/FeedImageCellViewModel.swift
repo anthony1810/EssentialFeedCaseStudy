@@ -6,23 +6,24 @@
 //
 import Foundation
 import EssentialFeed
-import UIKit
 
-final class FeedImageCellViewModel {
+final class FeedImageCellViewModel<Image> {
     
     typealias Observer<T> = (T) -> Void
     
     private var imageLoader: FeedImageLoaderProtocol
     private var loadingImageTask: ImageLoadingDataTaskProtocol?
     private var feed: FeedImage
+    private let imageTransformer: (Data) -> Image?
     
-    var onImageLoaded: Observer<UIImage?>?
+    var onImageLoaded: Observer<Image?>?
     var onLoadingStateChanged: Observer<Bool>?
     var shouldShowRetryStateChange: Observer<Bool>?
     
-    init(feed: FeedImage, imageLoader: FeedImageLoaderProtocol) {
+    init(feed: FeedImage, imageLoader: FeedImageLoaderProtocol, imageTransformer: @escaping (Data) -> Image?) {
         self.feed = feed
         self.imageLoader = imageLoader
+        self.imageTransformer = imageTransformer
     }
 }
 
@@ -50,7 +51,7 @@ extension FeedImageCellViewModel {
 // MARK: - Helpers
 extension FeedImageCellViewModel {
     func handleResult(_ result: Result<Data, Error>) {
-        let image = (try? result.get()).flatMap(UIImage.init)
+        let image = (try? result.get()).flatMap(imageTransformer)
         self.onImageLoaded?(image)
         self.onLoadingStateChanged?(false)
         self.shouldShowRetryStateChange?(image == nil)
