@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import EssentialFeed
 
-protocol FeedLoadingViewProtocol: AnyObject {
+protocol FeedLoadingViewProtocol {
     func display(isLoading: Bool)
 }
 
@@ -26,7 +26,7 @@ final class FeedPresenter {
         didSet { loadingView?.display(isLoading: isLoading) }
     }
     
-    weak var loadingView: FeedLoadingViewProtocol?
+    var loadingView: FeedLoadingViewProtocol?
     var fetchingView: FeedFetchingViewProtocol?
     
     init(loader: FeedLoader) {
