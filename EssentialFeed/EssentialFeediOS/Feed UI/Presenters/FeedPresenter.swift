@@ -28,7 +28,6 @@ final class FeedPresenter {
     
     typealias Observer<T> = (T) -> Void
     
-    private let feedsLoader: FeedLoader
     private(set) var isLoading: Bool = false {
         didSet { loadingView?.display(viewModel: FeedLoadingViewModel(isLoading: isLoading)) }
     }
@@ -36,18 +35,17 @@ final class FeedPresenter {
     var loadingView: FeedLoadingViewProtocol?
     var fetchingView: FeedFetchingViewProtocol?
     
-    init(loader: FeedLoader) {
-        self.feedsLoader = loader
+    func startLoading() {
+        isLoading = true
     }
     
-    func loadFeeds() {
-        isLoading = true
-        feedsLoader.load { [weak self] result in
-            if let feeds = try? result.get() {
-                self?.fetchingView?.display(viewModel: FeedFetchingViewModel(feeds: feeds))
-            }
-            self?.isLoading = false
-        }
+    func finishLoadingSuccessfully(feeds: [FeedImage]) {
+        fetchingView?.display(viewModel: FeedFetchingViewModel(feeds: feeds))
+        isLoading = false
+    }
+    
+    func finishLoadingFailure(error: Error) {
+        isLoading = false
     }
     
 }

@@ -16,8 +16,10 @@ public enum FeedUIComposer {
         refreshControl: UIRefreshControl = .init()
     ) -> FeedViewController {
         
-        let feedPresenter = FeedPresenter(loader: loader)
-        let refreshController = FeedRefreshController(presenter: feedPresenter, refreshController: refreshControl)
+        let feedPresenter = FeedPresenter()
+        let feedLoaderPresentationAdapter = FeedLoaderPresentationAdapter(loader: loader, presenter: feedPresenter)
+        let refreshController = FeedRefreshController(loadFeeds: feedLoaderPresentationAdapter.loadFeed, refreshController: refreshControl)
+        
         let feedViewController = FeedViewController(refreshController: refreshController)
         
         let fetchingView = FeedFetchView(feedViewController: feedViewController, imageLoader: imageLoader)
@@ -26,15 +28,29 @@ public enum FeedUIComposer {
         
         return feedViewController
     }
+}
+
+final class FeedLoaderPresentationAdapter {
+    private let loader: FeedLoader
+    private let presenter: FeedPresenter
     
-    private static func adaptFeedToCellControllers(forwardingTo feedViewController: FeedViewController, imageLoader: FeedImageLoaderProtocol) -> (([FeedImage]) -> Void) {
-        return { [weak feedViewController] feeds in
-            feedViewController?.tableModels = feeds.map {
-                let viewModel = FeedImageCellViewModel(feed: $0, imageLoader: imageLoader, imageTransformer: UIImage.init)
-                return FeedImageCellController(viewModel: viewModel)
+    init(loader: FeedLoader, presenter: FeedPresenter) {
+        self.loader = loader
+        self.presenter = presenter
+    }
+    
+    func loadFeed() {
+        presenter.startLoading()
+        loader.load { [weak self] result in
+            switch result {
+            case .success(let feeds):
+                self?.presenter.finishLoadingSuccessfully(feeds: feeds)
+            case .failure(let error):
+                self?.presenter.finishLoadingFailure(error: error)
             }
         }
     }
+    
 }
 
 private final class WeakRefVirtualProxy<T: AnyObject> {
