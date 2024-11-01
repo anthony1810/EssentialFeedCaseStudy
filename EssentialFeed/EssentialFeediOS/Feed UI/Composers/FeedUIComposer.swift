@@ -18,7 +18,7 @@ public enum FeedUIComposer {
         
         let feedPresenter = FeedPresenter()
         let feedLoaderPresentationAdapter = FeedLoaderPresentationAdapter(loader: loader, presenter: feedPresenter)
-        let refreshController = FeedRefreshController(loadFeeds: feedLoaderPresentationAdapter.loadFeed, refreshController: refreshControl)
+        let refreshController = FeedRefreshController(delegate: feedLoaderPresentationAdapter, refreshController: refreshControl)
         
         let feedViewController = FeedViewController(refreshController: refreshController)
         
@@ -30,7 +30,7 @@ public enum FeedUIComposer {
     }
 }
 
-final class FeedLoaderPresentationAdapter {
+final class FeedLoaderPresentationAdapter: FeedRefreshControllerDelegate {
     private let loader: FeedLoader
     private let presenter: FeedPresenter
     
@@ -39,7 +39,7 @@ final class FeedLoaderPresentationAdapter {
         self.presenter = presenter
     }
     
-    func loadFeed() {
+    func didRequestFeedRefresh() {
         presenter.startLoading()
         loader.load { [weak self] result in
             switch result {

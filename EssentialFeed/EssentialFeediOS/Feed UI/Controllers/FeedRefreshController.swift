@@ -7,13 +7,17 @@
 import Foundation
 import UIKit
 
+protocol FeedRefreshControllerDelegate {
+    func didRequestFeedRefresh()
+}
+
 final class FeedRefreshController: NSObject, FeedLoadingViewProtocol {
 
     private(set) var view: UIRefreshControl
-    private let loadFeed: () -> Void
+    private let delegate: FeedRefreshControllerDelegate
     
-    init(loadFeeds: @escaping () -> Void, refreshController: UIRefreshControl) {
-        self.loadFeed = loadFeeds
+    init(delegate: FeedRefreshControllerDelegate, refreshController: UIRefreshControl) {
+        self.delegate = delegate
         self.view = refreshController
         super.init()
         
@@ -29,6 +33,6 @@ final class FeedRefreshController: NSObject, FeedLoadingViewProtocol {
     }
     
     @objc func refresh() {
-        self.loadFeed()
+        delegate.didRequestFeedRefresh()
     }
 }
