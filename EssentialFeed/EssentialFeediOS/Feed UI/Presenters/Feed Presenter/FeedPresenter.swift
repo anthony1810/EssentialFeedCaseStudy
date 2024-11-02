@@ -8,14 +8,6 @@
 import Foundation
 import EssentialFeed
 
-struct FeedLoadingViewModel {
-    let isLoading: Bool
-}
-
-struct FeedFetchingViewModel {
-    let feeds: [FeedImage]
-}
-
 protocol FeedLoadingViewProtocol {
     func display(viewModel: FeedLoadingViewModel)
 }

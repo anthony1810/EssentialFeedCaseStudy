@@ -1,0 +1,31 @@
+//
+//  FeedLoaderPresentationAdapter.swift
+//  EssentialFeed
+//
+//  Created by Anthony on 2/11/24.
+//
+import Foundation
+import UIKit
+import EssentialFeed
+
+final class FeedLoaderPresentationAdapter: FeedRefreshControllerDelegate {
+    private let loader: FeedLoader
+    var presenter: FeedPresenter?
+    
+    init(loader: FeedLoader) {
+        self.loader = loader
+    }
+    
+    func didRequestFeedRefresh() {
+        presenter?.startLoading()
+        loader.load { [weak self] result in
+            switch result {
+            case .success(let feeds):
+                self?.presenter?.finishLoadingSuccessfully(feeds: feeds)
+            case .failure(let error):
+                self?.presenter?.finishLoadingFailure(error: error)
+            }
+        }
+    }
+    
+}
