@@ -8,23 +8,13 @@ import Foundation
 import UIKit
 
 public final class FeedViewController: UITableViewController {
-    private var refreshController: FeedRefreshController?
+    var refreshController: FeedRefreshController?
     
     var tableModels: [FeedImageCellController] = [] {
         didSet { tableView.reloadData() }
     }
 
     private var onViewFirstAppear: (() -> Void)?
-    
-    init(refreshController: FeedRefreshController) {
-        super.init(nibName: nil, bundle: nil)
-        
-        self.refreshController = refreshController
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     public override func viewDidLoad() {
         super.viewDidLoad()
