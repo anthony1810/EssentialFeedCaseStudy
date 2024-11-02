@@ -77,6 +77,9 @@ Location</string>
                                                             <buttonConfiguration key="configuration" style="plain">
                                                                 <imageReference key="image" image="arrow.clockwise" catalog="system" renderingMode="original"/>
                                                             </buttonConfiguration>
+                                                            <connections>
+                                                                <action selector="retryButtonTapped" destination="98b-hx-mpo" eventType="touchUpInside" id="8v0-mm-0Ma"/>
+                                                            </connections>
                                                         </button>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="NeI-a1-2QO">
                                                             <rect key="frame" x="0.0" y="0.0" width="353" height="353"/>
@@ -121,6 +124,13 @@ Location</string>
                                         <constraint firstAttribute="bottomMargin" secondItem="VVs-bh-fCP" secondAttribute="bottom" priority="999" constant="6" id="mBO-y9-TBz"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="descriptionLabel" destination="gsV-ol-ENf" id="ePE-j6-1JC"/>
+                                    <outlet property="feedImageView" destination="NeI-a1-2QO" id="Thg-ln-Ljp"/>
+                                    <outlet property="imageContainer" destination="tfe-Yk-CLd" id="cq0-cf-xRe"/>
+                                    <outlet property="locationLabel" destination="Jr1-AO-XlG" id="em0-Wk-jz5"/>
+                                    <outlet property="retryButton" destination="9lK-zc-H8P" id="2yw-Rw-LvJ"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>

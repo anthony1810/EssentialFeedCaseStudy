@@ -11,7 +11,7 @@ import UIKit
 final class FeedImageCellController: FeedImageView {
     
     typealias Image = UIImage
-    private lazy var cell: FeedImageCell = .init()
+    private var cell: FeedImageCell?
     
     private var delegate: FeedImageDataControllerDelegate
     
@@ -23,20 +23,22 @@ final class FeedImageCellController: FeedImageView {
         cancelLoading()
     }
     
-    func view() -> UITableViewCell {
+    func view(in tableView: UITableView) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "FeedImageCell") as! FeedImageCell
+        self.cell = cell
         delegate.didRequestImage()
         return cell
     }
     
     func display(_ model: FeedImageViewModel<UIImage>) {
-        cell.locationLabel.text = model.location
-        cell.descriptionLabel.text = model.description
-        cell.url = model.url
-        cell.imageContainer.isShimmering = model.isLoading
-        cell.feedImageView.image = model.image
-        cell.retryButton.isHidden = !model.shouldRetry
+        cell?.locationLabel.text = model.location
+        cell?.descriptionLabel.text = model.description
+        cell?.url = model.url
+        cell?.imageContainer.isShimmering = model.isLoading
+        cell?.feedImageView.image = model.image
+        cell?.retryButton.isHidden = !model.shouldRetry
         
-        cell.onRetryButtonTapped = delegate.didRequestImage
+        cell?.onRetryButtonTapped = delegate.didRequestImage
     }
 
     

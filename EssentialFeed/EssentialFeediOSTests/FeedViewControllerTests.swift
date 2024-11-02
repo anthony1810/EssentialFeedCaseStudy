@@ -298,7 +298,7 @@ final class FeedViewControllerTests: XCTestCase {
         sut.userInitiatedRefresh()
         loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
         
-        let cell = sut.stimulateBecomeNotVisibleView(at: 0)
+        let cell = sut.stimulateViewDisappear(at: 0)
         loader.completeImageLoadingSuccessfully(at: 0)
         
         XCTAssertNil(cell.renderedImage, "cell should not have rendered image when not visible")

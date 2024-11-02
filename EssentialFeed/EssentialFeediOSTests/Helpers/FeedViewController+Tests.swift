@@ -31,11 +31,14 @@ extension FeedViewController {
         return cell ?? UITableViewCell()
     }
     
-    func stimulateViewDisappear(at index: Int, file: StaticString = #file, line: UInt = #line) {
+    @discardableResult
+    func stimulateViewDisappear(at index: Int, file: StaticString = #file, line: UInt = #line) -> FeedImageCell {
         let cell = stimulateVisibleView(at: index)
         let delegate = tableView.delegate
         let indexPath = IndexPath(row: index, section: feedImageSection)
         delegate?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+        
+        return cell as! FeedImageCell
     }
     
     func numberOfRenderedFeedImageViews() -> Int {
