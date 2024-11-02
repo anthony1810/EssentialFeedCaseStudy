@@ -289,6 +289,21 @@ final class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.cancelLoadedImageURLs, [image0.imageURL, image1.imageURL], "Expect one more images to be cancel")
     }
     
+    func test_loadFeedImage_deliversNoImageWhenCellIsNotVisible() throws {
+        let image0 = makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
+        let image1 = makeFeedImage(location: nil, description: "any description", imageURL: makeAnyUrl())
+        let (sut, loader) = makeSUT()
+        
+        sut.triggerViewDidLoad()
+        sut.userInitiatedRefresh()
+        loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
+        
+        let cell = sut.stimulateBecomeNotVisibleView(at: 0)
+        loader.completeImageLoadingSuccessfully(at: 0)
+        
+        XCTAssertNil(cell.renderedImage, "cell should not have rendered image when not visible")
+    }
+    
 }
 
 // MARK: - Helpers
