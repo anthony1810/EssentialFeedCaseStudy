@@ -18,7 +18,7 @@ extension FeedImageCell {
     }
     
     var descriptionText: String? {
-        descrtipionLabel.text
+        descriptionLabel.text
     }
     
     func isShowingImageLoadingIndicator() -> Bool {

@@ -79,8 +79,20 @@ final class FeedFetchView: FeedFetchingViewProtocol {
     
     func display(viewModel: FeedFetchingViewModel) {
         feedViewController?.tableModels = viewModel.feeds.map {
-            let viewModel = FeedImageCellViewModel(feed: $0, imageLoader: imageLoader, imageTransformer: UIImage.init)
-            return FeedImageCellController(viewModel: viewModel)
+            let presenterAdapter = FeedImageDataLoaderPresentationAdapter<WeakRefVirtualProxy<FeedImageCellController>, UIImage>(feed: $0, imageLoader: imageLoader)
+           
+            let view = FeedImageCellController(delegate: presenterAdapter)
+            
+            let presenter = FeedImagePresenter(imageTransformer: UIImage.init, view: WeakRefVirtualProxy(target: view))
+            presenterAdapter.presenter = presenter
+            
+            return view
         }
+    }
+}
+
+extension WeakRefVirtualProxy: FeedImageView where T: FeedImageView, T.Image == UIImage {
+    func display(_ model: FeedImageViewModel<UIImage>) {
+        target?.display(model)
     }
 }

@@ -8,11 +8,15 @@
 import Foundation
 import UIKit
 
-final class FeedImageCellController {
-    private var viewModel: FeedImageCellViewModel<UIImage>
+final class FeedImageCellController: FeedImageView {
     
-    init(viewModel: FeedImageCellViewModel<UIImage>) {
-        self.viewModel = viewModel
+    typealias Image = UIImage
+    private lazy var cell: FeedImageCell = .init()
+    
+    private var delegate: FeedImageDataControllerDelegate
+    
+    init(delegate: FeedImageDataControllerDelegate) {
+        self.delegate = delegate
     }
     
     deinit {
@@ -20,46 +24,28 @@ final class FeedImageCellController {
     }
     
     func view() -> UITableViewCell {
-        let cell = FeedImageCell()
-        bind(to: cell)
-        
+        delegate.didRequestImage()
         return cell
     }
     
-    func bind(to cell: FeedImageCell) {
-        cell.locationLabel.text = viewModel.location
-        cell.descrtipionLabel.text = viewModel.description
-        cell.url = viewModel.imageURL
-        cell.imageContainer.isShimmering = true
-        cell.feedImageView.image = nil
-        cell.retryButton.isHidden = true
+    func display(_ model: FeedImageViewModel<UIImage>) {
+        cell.locationLabel.text = model.location
+        cell.descriptionLabel.text = model.description
+        cell.url = model.url
+        cell.imageContainer.isShimmering = model.isLoading
+        cell.feedImageView.image = model.image
+        cell.retryButton.isHidden = !model.shouldRetry
         
-        viewModel.onImageLoaded = { [weak cell] image in
-            cell?.feedImageView.image = image
-        }
-        
-        viewModel.onLoadingStateChanged = { [weak cell] isLoading in
-            cell?.imageContainer.isShimmering = isLoading
-        }
-        
-        viewModel.shouldShowRetryStateChange = { [weak cell] shouldShow in
-            cell?.retryButton.isHidden = !shouldShow
-        }
-        
-        let loadImage = { [viewModel] in
-            viewModel.startImageDownloadTask()
-        }
-        
-        cell.onRetryButtonTapped = loadImage
-        loadImage()
+        cell.onRetryButtonTapped = delegate.didRequestImage
     }
+
     
     func prefetch() {
-        viewModel.prefetchImage()
+        delegate.didRequestImage()
     }
     
     func cancelLoading() {
-        viewModel.cancelLoadingImageTask()
+        delegate.didCancelImageRequest()
     }
    
 }

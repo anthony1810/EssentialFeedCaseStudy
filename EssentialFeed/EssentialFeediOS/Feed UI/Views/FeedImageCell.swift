@@ -9,7 +9,7 @@ import UIKit
 
 public final class FeedImageCell: UITableViewCell {
     public let locationLabel: UILabel = .init()
-    public let descrtipionLabel: UILabel = .init()
+    public let descriptionLabel: UILabel = .init()
     public var url: URL!
     public let imageContainer: UIView = .init()
     public var feedImageView: UIImageView = .init()
