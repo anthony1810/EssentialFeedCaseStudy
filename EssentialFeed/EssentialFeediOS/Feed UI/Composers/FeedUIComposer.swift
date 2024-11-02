@@ -12,15 +12,15 @@ import EssentialFeed
 public enum FeedUIComposer {
     public static func composeFeedViewController(
         loader: FeedLoader,
-        imageLoader: FeedImageLoaderProtocol,
-        refreshControl: UIRefreshControl = .init()
+        imageLoader: FeedImageLoaderProtocol
     ) -> FeedViewController {
         let feedLoaderPresentationAdapter = FeedLoaderPresentationAdapter(loader: loader)
-        let refreshController = FeedRefreshController(delegate: feedLoaderPresentationAdapter, refreshController: refreshControl)
     
         let storyboard = UIStoryboard(name: "Feed", bundle: Bundle(for: FeedViewController.self))
         let feedViewController = storyboard.instantiateInitialViewController() as! FeedViewController
-        feedViewController.refreshController = refreshController
+        
+        let refreshController = feedViewController.refreshController!
+        refreshController.delegate = feedLoaderPresentationAdapter
         
         let feedPresenter = FeedPresenter(
             loadingView: WeakRefVirtualProxy(target: refreshController),

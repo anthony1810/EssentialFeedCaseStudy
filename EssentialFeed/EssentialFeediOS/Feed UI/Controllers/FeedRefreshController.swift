@@ -7,24 +7,16 @@
 import Foundation
 import UIKit
 
-protocol FeedRefreshControllerDelegate {
+public protocol FeedRefreshControllerDelegate {
     func didRequestFeedRefresh()
 }
 
-final class FeedRefreshController: NSObject, FeedLoadingViewProtocol {
+public final class FeedRefreshController: NSObject, FeedLoadingViewProtocol {
 
-    private(set) var view: UIRefreshControl
-    private let delegate: FeedRefreshControllerDelegate
+    @IBOutlet public var view: UIRefreshControl!
+    var delegate: FeedRefreshControllerDelegate?
     
-    init(delegate: FeedRefreshControllerDelegate, refreshController: UIRefreshControl) {
-        self.delegate = delegate
-        self.view = refreshController
-        super.init()
-        
-        view.addTarget(self, action: #selector(refresh), for: .valueChanged)
-    }
-    
-    func display(viewModel: FeedLoadingViewModel) {
+   func display(viewModel: FeedLoadingViewModel) {
         if viewModel.isLoading {
             self.view.beginRefreshing()
         } else {
@@ -32,7 +24,8 @@ final class FeedRefreshController: NSObject, FeedLoadingViewProtocol {
         }
     }
     
-    @objc func refresh() {
-        delegate.didRequestFeedRefresh()
+    @objc
+    @IBAction func refresh() {
+        delegate?.didRequestFeedRefresh()
     }
 }

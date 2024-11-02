@@ -12,9 +12,15 @@ import UIKit
 extension FeedViewController {
     func triggerViewDidLoad() {
         self.loadViewIfNeeded()
+        replaceRefreshControlWithFakeForiOS17PlusSupport()
     }
     
     func triggerViewWillAppear() {
+        if !isViewLoaded {
+            loadViewIfNeeded()
+            replaceRefreshControlWithFakeForiOS17PlusSupport()
+        }
+        
         self.beginAppearanceTransition(true, animated: false) //view appear again
         self.endAppearanceTransition()
     }
@@ -58,6 +64,19 @@ extension FeedViewController {
         let ds = tableView.prefetchDataSource
         let indexPath = IndexPath(row: index, section: feedImageSection)
         ds?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
+    }
+    
+    private func replaceRefreshControlWithFakeForiOS17PlusSupport() {
+        let fakeRefreshControl = FakeRefreshControl()
+        
+        refreshControl?.allTargets.forEach { target in
+            refreshControl?.actions(forTarget: target, forControlEvent: .valueChanged)?.forEach { action in
+                fakeRefreshControl.addTarget(target, action: Selector(action), for: .valueChanged)
+            }
+        }
+        
+        refreshControl = fakeRefreshControl
+        refreshController?.view = refreshControl
     }
 }
 
