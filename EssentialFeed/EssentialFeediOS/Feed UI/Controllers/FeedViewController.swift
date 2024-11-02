@@ -24,8 +24,6 @@ public final class FeedViewController: UITableViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.prefetchDataSource = self
-        
         onViewFirstAppear = { [weak self] in
             self?.loadFeeds()
             self?.onViewFirstAppear = nil
