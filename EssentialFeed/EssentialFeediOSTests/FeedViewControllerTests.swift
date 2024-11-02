@@ -290,18 +290,31 @@ final class FeedViewControllerTests: XCTestCase {
     }
     
     func test_loadFeedImage_deliversNoImageWhenCellIsNotVisible() throws {
-        let image0 = makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
-        let image1 = makeFeedImage(location: nil, description: "any description", imageURL: makeAnyUrl())
         let (sut, loader) = makeSUT()
         
         sut.triggerViewDidLoad()
-        sut.userInitiatedRefresh()
-        loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
+        sut.triggerViewWillAppear()
+        loader.completeFeedLoadingSuccess(at: 0, with: [makeRandomFeedImage(), makeRandomFeedImage()])
         
         let cell = sut.stimulateViewDisappear(at: 0)
         loader.completeImageLoadingSuccessfully(at: 0)
         
         XCTAssertNil(cell.renderedImage, "cell should not have rendered image when not visible")
+    }
+    
+    func test_feedImageView_doesNitShowDataFromPreviousRequestWhenCellIsReused() throws {
+        let (sut, loader) = makeSUT()
+        
+        sut.triggerViewDidLoad()
+        sut.triggerViewWillAppear()
+        loader.completeFeedLoadingSuccess(at: 0, with: [makeRandomFeedImage(), makeRandomFeedImage()])
+        
+        let cell = sut.stimulateViewDisappear(at: 0)
+        cell.prepareForReuse()
+        
+        loader.completeImageLoadingSuccessfully(at: 0)
+        
+        XCTAssertEqual(cell.renderedImage, .none, "expect no image to be rendered for reused view when cell is reused")
     }
     
 }
@@ -337,6 +350,10 @@ extension FeedViewControllerTests {
     
     func makeFeedImage(location: String?, description: String?, imageURL: URL) -> FeedImage {
         FeedImage(id: UUID(), description: description, location: location, imageURL: imageURL)
+    }
+    
+    func makeRandomFeedImage() -> FeedImage {
+        makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
     }
 }
 
