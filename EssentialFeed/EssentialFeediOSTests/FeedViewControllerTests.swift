@@ -317,6 +317,22 @@ final class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(cell.renderedImage, .none, "expect no image to be rendered for reused view when cell is reused")
     }
     
+//    func test_feedImageView_showsDataForNewViewRequestAfterPreviousViewIsReused() throws {
+//        let (sut, loader) = makeSUT()
+//        sut.triggerViewWillAppear()
+//        loader.completeFeedLoadingSuccess(at: 0, with: [makeRandomFeedImage(), makeRandomFeedImage()])
+//        
+//        let previousView = sut.stimulateVisibleView(at: 0)
+//        
+//        let newView = sut.stimulateVisibleView(at: 0)
+//        previousView.prepareForReuse()
+//        
+//        let imageData = UIImage.make(withColor: .red).pngData()!
+//        loader.completeImageLoadingSuccessfully(at: 0)
+//        
+//        XCTAssertEqual(newView.renderedImage, imageData, "expect image to be rendered for new view when previous view is reused")
+//    }
+    
 }
 
 // MARK: - Helpers

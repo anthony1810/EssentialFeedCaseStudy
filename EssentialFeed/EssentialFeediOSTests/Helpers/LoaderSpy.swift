@@ -7,6 +7,7 @@
 import Foundation
 import EssentialFeed
 import EssentialFeediOS
+import UIKit
 
 final class LoaderSpy: FeedLoader, FeedImageLoaderProtocol {
 
@@ -43,7 +44,7 @@ final class LoaderSpy: FeedLoader, FeedImageLoaderProtocol {
         return LoadingImageTaskSpy(cancelCallBack: { [weak self] in self?.cancelLoadedImageURLs.append(url) })
     }
     
-    func completeImageLoadingSuccessfully(at index: Int, with imageData: Data = Data("anyData".utf8)) {
+    func completeImageLoadingSuccessfully(at index: Int, with imageData: Data = UIImage.make(withColor: .red).pngData()!) {
         imageRequests[index].completion(.success(imageData))
     }
     

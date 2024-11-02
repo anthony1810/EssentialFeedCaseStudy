@@ -26,9 +26,9 @@ extension FeedViewController {
     }
     
     @discardableResult
-    func stimulateVisibleView(at index: Int) -> UITableViewCell {
+    func stimulateVisibleView(at index: Int) -> FeedImageCell {
         let cell = feedImageView(at: index)
-        return cell ?? UITableViewCell()
+        return cell as! FeedImageCell
     }
     
     @discardableResult
@@ -38,7 +38,7 @@ extension FeedViewController {
         let indexPath = IndexPath(row: index, section: feedImageSection)
         delegate?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
         
-        return cell as! FeedImageCell
+        return cell
     }
     
     func numberOfRenderedFeedImageViews() -> Int {
@@ -69,7 +69,7 @@ extension FeedViewController {
         let indexPath = IndexPath(row: index, section: feedImageSection)
         ds?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
         
-        return cell as! FeedImageCell
+        return cell
     }
     
     private func replaceRefreshControlWithFakeForiOS17PlusSupport() {

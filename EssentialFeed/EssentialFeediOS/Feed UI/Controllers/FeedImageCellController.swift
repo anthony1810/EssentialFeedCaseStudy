@@ -37,7 +37,12 @@ final class FeedImageCellController: FeedImageView {
         cell?.feedImageView.setImage(model.image)
         cell?.retryButton.isHidden = !model.shouldRetry
         
-        cell?.onRetryButtonTapped = delegate.didRequestImage
+        cell?.onRetryButtonTapped = { [weak self] in
+            self?.prefetch()
+        }
+        cell?.onPrepareForReused = {[weak self] in
+            self?.cancelLoading()
+        }
     }
 
     
@@ -46,7 +51,13 @@ final class FeedImageCellController: FeedImageView {
     }
     
     func cancelLoading() {
+        cell = nil
         delegate.didCancelImageRequest()
+    }
+    
+    func releaseCellForReuse() {
+        cell?.onPrepareForReused = nil
+        cell = nil
     }
    
 }

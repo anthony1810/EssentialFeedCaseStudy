@@ -18,6 +18,13 @@ public final class FeedImageCell: UITableViewCell {
     public var url: URL!
     
     var onRetryButtonTapped: (() -> Void)?
+    var onPrepareForReused: (() -> Void)?
+    
+    public override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        onPrepareForReused?()
+    }
     
     @objc
     @IBAction func retryButtonTapped() {
