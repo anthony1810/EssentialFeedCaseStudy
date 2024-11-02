@@ -8,7 +8,7 @@ import Foundation
 import UIKit
 import EssentialFeed
 
-final class FeedLoaderPresentationAdapter: FeedRefreshControllerDelegate {
+final class FeedLoaderPresentationAdapter: FeedRefreshDelegate {
     private let loader: FeedLoader
     var presenter: FeedPresenter?
     

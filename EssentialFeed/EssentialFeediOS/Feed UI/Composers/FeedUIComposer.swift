@@ -19,11 +19,10 @@ public enum FeedUIComposer {
         let storyboard = UIStoryboard(name: "Feed", bundle: Bundle(for: FeedViewController.self))
         let feedViewController = storyboard.instantiateInitialViewController() as! FeedViewController
         
-        let refreshController = feedViewController.refreshController!
-        refreshController.delegate = feedLoaderPresentationAdapter
+        feedViewController.delegate = feedLoaderPresentationAdapter
         
         let feedPresenter = FeedPresenter(
-            loadingView: WeakRefVirtualProxy(target: refreshController),
+            loadingView: WeakRefVirtualProxy(target: feedViewController),
             fetchingView: FeedFetchView(
                 feedViewController: feedViewController,
                 imageLoader: imageLoader)

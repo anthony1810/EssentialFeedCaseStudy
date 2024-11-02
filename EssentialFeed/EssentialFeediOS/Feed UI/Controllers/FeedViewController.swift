@@ -7,8 +7,13 @@
 import Foundation
 import UIKit
 
+public protocol FeedRefreshDelegate {
+    func didRequestFeedRefresh()
+}
+
 public final class FeedViewController: UITableViewController {
-    @IBOutlet public var refreshController: FeedRefreshController?
+    
+    var delegate: FeedRefreshDelegate?
     
     var tableModels: [FeedImageCellController] = [] {
         didSet { tableView.reloadData() }
@@ -32,6 +37,21 @@ public final class FeedViewController: UITableViewController {
         
         onViewFirstAppear?()
     }
+    
+    @objc
+    @IBAction private func refresh() {
+        delegate?.didRequestFeedRefresh()
+    }
+}
+
+extension FeedViewController: FeedLoadingViewProtocol {
+    func display(viewModel: FeedLoadingViewModel) {
+         if viewModel.isLoading {
+             self.refreshControl?.beginRefreshing()
+         } else {
+             self.refreshControl?.endRefreshing()
+         }
+     }
 }
 
 // MARK: - UITableViewDatasource
@@ -84,6 +104,6 @@ extension FeedViewController {
     
     @objc
     public func loadFeeds() {
-        refreshController?.refresh()
+        refresh()
     }
 }

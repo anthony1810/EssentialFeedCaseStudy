@@ -76,7 +76,6 @@ extension FeedViewController {
         }
         
         refreshControl = fakeRefreshControl
-        refreshController?.view = refreshControl
     }
 }
 
