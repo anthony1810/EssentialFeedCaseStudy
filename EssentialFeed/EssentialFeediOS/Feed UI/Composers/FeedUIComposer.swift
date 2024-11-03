@@ -26,7 +26,7 @@ public enum FeedUIComposer {
             loadingView: WeakRefVirtualProxy(target: feedViewController),
             fetchingView: FeedFetchView(
                 feedViewController: feedViewController,
-                imageLoader: imageLoader)
+                imageLoader: MainThreadDecorator(imageLoader))
         )
         feedLoaderPresentationAdapter.presenter = feedPresenter
         

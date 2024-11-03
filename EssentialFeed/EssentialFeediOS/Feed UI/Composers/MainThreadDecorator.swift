@@ -31,3 +31,11 @@ extension MainThreadDecorator: FeedLoader where T == FeedLoader {
         }
     }
 }
+
+extension MainThreadDecorator: FeedImageLoaderProtocol where T == FeedImageLoaderProtocol {
+    func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> any ImageLoadingDataTaskProtocol {
+        decoratee.loadImageData(from: url) { [weak self] result in
+            self?.dispatch {completion(result)}
+        }
+    }
+}

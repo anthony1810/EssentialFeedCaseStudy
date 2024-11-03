@@ -348,6 +348,23 @@ final class FeedViewControllerTests: XCTestCase {
         }
         wait(for: [exp], timeout: 1.0)
     }
+    
+    func test_feedViewController_deliversImageResultsOnMainThread() throws {
+        let images: [FeedImage] = [makeRandomFeedImage(), makeRandomFeedImage()]
+        let (sut, loader) = makeSUT()
+        
+        sut.triggerViewWillAppear()
+        loader.completeFeedLoadingSuccess(at: 0, with: images)
+        sut.stimulateVisibleView(at: 0)
+        
+        let exp = expectation(description: "Expect image results to be delivered on main thread")
+        DispatchQueue.global().async {
+            loader.completeImageLoadingSuccessfully(at: 0)
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+    }
 }
 
 // MARK: - Helpers
