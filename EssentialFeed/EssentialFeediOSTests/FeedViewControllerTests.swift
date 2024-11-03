@@ -118,18 +118,18 @@ final class FeedViewControllerTests: XCTestCase {
         sut.userInitiatedRefresh()
         loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
         
-        let imageView0 = sut.stimulateVisibleView(at: 0) as? FeedImageCell
-        let imageView1 = sut.stimulateVisibleView(at: 1) as? FeedImageCell
-        XCTAssertEqual(imageView0?.isShowingImageLoadingIndicator(), true, "Expect loading image indicator at 0 index")
-        XCTAssertEqual(imageView1?.isShowingImageLoadingIndicator(), true, "Expect loading image indicator at 1 index")
+        let imageView0 = sut.stimulateVisibleView(at: 0) as FeedImageCell
+        let imageView1 = sut.stimulateVisibleView(at: 1) as FeedImageCell
+        XCTAssertEqual(imageView0.isShowingImageLoadingIndicator(), true, "Expect loading image indicator at 0 index")
+        XCTAssertEqual(imageView1.isShowingImageLoadingIndicator(), true, "Expect loading image indicator at 1 index")
         
         loader.completeImageLoadingSuccessfully(at: 0)
-        XCTAssertEqual(imageView0?.isShowingImageLoadingIndicator(), false, "Expect loading image indicator at 0 index")
-        XCTAssertEqual(imageView1?.isShowingImageLoadingIndicator(), true, "Expect loading image indicator at 1 index")
+        XCTAssertEqual(imageView0.isShowingImageLoadingIndicator(), false, "Expect loading image indicator at 0 index")
+        XCTAssertEqual(imageView1.isShowingImageLoadingIndicator(), true, "Expect loading image indicator at 1 index")
         
         loader.completeImageLoadingWithFailure(at: 1, error: makeAnyError())
-        XCTAssertEqual(imageView0?.isShowingImageLoadingIndicator(), false, "Expect loading image indicator at 0 index")
-        XCTAssertEqual(imageView1?.isShowingImageLoadingIndicator(), false, "Expect loading image indicator at 1 index")
+        XCTAssertEqual(imageView0.isShowingImageLoadingIndicator(), false, "Expect loading image indicator at 0 index")
+        XCTAssertEqual(imageView1.isShowingImageLoadingIndicator(), false, "Expect loading image indicator at 1 index")
     }
     
     func test_loadFeedCompletion_cancelRendersImageWhenImageViewIsNotVisible() throws {
@@ -164,20 +164,20 @@ final class FeedViewControllerTests: XCTestCase {
         sut.userInitiatedRefresh()
         loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
         
-        let imageView0 = sut.stimulateVisibleView(at: 0) as? FeedImageCell
-        let imageView1 = sut.stimulateVisibleView(at: 1) as? FeedImageCell
-        XCTAssertEqual(imageView0?.renderedImage, .none, "Expect no image data while loading at 0 index")
-        XCTAssertEqual(imageView1?.renderedImage, .none, "Expect no image data while loading at 1 index")
+        let imageView0 = sut.stimulateVisibleView(at: 0) as FeedImageCell
+        let imageView1 = sut.stimulateVisibleView(at: 1) as FeedImageCell
+        XCTAssertEqual(imageView0.renderedImage, .none, "Expect no image data while loading at 0 index")
+        XCTAssertEqual(imageView1.renderedImage, .none, "Expect no image data while loading at 1 index")
         
         let image0Data = UIImage.make(withColor: .red).pngData()!
         loader.completeImageLoadingSuccessfully(at: 0, with: image0Data)
-        XCTAssertEqual(imageView0?.renderedImage, image0Data, "Expect loading image indicator at 0 index")
-        XCTAssertEqual(imageView1?.renderedImage, .none, "Expect loading image indicator at 1 index")
+        XCTAssertEqual(imageView0.renderedImage, image0Data, "Expect loading image indicator at 0 index")
+        XCTAssertEqual(imageView1.renderedImage, .none, "Expect loading image indicator at 1 index")
         
         let image1Data = UIImage.make(withColor: .blue).pngData()!
         loader.completeImageLoadingSuccessfully(at: 1, with: image1Data)
-        XCTAssertEqual(imageView0?.renderedImage, image0Data, "Expect data at 0 index")
-        XCTAssertEqual(imageView1?.renderedImage, image1Data, "Expect data at 1 index")
+        XCTAssertEqual(imageView0.renderedImage, image0Data, "Expect data at 0 index")
+        XCTAssertEqual(imageView1.renderedImage, image1Data, "Expect data at 1 index")
     }
     
     func test_feedImageView_showingRetryActionWhenLoadingImageFail() throws {
@@ -190,19 +190,19 @@ final class FeedViewControllerTests: XCTestCase {
         sut.userInitiatedRefresh()
         loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
         
-        let imageView0 = sut.stimulateVisibleView(at: 0) as? FeedImageCell
-        let imageView1 = sut.stimulateVisibleView(at: 1) as? FeedImageCell
-        XCTAssertEqual(imageView0?.showingRetryButton, false, "Expect hidden retrieve button while loading")
-        XCTAssertEqual(imageView1?.showingRetryButton, false, "Expect hidden retrieve button while loading")
+        let imageView0 = sut.stimulateVisibleView(at: 0) as FeedImageCell
+        let imageView1 = sut.stimulateVisibleView(at: 1) as FeedImageCell
+        XCTAssertEqual(imageView0.showingRetryButton, false, "Expect hidden retrieve button while loading")
+        XCTAssertEqual(imageView1.showingRetryButton, false, "Expect hidden retrieve button while loading")
         
         let image0Data = UIImage.make(withColor: .red).pngData()!
         loader.completeImageLoadingSuccessfully(at: 0, with: image0Data)
-        XCTAssertEqual(imageView0?.showingRetryButton, false, "Expect hidden retrieve button while loading complete successully")
-        XCTAssertEqual(imageView1?.showingRetryButton, false, "Expect hidden retrieve button while not loading")
+        XCTAssertEqual(imageView0.showingRetryButton, false, "Expect hidden retrieve button while loading complete successully")
+        XCTAssertEqual(imageView1.showingRetryButton, false, "Expect hidden retrieve button while not loading")
         
         loader.completeImageLoadingWithFailure(at: 1, error: makeAnyError())
-        XCTAssertEqual(imageView0?.showingRetryButton, false, "Expect hidden retrieve button while loading complete successully")
-        XCTAssertEqual(imageView1?.showingRetryButton, true, "Expect showing retrieve button while loading failed")
+        XCTAssertEqual(imageView0.showingRetryButton, false, "Expect hidden retrieve button while loading complete successully")
+        XCTAssertEqual(imageView1.showingRetryButton, true, "Expect showing retrieve button while loading failed")
     }
     
     func test_feedImageView_showingRetryButtonWhenLoadingInvalidImageData() throws {
@@ -215,12 +215,12 @@ final class FeedViewControllerTests: XCTestCase {
         sut.userInitiatedRefresh()
         loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
         
-        let imageView0 = sut.stimulateVisibleView(at: 0) as? FeedImageCell
+        let imageView0 = sut.stimulateVisibleView(at: 0) as FeedImageCell
         sut.userInitiatedRefresh()
         let invalidImageData = Data("invalid image data".utf8)
         loader.completeImageLoadingSuccessfully(at: 0, with: invalidImageData)
         
-        XCTAssertEqual(imageView0?.retryButton.isHidden, false)
+        XCTAssertEqual(imageView0.retryButton.isHidden, false)
     }
     
     func test_feedImageViewRetryAction_reloadsFeed() throws {
@@ -233,18 +233,18 @@ final class FeedViewControllerTests: XCTestCase {
         sut.userInitiatedRefresh()
         loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
         
-        let imageView0 = sut.stimulateVisibleView(at: 0) as? FeedImageCell
-        let imageView1 = sut.stimulateVisibleView(at: 1) as? FeedImageCell
+        let imageView0 = sut.stimulateVisibleView(at: 0) as FeedImageCell
+        let imageView1 = sut.stimulateVisibleView(at: 1) as FeedImageCell
         XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL, image1.imageURL], "expect only two images url request fired when two cell visible")
         
         loader.completeImageLoadingWithFailure(at: 0, error: makeAnyError())
         loader.completeImageLoadingWithFailure(at: 1, error: makeAnyError())
         XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL, image1.imageURL], "expect still only two images url request fired when two cell isn't retrying")
         
-        imageView0?.triggerRetryAction()
+        imageView0.triggerRetryAction()
         XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL, image1.imageURL, image0.imageURL], "expect oen more image url request fired when two cell retrying")
         
-        imageView1?.triggerRetryAction()
+        imageView1.triggerRetryAction()
         XCTAssertEqual(loader.loadedImageURLs, [image0.imageURL, image1.imageURL, image0.imageURL, image1.imageURL], "expect two more images url request fired when two cell retrying")
         
     }
