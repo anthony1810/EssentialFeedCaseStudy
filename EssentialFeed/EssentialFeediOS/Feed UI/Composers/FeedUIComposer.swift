@@ -20,6 +20,7 @@ public enum FeedUIComposer {
         let feedViewController = storyboard.instantiateInitialViewController() as! FeedViewController
         
         feedViewController.delegate = feedLoaderPresentationAdapter
+        feedViewController.title = localizedString(for: "FEED_VIEW_TITLE")
         
         let feedPresenter = FeedPresenter(
             loadingView: WeakRefVirtualProxy(target: feedViewController),
