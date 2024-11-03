@@ -14,7 +14,7 @@ public enum FeedUIComposer {
         loader: FeedLoader,
         imageLoader: FeedImageLoaderProtocol
     ) -> FeedViewController {
-        let feedLoaderPresentationAdapter = FeedLoaderPresentationAdapter(loader: loader)
+        let feedLoaderPresentationAdapter = FeedLoaderPresentationAdapter(loader: MainThreadDecorator(loader))
     
         let storyboard = UIStoryboard(name: "Feed", bundle: Bundle(for: FeedViewController.self))
         let feedViewController = storyboard.instantiateInitialViewController() as! FeedViewController

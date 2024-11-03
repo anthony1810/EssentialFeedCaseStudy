@@ -333,13 +333,28 @@ final class FeedViewControllerTests: XCTestCase {
 //        XCTAssertEqual(newView.renderedImage, imageData, "expect image to be rendered for new view when previous view is reused")
 //    }
     
+    
+    func test_feedViewController_deliversFeedResultsOnMainThread() throws {
+        let (sut, loader) = makeSUT()
+        
+        sut.triggerViewWillAppear()
+        
+        let images: [FeedImage] = [makeRandomFeedImage(), makeRandomFeedImage()]
+        
+        let exp = expectation(description: "Expect feed results to be delivered on main thread")
+        DispatchQueue.global().async {
+            loader.completeFeedLoadingSuccess(at: 0, with: images)
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+    }
 }
 
 // MARK: - Helpers
 
 extension FeedViewControllerTests {
     func assert(sut: FeedViewController, rendering images: [FeedImage], file: StaticString = #file, line: UInt = #line) {
-        XCTAssertEqual(sut.numberOfRenderedFeedImageViews(), images.count)
+        XCTAssertEqual(sut.numberOfRenderedFeedImageViews(), images.count, file: file, line: line)
         
         for (index, image) in images.enumerated() {
             assert(sut: sut, hasConfigureFeedImageViewAt: index, with: image, file: file, line: line)
