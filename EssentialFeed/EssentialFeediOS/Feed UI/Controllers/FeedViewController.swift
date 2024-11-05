@@ -47,6 +47,7 @@ public final class FeedViewController: UITableViewController {
     }
 }
 
+// MARK: - FeedLoadingViewProtocol
 extension FeedViewController: FeedLoadingViewProtocol {
     func display(viewModel: FeedLoadingViewModel) {
          if viewModel.isLoading {
@@ -56,6 +57,14 @@ extension FeedViewController: FeedLoadingViewProtocol {
          }
      }
 }
+
+// MARK: - FeedErrorViewProtocol
+extension FeedViewController: FeedErrorViewProtocol {
+    func display(_ viewModel: FeedErrorViewModel) {
+        errorView.message = viewModel.message
+    }
+}
+
 
 // MARK: - UITableViewDatasource
 extension FeedViewController {

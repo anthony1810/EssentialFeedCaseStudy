@@ -373,6 +373,16 @@ final class FeedUIIntegrationTests: XCTestCase {
         
         XCTAssertEqual(sut.errorMessage, nil)
     }
+    
+    func test_loadFeedCompletion_rendersErrorMessageOnError() {
+        let (sut, loader) = makeSUT()
+        
+        sut.triggerViewWillAppear()
+        XCTAssertEqual(sut.errorMessage, nil)
+        
+        loader.completeFeedLoadingWithFailure(at: 0, error: makeAnyError())
+        XCTAssertEqual(sut.errorMessage, localized("FEED_VIEW_CONNECTION_ERROR"))
+    }
 }
 
 // MARK: - Helpers
@@ -410,6 +420,16 @@ extension FeedUIIntegrationTests {
     
     func makeRandomFeedImage() -> FeedImage {
         makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
+    }
+    
+    func localized(_ key: String, file: StaticString = #filePath, line: UInt = #line) -> String {
+        let table = "Feed"
+        let bundle = Bundle(for: FeedViewController.self)
+        let value = bundle.localizedString(forKey: key, value: nil, table: table)
+        if value == key {
+            XCTFail("Missing localized string for key: \(key) in table: \(table)", file: file, line: line)
+        }
+        return value
     }
 }
 

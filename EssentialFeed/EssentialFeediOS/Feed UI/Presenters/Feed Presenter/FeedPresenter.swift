@@ -8,12 +8,20 @@
 import Foundation
 import EssentialFeed
 
+struct FeedErrorViewModel {
+    let message: String
+}
+
 protocol FeedLoadingViewProtocol {
     func display(viewModel: FeedLoadingViewModel)
 }
 
 protocol FeedFetchingViewProtocol {
     func display(viewModel: FeedFetchingViewModel)
+}
+
+protocol FeedErrorViewProtocol {
+    func display(_ viewModel: FeedErrorViewModel)
 }
 
 final class FeedPresenter {
@@ -26,10 +34,12 @@ final class FeedPresenter {
     
     var loadingView: FeedLoadingViewProtocol
     var fetchingView: FeedFetchingViewProtocol
+    var errorView: FeedErrorViewProtocol
     
-    init(loadingView: FeedLoadingViewProtocol, fetchingView: FeedFetchingViewProtocol) {
+    init(loadingView: FeedLoadingViewProtocol, fetchingView: FeedFetchingViewProtocol, errorView: FeedErrorViewProtocol) {
         self.loadingView = loadingView
         self.fetchingView = fetchingView
+        self.errorView = errorView
     }
     
     func startLoading() {
@@ -43,6 +53,7 @@ final class FeedPresenter {
     
     func finishLoadingFailure(error: Error) {
         isLoading = false
+        errorView.display(FeedErrorViewModel(message: localizedString(for: "FEED_VIEW_CONNECTION_ERROR")))
     }
     
 }
