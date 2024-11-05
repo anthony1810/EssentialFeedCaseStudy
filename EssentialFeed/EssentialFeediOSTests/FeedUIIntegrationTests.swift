@@ -366,25 +366,39 @@ final class FeedUIIntegrationTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func test_errorView_doesNotRenderErrorOnLoad() {
-        let (sut, _) = makeSUT()
-        
-        sut.loadViewIfNeeded()
-        
-        XCTAssertEqual(sut.errorMessage, nil)
-    }
-    
-    func test_errorView_showErrorMessageWhenApplicable() {
+    func test_errorView_showHideErrorWhenApproriate() {
         let (sut, loader) = makeSUT()
-        
+
         sut.triggerViewWillAppear()
-        XCTAssertEqual(sut.errorMessage, nil)
-        
+        XCTAssertEqual(sut.isShowingErrorView, false)
+
+        loader.completeFeedLoadingSuccess(at: 0)
+        XCTAssertEqual(sut.isShowingErrorView, false)
+
         loader.completeFeedLoadingWithFailure(at: 0, error: makeAnyError())
-        XCTAssertEqual(sut.errorMessage, localized("FEED_VIEW_CONNECTION_ERROR"))
-        
+        XCTAssertEqual(sut.isShowingErrorView, true)
+
+        sut.simulateErrorViewTap()
+        XCTAssertEqual(sut.isShowingErrorView, false)
+
         sut.userInitiatedRefresh()
-        XCTAssertEqual(sut.errorMessage, nil)
+        XCTAssertEqual(sut.isShowingErrorView, false)
+    }
+
+    func test_errorView_deliverCorrectErrorMessage() {
+        let (sut, loader) = makeSUT()
+
+        sut.triggerViewWillAppear()
+        XCTAssertEqual(sut.displayedErrorViewMessage, nil)
+
+        loader.completeFeedLoadingSuccess(at: 0)
+        XCTAssertEqual(sut.displayedErrorViewMessage, nil)
+
+        loader.completeFeedLoadingWithFailure(at: 0, error: makeAnyError())
+        XCTAssertEqual(sut.displayedErrorViewMessage, localized("FEED_VIEW_CONNECTION_ERROR"))
+
+        sut.userInitiatedRefresh()
+        XCTAssertEqual(sut.displayedErrorViewMessage, nil)
     }
 }
 

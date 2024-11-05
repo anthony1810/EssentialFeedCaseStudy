@@ -25,8 +25,16 @@ extension FeedViewController {
         self.endAppearanceTransition()
     }
     
-    var errorMessage: String? {
-        return errorView.message
+    func simulateErrorViewTap() {
+        errorView?.button.simulateTap()
+    }
+
+    var isShowingErrorView: Bool {
+        return errorView?.alpha == 1
+    }
+
+    var displayedErrorViewMessage: String? {
+        return errorView?.message
     }
     
     @discardableResult
