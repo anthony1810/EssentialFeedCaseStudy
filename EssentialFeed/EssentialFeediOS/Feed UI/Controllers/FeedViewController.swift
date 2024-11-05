@@ -7,10 +7,6 @@
 import Foundation
 import UIKit
 
-public final class ErrorView: UIView {
-     public var message: String?
- }
-
 public protocol FeedRefreshDelegate {
     func didRequestFeedRefresh()
 }
