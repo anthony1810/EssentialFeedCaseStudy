@@ -9,7 +9,7 @@ import Foundation
 import XCTest
 import EssentialFeediOS
 
-extension FeedViewControllerTests {
+extension FeedUIIntegrationTests {
     
     func test_feedView_hasTitlte() {
         let (sut, _) = makeSUT()
@@ -44,7 +44,7 @@ extension FeedViewControllerTests {
 }
 
 // MARK: - Helpers
-extension FeedViewControllerTests {
+extension FeedUIIntegrationTests {
     
     private typealias LocalizedBundle = (bundle: Bundle, localization: String)
     

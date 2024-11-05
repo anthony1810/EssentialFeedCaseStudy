@@ -25,6 +25,10 @@ extension FeedViewController {
         self.endAppearanceTransition()
     }
     
+    var errorMessage: String? {
+        return errorView.message
+    }
+    
     @discardableResult
     func stimulateVisibleView(at index: Int) -> FeedImageCell {
         let cell = feedImageView(at: index)

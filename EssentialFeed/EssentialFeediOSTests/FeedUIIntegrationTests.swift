@@ -10,7 +10,7 @@ import UIKit
 import EssentialFeed
 import EssentialFeediOS
 
-final class FeedViewControllerTests: XCTestCase {
+final class FeedUIIntegrationTests: XCTestCase {
     
     func test_userInitiatedRefresh_loadFeedCorrectAsExepcted() throws {
         let (sut, loader) = makeSUT()
@@ -365,11 +365,19 @@ final class FeedViewControllerTests: XCTestCase {
         
         wait(for: [exp], timeout: 1.0)
     }
+    
+    func test_errorView_doesNotRenderErrorOnLoad() {
+        let (sut, _) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        
+        XCTAssertEqual(sut.errorMessage, nil)
+    }
 }
 
 // MARK: - Helpers
 
-extension FeedViewControllerTests {
+extension FeedUIIntegrationTests {
     func assert(sut: FeedViewController, rendering images: [FeedImage], file: StaticString = #file, line: UInt = #line) {
         XCTAssertEqual(sut.numberOfRenderedFeedImageViews(), images.count, file: file, line: line)
         
