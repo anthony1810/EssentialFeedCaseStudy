@@ -37,6 +37,9 @@
                                 <constraint firstItem="I3q-al-W3d" firstAttribute="top" secondItem="DeW-Fl-JH8" secondAttribute="top" id="dmN-RL-yl1"/>
                                 <constraint firstAttribute="trailing" secondItem="I3q-al-W3d" secondAttribute="trailing" id="pwR-sT-YXE"/>
                             </constraints>
+                            <connections>
+                                <outlet property="button" destination="I3q-al-W3d" id="HsM-Xh-BWF"/>
+                            </connections>
                         </view>
                         <view key="tableFooterView" contentMode="scaleToFill" id="4PB-ja-mxf">
                             <rect key="frame" x="0.0" y="692" width="393" height="16"/>

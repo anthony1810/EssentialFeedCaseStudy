@@ -57,7 +57,11 @@ extension FeedViewController: FeedLoadingViewProtocol {
 // MARK: - FeedErrorViewProtocol
 extension FeedViewController: FeedErrorViewProtocol {
     func display(_ viewModel: FeedErrorViewModel) {
-        errorView.message = viewModel.message
+        if let message = viewModel.message {
+            errorView.show(message: message)
+        } else {
+            errorView.hideMessage()
+        }
     }
 }
 
