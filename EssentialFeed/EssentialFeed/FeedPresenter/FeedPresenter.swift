@@ -7,47 +7,6 @@
 
 import Foundation
 
-public struct FeedFetchingViewModel {
-    public let feeds: [FeedImage]
-}
-
-public protocol FeedFetchingViewProtocol {
-    func display(viewModel: FeedFetchingViewModel)
-}
-
-public struct FeedLoadingViewModel {
-    public let isLoading: Bool
-    
-    static var isLoading: FeedLoadingViewModel {
-        return FeedLoadingViewModel(isLoading: true)
-    }
-    
-    static var noLoading: FeedLoadingViewModel {
-        return FeedLoadingViewModel(isLoading: false)
-    }
-}
-
-public protocol FeedLoadingViewProtocol {
-    func display(_ viewModel: FeedLoadingViewModel)
-}
-
-
-public struct FeedErrorViewModel {
-    public let message: String?
-    
-    static var noError: FeedErrorViewModel {
-        return FeedErrorViewModel(message: nil)
-    }
-    
-    static func error(message: String) -> FeedErrorViewModel {
-        return FeedErrorViewModel(message: message)
-    }
-}
-
-public protocol FeedErrorViewProtocol {
-    func display(_ viewModel: FeedErrorViewModel)
-}
-
 public class FeedPresenter {
     private var loadingView: FeedLoadingViewProtocol
     private var errorView: FeedErrorViewProtocol
