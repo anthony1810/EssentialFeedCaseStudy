@@ -17,8 +17,8 @@ final class WeakRefVirtualProxy<T: AnyObject> {
 }
 
 extension WeakRefVirtualProxy: FeedLoadingViewProtocol where T: FeedLoadingViewProtocol {
-    func display(viewModel: FeedLoadingViewModel) {
-        target?.display(viewModel: viewModel)
+    func display(_ viewModel: FeedLoadingViewModel) {
+        target?.display(viewModel)
     }
 }
 

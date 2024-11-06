@@ -24,10 +24,11 @@ public enum FeedUIComposer {
         
         let feedPresenter = FeedPresenter(
             loadingView: WeakRefVirtualProxy(target: feedViewController),
+            errorView: WeakRefVirtualProxy(target: feedViewController),
             fetchingView: FeedFetchView(
                 feedViewController: feedViewController,
-                imageLoader: MainThreadDecorator(imageLoader)),
-            errorView: WeakRefVirtualProxy(target: feedViewController)
+                imageLoader: MainThreadDecorator(imageLoader))
+           
         )
         feedLoaderPresentationAdapter.presenter = feedPresenter
         

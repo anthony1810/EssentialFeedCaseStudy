@@ -8,6 +8,7 @@
 import Foundation
 import XCTest
 import EssentialFeediOS
+import EssentialFeed
 
 extension FeedUIIntegrationTests {
     
@@ -16,9 +17,8 @@ extension FeedUIIntegrationTests {
         
         sut.triggerViewDidLoad()
         
-        let bundle = Bundle(for: FeedViewController.self)
         let localizedKey = "FEED_VIEW_TITLE"
-        let title = bundle.localizedString(forKey: localizedKey, value: nil, table: localizedTableName)
+        let title = localized("FEED_VIEW_TITLE")
         
         XCTAssertNotEqual(title, localizedKey, "Missing localized string for key: \(localizedKey)")
         XCTAssertEqual(sut.title, title, "Unexpected title: \(sut.title?.debugDescription ?? "nil") ")
@@ -26,7 +26,7 @@ extension FeedUIIntegrationTests {
                        
     func test_localizedStrings_haveKeysAndValuesForAllSupportedLocalizations() {
         let table = "Feed"
-        let presentationBundle = Bundle(for: FeedViewController.self)
+        let presentationBundle = Bundle(for: FeedPresenter.self)
         let localizedBundles = allLocalizationBundles(in: presentationBundle)
         let localizedStringKeys = allLocalizedStringKeys(in: localizedBundles, table: table)
         

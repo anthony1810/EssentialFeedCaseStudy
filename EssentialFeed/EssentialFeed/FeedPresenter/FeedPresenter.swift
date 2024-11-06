@@ -20,7 +20,11 @@ public class FeedPresenter {
         return NSLocalizedString("FEED_VIEW_TITLE", tableName: "Feed", bundle: Bundle(for: FeedPresenter.self),  comment: "Error Message displayed when there is an error loading the feed")
     }
     
-    public init(loadingView: FeedLoadingViewProtocol, errorView: FeedErrorViewProtocol, fetchingView: FeedFetchingViewProtocol) {
+    public init(
+        loadingView: FeedLoadingViewProtocol,
+        errorView: FeedErrorViewProtocol,
+        fetchingView: FeedFetchingViewProtocol
+    ) {
         self.loadingView = loadingView
         self.errorView = errorView
         self.fetchingView = fetchingView
