@@ -41,6 +41,17 @@ final class FeedImagePresenter {
             shouldRetry: false)
         )
     }
+    
+    func didFinishLoadingImageData(for model: FeedImage, with error: Error) {
+        view.display(FeedImageViewModel(
+            location: model.location,
+            description: model.description,
+            url: model.imageURL,
+            image: nil,
+            isLoading: false,
+            shouldRetry: true)
+        )
+    }
 }
 
 final class FeedImagePresenterTests: XCTestCase {
@@ -65,6 +76,18 @@ final class FeedImagePresenterTests: XCTestCase {
         
         XCTAssertEqual(message?.shouldRetry, false)
         XCTAssertEqual(message?.isLoading, true)
+    }
+    
+    func test_finishedLoadingImage_showRetryOnFailLoading() {
+        let (sut, view) = makeSUT()
+        let image = uniqueItem().domainModel
+        
+        sut.didFinishLoadingImageData(for: image, with: makeAnyError())
+            
+        let message = view.messages.first
+        XCTAssertFalse(view.messages.isEmpty)
+        XCTAssertEqual(message?.shouldRetry, true)
+        XCTAssertEqual(message?.isLoading, false)
     }
     
 }
@@ -95,6 +118,7 @@ extension FeedImagePresenterTests {
         
         return (domain, local)
     }
+
 }
 
 extension FeedImageViewModel: Equatable {
