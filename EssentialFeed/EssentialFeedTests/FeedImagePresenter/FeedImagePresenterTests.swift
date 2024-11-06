@@ -9,66 +9,6 @@ import Foundation
 import EssentialFeed
 import XCTest
 
-struct FeedImageViewModel<Image> {
-    let location: String?
-    let description: String?
-    let url: URL
-    let image: Image?
-    let isLoading: Bool
-    let shouldRetry: Bool
-}
-
-
-protocol FeedImageView {
-    associatedtype Image
-    func display(_ model: FeedImageViewModel<Image>)
-}
-
-final class FeedImagePresenter<Image, View: FeedImageView> where View.Image == Image {
-    
-    private var view: View
-    private let imageTransformer: (Data) -> Any?
-    
-    init(view: View, imageTransformer: @escaping (Data) -> Any?) {
-        self.view = view
-        self.imageTransformer = imageTransformer
-    }
-    
-    func didStartLoadingImageData(for model: FeedImage) {
-        view.display(FeedImageViewModel(
-            location: model.location,
-            description: model.description,
-            url: model.imageURL,
-            image: nil,
-            isLoading: true,
-            shouldRetry: false)
-        )
-    }
-    
-    func didFinishLoadingImageData(for model: FeedImage, with error: Error) {
-        view.display(FeedImageViewModel(
-            location: model.location,
-            description: model.description,
-            url: model.imageURL,
-            image: nil,
-            isLoading: false,
-            shouldRetry: true)
-        )
-    }
-    
-    func didFinishLoadingImageData(for model: FeedImage, with data: Data) {
-        let image = imageTransformer(data)
-        
-        view.display(FeedImageViewModel(
-            location: model.location,
-            description: model.description,
-            url: model.imageURL,
-            image: nil,
-            isLoading: false,
-            shouldRetry: image == nil)
-        )
-    }
-}
 
 final class FeedImagePresenterTests: XCTestCase {
     
@@ -106,7 +46,7 @@ final class FeedImagePresenterTests: XCTestCase {
         XCTAssertEqual(message?.isLoading, false)
     }
     
-    func test_finishedLoadingImage_showRetrForInvalidImageData() {
+    func test_finishedLoadingImage_showRetryForInvalidImageData() {
         let (sut, view) = makeSUT()
         let image = uniqueItem().domainModel
         
@@ -176,8 +116,8 @@ extension FeedImagePresenterTests {
 
 }
 
-extension FeedImageViewModel: Equatable {
-    static func == (lhs: FeedImageViewModel, rhs: FeedImageViewModel) -> Bool {
+extension FeedImageViewModel: @retroactive Equatable {
+    public static func == (lhs: FeedImageViewModel, rhs: FeedImageViewModel) -> Bool {
         lhs.url == rhs.url
     }
 }
