@@ -40,9 +40,13 @@ final class FeedPresenter {
         didSet { loadingView.display(viewModel: FeedLoadingViewModel(isLoading: isLoading)) }
     }
     
-    var loadingView: FeedLoadingViewProtocol
-    var fetchingView: FeedFetchingViewProtocol
-    var errorView: FeedErrorViewProtocol
+    private var loadingView: FeedLoadingViewProtocol
+    private var fetchingView: FeedFetchingViewProtocol
+    private var errorView: FeedErrorViewProtocol
+    
+    private var feedLoadError: String {
+        return NSLocalizedString("FEED_VIEW_CONNECTION_ERROR", tableName: "Feed", bundle: Bundle(for: FeedPresenter.self),  comment: "Error Message displayed when there is an error loading the feed")
+    }
     
     init(loadingView: FeedLoadingViewProtocol, fetchingView: FeedFetchingViewProtocol, errorView: FeedErrorViewProtocol) {
         self.loadingView = loadingView

@@ -9,65 +9,6 @@ import Foundation
 import XCTest
 import EssentialFeed
 
-struct FeedFetchingViewModel {
-    let feeds: [FeedImage]
-}
-
-protocol FeedFetchingViewProtocol {
-    func display(viewModel: FeedFetchingViewModel)
-}
-
-struct FeedLoadingViewModel {
-    let isLoading: Bool
-    
-    static var isLoading: FeedLoadingViewModel {
-        return FeedLoadingViewModel(isLoading: true)
-    }
-    
-    static var noLoading: FeedLoadingViewModel {
-        return FeedLoadingViewModel(isLoading: false)
-    }
-}
-
-protocol FeedLoadingViewProtocol {
-    func display(_ viewModel: FeedLoadingViewModel)
-}
-
-
-struct FeedErrorViewModel {
-    let message: String?
-    
-    static var noError: FeedErrorViewModel {
-        return FeedErrorViewModel(message: nil)
-    }
-}
-
-protocol FeedErrorViewProtocol {
-    func display(_ viewModel: FeedErrorViewModel)
-}
-
-class FeedPresenter {
-    var loadingView: FeedLoadingViewProtocol
-    var errorView: FeedErrorViewProtocol
-    var fetchingView: FeedFetchingViewProtocol
-    
-    init(loadingView: FeedLoadingViewProtocol, errorView: FeedErrorViewProtocol, fetchingView: FeedFetchingViewProtocol) {
-        self.loadingView = loadingView
-        self.errorView = errorView
-        self.fetchingView = fetchingView
-    }
-    
-    func startLoading() {
-        loadingView.display(.isLoading)
-        errorView.display(.noError)
-    }
-    
-    func finishLoadingSuccessfully(feeds: [FeedImage]) {
-        fetchingView.display(viewModel: FeedFetchingViewModel(feeds: feeds))
-        loadingView.display(.noLoading)
-    }
-}
-
 class FeedPrensenterTests: XCTestCase {
     
     func test_init_doesNotSendMessageToView() {
@@ -98,6 +39,18 @@ class FeedPrensenterTests: XCTestCase {
             .display(feed: feeds)
         ])
     }
+    
+    func test_didFinishLoadingWithError_displaysErrorAndStopLoading() {
+        let (sut, viewSpy) = makeSUT()
+        let error: Error = makeAnyError()
+        
+        sut.finishLoadingFailure(error: error)
+        
+        XCTAssertEqual(viewSpy.messages, [
+            .display(loading: false),
+            .display(message: localized("FEED_VIEW_CONNECTION_ERROR"))
+        ])
+    }
 }
 
 extension FeedPrensenterTests {
@@ -116,6 +69,16 @@ extension FeedPrensenterTests {
         let local = LocalFeedImage(id: domain.id, description: domain.description, location: domain.location, url: domain.imageURL)
         
         return (domain, local)
+    }
+    
+    func localized(_ key: String, file: StaticString = #filePath, line: UInt = #line) -> String {
+        let table = "Feed"
+        let bundle = Bundle(for: FeedPresenter.self)
+        let value = bundle.localizedString(forKey: key, value: nil, table: table)
+        if value == key {
+            XCTFail("Missing localized string for key: \(key) in table: \(table)", file: file, line: line)
+        }
+        return value
     }
 }
 
