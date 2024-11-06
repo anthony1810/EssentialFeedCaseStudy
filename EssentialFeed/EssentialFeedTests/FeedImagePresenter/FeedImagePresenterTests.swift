@@ -9,28 +9,74 @@ import Foundation
 import EssentialFeed
 import XCTest
 
+struct FeedImageViewModel {
+    let location: String?
+    let description: String?
+    let url: URL
+    let image: Any?
+    let isLoading: Bool
+    let shouldRetry: Bool
+}
+
+
+protocol FeedImageView {
+    func display(_ model: FeedImageViewModel)
+}
+
 final class FeedImagePresenter {
-    init(view: Any) {
-        
+    
+    private var view: FeedImageView
+    
+    init(view: FeedImageView) {
+        self.view = view
+    }
+    
+    func didStartLoadingImageData(for model: FeedImage) {
+        view.display(FeedImageViewModel(
+            location: model.location,
+            description: model.description,
+            url: model.imageURL,
+            image: nil,
+            isLoading: true,
+            shouldRetry: false)
+        )
     }
 }
 
 final class FeedImagePresenterTests: XCTestCase {
     
     func test_init_doesNotSendAnyMessage() {
-       let (_, view) = makeSUT()
+        let (_, view) = makeSUT()
         XCTAssertEqual(view.messages.count, 0)
     }
     
     func test_startLoadingImage_showLoadingAndDoesNotShowRetry() {
+        let (sut, view) = makeSUT()
+        let image = uniqueItem().domainModel
         
+        sut.didStartLoadingImageData(for: image)
+        
+        
+        let message = view.messages.first
+        XCTAssertFalse(view.messages.isEmpty)
+        XCTAssertEqual(message?.description, image.description)
+        XCTAssertEqual(message?.location, image.location)
+        XCTAssertNil(message?.image)
+        
+        XCTAssertEqual(message?.shouldRetry, false)
+        XCTAssertEqual(message?.isLoading, true)
     }
     
 }
 
 extension FeedImagePresenterTests {
-    private final class ViewSpy {
-        var messages: [Any] = []
+    private final class ViewSpy: FeedImageView {
+            
+        var messages: [FeedImageViewModel] = []
+        
+        func display(_ model: FeedImageViewModel) {
+            messages.append(model)
+        }
     }
     
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedImagePresenter, view: ViewSpy) {
@@ -41,5 +87,18 @@ extension FeedImagePresenterTests {
         trackForMemoryLeaks(sut)
         
         return (sut, view)
+    }
+    
+    func uniqueItem() -> (domainModel: FeedImage, localModel: LocalFeedImage) {
+        let domain = FeedImage(id: UUID(), description: nil, location: nil, imageURL: makeAnyUrl())
+        let local = LocalFeedImage(id: domain.id, description: domain.description, location: domain.location, url: domain.imageURL)
+        
+        return (domain, local)
+    }
+}
+
+extension FeedImageViewModel: Equatable {
+    static func == (lhs: FeedImageViewModel, rhs: FeedImageViewModel) -> Bool {
+        lhs.url == rhs.url
     }
 }
