@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import EssentialFeed
 
 final class FeedImageCellController: FeedImageView {
     

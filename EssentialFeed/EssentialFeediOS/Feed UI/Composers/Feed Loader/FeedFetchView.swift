@@ -23,7 +23,7 @@ final class FeedFetchView: FeedFetchingViewProtocol {
            
             let view = FeedImageCellController(delegate: presenterAdapter)
             
-            let presenter = FeedImagePresenter(imageTransformer: UIImage.init, view: WeakRefVirtualProxy(target: view))
+            let presenter = FeedImagePresenter(view: WeakRefVirtualProxy(target: view), imageTransformer: UIImage.init)
             presenterAdapter.presenter = presenter
             
             return view

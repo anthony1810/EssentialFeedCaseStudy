@@ -9,9 +9,9 @@ import Foundation
 public final class FeedImagePresenter<Image, View: FeedImageView> where View.Image == Image {
     
     private var view: View
-    private let imageTransformer: (Data) -> Any?
+    private let imageTransformer: (Data) -> Image?
     
-    public init(view: View, imageTransformer: @escaping (Data) -> Any?) {
+    public init(view: View, imageTransformer: @escaping (Data) -> Image?) {
         self.view = view
         self.imageTransformer = imageTransformer
     }
@@ -45,7 +45,7 @@ public final class FeedImagePresenter<Image, View: FeedImageView> where View.Ima
             location: model.location,
             description: model.description,
             url: model.imageURL,
-            image: nil,
+            image: image,
             isLoading: false,
             shouldRetry: image == nil)
         )

@@ -69,7 +69,7 @@ final class FeedImagePresenterTests: XCTestCase {
         
         XCTAssertEqual(message?.description, image.description)
         XCTAssertEqual(message?.location, image.location)
-        XCTAssertNil(message?.image)
+        XCTAssertNotNil(message?.image)
         
         XCTAssertEqual(message?.shouldRetry, false)
         XCTAssertEqual(message?.isLoading, false)
@@ -88,7 +88,7 @@ extension FeedImagePresenterTests {
     }
     
     private func makeSUT(
-        imageTransformer: @escaping (Data) -> Any? = { _ in nil },
+        imageTransformer: @escaping ((Data) -> AnyImage?) = { _ in nil },
         file: StaticString = #file,
         line: UInt = #line
     ) -> (sut: FeedImagePresenter<AnyImage, ViewSpy>, view: ViewSpy) {
