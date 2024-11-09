@@ -157,7 +157,14 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 
 extension LoadFeedFromRemoteUseCaseTests {
     private class URLProtocolStub: URLProtocol {
-        private static var stub: Stub?
+        
+        private static var _stub: Stub?
+        private static var stub: Stub? {
+            get { queue.sync { _stub } }
+            set { queue.sync { _stub = newValue } }
+        }
+        
+        private static let queue = DispatchQueue(label: "URLProtocolStub.queue")
         
         private struct Stub {
             let data: Data?
