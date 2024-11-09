@@ -58,24 +58,10 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
     
     func test_loadImageDataFromURL_deliversErrorOnClientError() {
         let (sut, client) = makeSUT()
-        let url = makeAnyUrl()
         let expectedError = makeAnyError()
         
-        var result: FeedImageLoaderProtocol.Result?
-        let exp = expectation(description: "Waiting for load image data completion")
-       
-        sut.loadImageData(from: url) { receivedResult in
-            result = receivedResult
-            exp.fulfill()
-        }
-        client.didFinishLoadImageWithFailure(expectedError)
-        
-        wait(for: [exp], timeout: 1.0)
-        
-        if case .failure(let error) = result {
-            XCTAssertEqual((error as NSError?)?.code, expectedError.code)
-        } else {
-            XCTFail("expected .failure, got .success")
+        expect(sut: sut, toCompleteWith: .failure(expectedError)) {
+            client.didFinishLoadImageWithFailure(expectedError)
         }
     }
 }
@@ -88,6 +74,48 @@ extension RemoteFeedImageDataLoaderTests {
         let loader = RemoteFeedImageDataLoader(client: client)
         
         return (loader, client)
+    }
+    
+    func expect(
+        sut: RemoteFeedImageDataLoader,
+        toCompleteWith expectedResult: FeedImageLoaderProtocol.Result,
+        when action: @escaping () -> Void,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
+        let url = makeAnyUrl()
+        var result: FeedImageLoaderProtocol.Result?
+        let exp = expectation(description: "Waiting for load image data completion")
+       
+        sut.loadImageData(from: url) { receivedResult in
+            result = receivedResult
+            exp.fulfill()
+        }
+        
+        action()
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        switch (result, expectedResult) {
+        case let (.success(receivedData), .success(expectedData)):
+            XCTAssertEqual(
+                receivedData, expectedData,
+                file: file,
+                line: line
+            )
+        case let (.failure(receivedError as NSError?), .failure(expectedError as NSError?)):
+            XCTAssertEqual(
+                receivedError?.code, expectedError?.code,
+                file: file,
+                line: line
+            )
+        default:
+            XCTFail(
+                "expected \(expectedResult), got \(String(describing: result)) instead",
+                file: file,
+                line: line
+            )
+        }
     }
     
     final class ClientSpy: HTTPClient {
