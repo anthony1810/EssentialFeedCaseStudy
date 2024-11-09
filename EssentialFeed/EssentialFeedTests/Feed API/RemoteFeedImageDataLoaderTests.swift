@@ -96,6 +96,17 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
             client.didFinishLoadImageWithStatusCode(200, data: Data())
         }
     }
+    
+    func test_loadImageDataFromURL_deliversImageDataOn200ResponseWithValidData() {
+        let (sut, client) = makeSUT()
+        let expectedImageData = makeAnyData()
+        
+        expect(sut, toCompleteWith: .success(expectedImageData)) {
+            client.didFinishLoadImageWithStatusCode(200, data: expectedImageData)
+        }
+    }
+    
+    
 }
 
 // MARK: - Helpers
