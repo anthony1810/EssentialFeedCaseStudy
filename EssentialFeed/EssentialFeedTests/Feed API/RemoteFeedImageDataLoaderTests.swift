@@ -106,7 +106,18 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         }
     }
     
-    
+    func test_loadImageDataFromURL_doesNotDeliversResultWhenInstanceIsDeallocated() {
+        let (_, client) = makeSUT()
+        var sut: RemoteFeedImageDataLoader? = RemoteFeedImageDataLoader(client: client)
+        
+        var capturedResult: FeedImageLoaderProtocol.Result?
+        sut?.loadImageData(from: makeAnyUrl(), completion: { capturedResult = $0 })
+        sut = nil
+        
+        client.didFinishLoadImageWithStatusCode(200, data: makeAnyData())
+        
+        XCTAssertNil(capturedResult)
+    }
 }
 
 // MARK: - Helpers
