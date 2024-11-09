@@ -16,8 +16,14 @@ final class RemoteFeedImageDataLoader {
         self.client = client
     }
     
-    func loadImageData(from url: URL, completion: @escaping (Any) -> Void) {
-        client.get(from: url) { _ in }
+    func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) {
+        client.get(from: url) { result in
+            switch result {
+            case .success: break
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
     }
 
 }
@@ -49,6 +55,29 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         
         XCTAssertEqual(client.requestedURLs, [url, url])
     }
+    
+    func test_loadImageDataFromURL_deliversErrorOnClientError() {
+        let (sut, client) = makeSUT()
+        let url = makeAnyUrl()
+        let expectedError = makeAnyError()
+        
+        var result: FeedImageLoaderProtocol.Result?
+        let exp = expectation(description: "Waiting for load image data completion")
+       
+        sut.loadImageData(from: url) { receivedResult in
+            result = receivedResult
+            exp.fulfill()
+        }
+        client.didFinishLoadImageWithFailure(expectedError)
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        if case .failure(let error) = result {
+            XCTAssertEqual((error as NSError?)?.code, expectedError.code)
+        } else {
+            XCTFail("expected .failure, got .success")
+        }
+    }
 }
 
 // MARK: - Helpers
@@ -63,10 +92,17 @@ extension RemoteFeedImageDataLoaderTests {
     
     final class ClientSpy: HTTPClient {
     
-        var requestedURLs: [URL] = []
+        var requestedURLs: [URL] {
+            messages.map(\.url)
+        }
+        var messages: [(url: URL, completion:  (HTTPClient.Result) -> Void)] = []
         
         func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) {
-            requestedURLs.append(url)
+            messages.append((url, completion))
+        }
+        
+        func didFinishLoadImageWithFailure(_ error: Error, at index: Int = 0) {
+            messages[index].completion(.failure(error))
         }
     }
 }
