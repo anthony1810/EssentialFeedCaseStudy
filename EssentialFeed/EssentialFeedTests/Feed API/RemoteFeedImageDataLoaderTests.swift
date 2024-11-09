@@ -123,7 +123,8 @@ extension RemoteFeedImageDataLoaderTests {
         var requestedURLs: [URL] {
             messages.map(\.url)
         }
-        var messages: [(url: URL, completion:  (HTTPClient.Result) -> Void)] = []
+        
+        private var messages: [(url: URL, completion:  (HTTPClient.Result) -> Void)] = []
         
         func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) {
             messages.append((url, completion))
