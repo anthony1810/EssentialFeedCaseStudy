@@ -77,6 +77,24 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         XCTAssertEqual(result?.data, emptyData)
     }
     
+    func test_cancelGetFromURL_cancelsRequest() {
+        let sut = makeSUT()
+        let exp = expectation(description: "wait for task completion")
+        let task = sut.get(from: makeAnyUrl(), completion: { result in
+            switch result {
+            case let .failure(error as NSError) where error.code == URLError.cancelled.rawValue:
+                break
+            default:
+                XCTFail("Expected cancel result, got \(result) instead")
+            }
+            exp.fulfill()
+        })
+        
+        task.cancel()
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
     // MARK: - Helpers
     func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> HTTPClient {
         let sut = URLSessionHTTPClient()
