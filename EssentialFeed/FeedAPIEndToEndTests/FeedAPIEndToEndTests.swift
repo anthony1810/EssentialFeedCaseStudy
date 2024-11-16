@@ -10,14 +10,6 @@ import EssentialFeed
 
 final class FeedAPIEndToEndTests: XCTestCase {
     
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-    
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-    
     func test_endToEndFeedResult_matchesFixedTestSampleData() throws {
         let url = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
         let httpclient = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
@@ -53,6 +45,40 @@ final class FeedAPIEndToEndTests: XCTestCase {
         }
     }
     
+    func test_endtoEndTestServerGETFeedImageResult_matchesFixedTestSampleData() throws {
+        let testServerURL = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed/73A7F70C-75DA-4C2E-B5A3-EED40DC53AA6/image")!
+        let configuration = URLSessionConfiguration.ephemeral
+        let urlSession = URLSession(configuration: configuration)
+        let client = URLSessionHTTPClient(session: urlSession)
+        
+        let loader = RemoteFeedImageDataLoader(client: client)
+        
+        trackForMemoryLeaks(loader)
+        trackForMemoryLeaks(client)
+        
+        let expectation = expectation(description: "Waiting for image loader")
+        var result: RemoteFeedImageDataLoader.Result?
+        _ = loader.loadImageData(
+            from: testServerURL,
+            completion: {
+                result = $0
+                expectation.fulfill()
+            }
+        )
+        wait(for: [expectation], timeout: 5.0)
+        
+        switch result {
+        case .success(let imageData)?:
+            XCTAssertEqual(imageData.isEmpty, false, "Expected received image data to be non-empty")
+        case .failure(let error):
+            XCTFail("Expected image loader to succeed, but received error: \(error) instead")
+        default:
+            XCTFail("Expected image loader to succeed, but received unexpected result instead")
+        }
+    }
+}
+
+extension FeedAPIEndToEndTests {
     func expectItem(at index: Int) -> FeedImage {
         FeedImage(
             id: id(at: index),
