@@ -47,27 +47,8 @@ final class FeedAPIEndToEndTests: XCTestCase {
     
     func test_endtoEndTestServerGETFeedImageResult_matchesFixedTestSampleData() throws {
         let testServerURL = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed/73A7F70C-75DA-4C2E-B5A3-EED40DC53AA6/image")!
-        let configuration = URLSessionConfiguration.ephemeral
-        let urlSession = URLSession(configuration: configuration)
-        let client = URLSessionHTTPClient(session: urlSession)
         
-        let loader = RemoteFeedImageDataLoader(client: client)
-        
-        trackForMemoryLeaks(loader)
-        trackForMemoryLeaks(client)
-        
-        let expectation = expectation(description: "Waiting for image loader")
-        var result: RemoteFeedImageDataLoader.Result?
-        _ = loader.loadImageData(
-            from: testServerURL,
-            completion: {
-                result = $0
-                expectation.fulfill()
-            }
-        )
-        wait(for: [expectation], timeout: 5.0)
-        
-        switch result {
+        switch getFeedImageResult(from: testServerURL) {
         case .success(let imageData)?:
             XCTAssertEqual(imageData.isEmpty, false, "Expected received image data to be non-empty")
         case .failure(let error):
@@ -86,6 +67,30 @@ extension FeedAPIEndToEndTests {
             location: location(at: index),
             imageURL: imageURL(at: index)
         )
+    }
+    
+    func getFeedImageResult(from url: URL) -> FeedImageLoaderProtocol.Result? {
+        let configuration = URLSessionConfiguration.ephemeral
+        let urlSession = URLSession(configuration: configuration)
+        let client = URLSessionHTTPClient(session: urlSession)
+        
+        let loader = RemoteFeedImageDataLoader(client: client)
+        
+        trackForMemoryLeaks(loader)
+        trackForMemoryLeaks(client)
+        
+        let expectation = expectation(description: "Waiting for image loader")
+        var result: RemoteFeedImageDataLoader.Result?
+        _ = loader.loadImageData(
+            from: url,
+            completion: {
+                result = $0
+                expectation.fulfill()
+            }
+        )
+        wait(for: [expectation], timeout: 5.0)
+        
+        return result
     }
     
     private func id(at index: Int) -> UUID {
