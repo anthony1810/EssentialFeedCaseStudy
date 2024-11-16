@@ -97,6 +97,20 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         
         XCTAssertEqual(client.cancelledURLs, [imageURL])
     }
+    
+    func test_loadImageDataFromURL_doesNotDeliverResultWhenTaskIsCancelled() {
+        let (sut, client) = makeSUT()
+        let imageURL = makeAnyUrl()
+        let nonEmptyData = makeAnyData()
+        
+        var receivedResults = [FeedImageLoaderProtocol.Result?]()
+        let task = sut.loadImageData(from: imageURL, completion: { receivedResults.append($0) })
+        task.cancel()
+        
+        client.didFinishLoadImageWithStatusCode(200, data: nonEmptyData)
+        
+        XCTAssertTrue(receivedResults.isEmpty, "Expect Received result to be empty")
+    }
 }
 
 // MARK: - Helpers
@@ -164,7 +178,9 @@ extension RemoteFeedImageDataLoaderTests {
         
         private struct Task: HTTPClientTask {
             let callback: () -> Void
-            func cancel() { callback() }
+            func cancel() {
+                callback()
+            }
         }
     
         var requestedURLs: [URL] {

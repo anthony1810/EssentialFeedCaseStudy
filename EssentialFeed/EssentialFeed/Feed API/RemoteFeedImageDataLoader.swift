@@ -18,30 +18,49 @@ public final class RemoteFeedImageDataLoader {
         case invalidData
     }
     
-    private struct HTTPTaskWrapper: ImageLoadingDataTaskProtocol {
-        let wrapped: HTTPClientTask
+    private final class HTTPTaskWrapper: ImageLoadingDataTaskProtocol {
+        
+        var wrapped: HTTPClientTask?
+        private var completion: ((FeedImageLoaderProtocol.Result) -> Void)?
+        
+        init(completion: @escaping ((FeedImageLoaderProtocol.Result) -> Void)) {
+            self.completion = completion
+        }
+        
+        func complete(with result: FeedImageLoaderProtocol.Result) {
+            self.completion?(result)
+        }
         
         func cancel() {
-            wrapped.cancel()
+            preventFurtherCompletions()
+            wrapped?.cancel()
+        }
+        
+        func preventFurtherCompletions() {
+            completion = nil
         }
     }
     
     @discardableResult
     public func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> ImageLoadingDataTaskProtocol {
-        HTTPTaskWrapper(wrapped: client.get(from: url) { [weak self] result in
+        let task = HTTPTaskWrapper(completion: completion)
+        
+        task.wrapped = client.get(from: url) { [weak self] result in
             guard self != nil else { return }
             
             switch result {
             case let .success((res, data)):
                 if  res.statusCode != 200 || data.isEmpty {
-                    completion(.failure(Error.invalidData))
+                    task.complete(with: .failure(Error.invalidData))
                 } else {
-                    completion(.success(data))
+                    task.complete(with: .success(data))
                 }
             case .failure(let error):
-                completion(.failure(error))
+                task.complete(with: .failure(error))
             }
-        })
+        }
+        
+        return task
     }
 
 }
