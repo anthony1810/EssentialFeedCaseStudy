@@ -67,10 +67,6 @@ extension FeedAPIEndToEndTests {
     }
     
     func getFeedImageResult(from url: URL) -> FeedImageLoaderProtocol.Result? {
-        let configuration = URLSessionConfiguration.ephemeral
-        let urlSession = URLSession(configuration: configuration)
-        let client = empheralURLSessionHTTPClient
-        
         let loader = RemoteFeedImageDataLoader(client: empheralURLSessionHTTPClient())
         
         trackForMemoryLeaks(loader)
