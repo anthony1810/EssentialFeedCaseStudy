@@ -11,9 +11,8 @@ import EssentialFeed
 final class FeedAPIEndToEndTests: XCTestCase {
     
     func test_endToEndFeedResult_matchesFixedTestSampleData() throws {
-        let url = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
         let httpclient = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
-        let loader = RemoteFeedLoader(httpClient: httpclient, url: url)
+        let loader = RemoteFeedLoader(httpClient: httpclient, url: feedTestServerURL)
         
         trackForMemoryLeaks(httpclient)
         trackForMemoryLeaks(loader)
@@ -46,7 +45,7 @@ final class FeedAPIEndToEndTests: XCTestCase {
     }
     
     func test_endtoEndTestServerGETFeedImageResult_matchesFixedTestSampleData() throws {
-        let testServerURL = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed/73A7F70C-75DA-4C2E-B5A3-EED40DC53AA6/image")!
+        let testServerURL =  feedTestServerURL.appendingPathComponent("/73A7F70C-75DA-4C2E-B5A3-EED40DC53AA6/image")
         
         switch getFeedImageResult(from: testServerURL) {
         case .success(let imageData)?:
@@ -135,5 +134,9 @@ extension FeedAPIEndToEndTests {
     
     private func imageURL(at index: Int) -> URL {
         return URL(string: "https://url-\(index+1).com")!
+    }
+    
+    private var feedTestServerURL: URL {
+        return URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
     }
 }
