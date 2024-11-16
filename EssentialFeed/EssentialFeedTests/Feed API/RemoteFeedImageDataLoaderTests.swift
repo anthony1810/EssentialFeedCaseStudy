@@ -111,6 +111,15 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         
         XCTAssertTrue(receivedResults.isEmpty, "Expect Received result to be empty")
     }
+    
+    func test_loadImageDataFromURL_deliversConnectivityErrorOnClientError() {
+        let (sut, client) = makeSUT()
+        let clientError = makeAnyError()
+        
+        expect(sut, toCompleteWith: .failure(RemoteFeedImageDataLoader.Error.connectivity)) {
+            client.complete(with: clientError)
+        }
+    }
 }
 
 // MARK: - Helpers

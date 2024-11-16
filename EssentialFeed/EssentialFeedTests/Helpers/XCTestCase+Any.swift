@@ -9,7 +9,7 @@ import XCTest
 
 extension XCTestCase {
     func makeAnyError() -> NSError {
-        NSError(domain: "any error", code: 1, userInfo: nil)
+        NSError(domain: "any error", code: 0, userInfo: nil)
     }
     
     func makeAnyUrl() -> URL {
