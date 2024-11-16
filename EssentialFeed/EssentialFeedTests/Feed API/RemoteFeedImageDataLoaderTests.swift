@@ -41,7 +41,7 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         let expectedError = makeAnyError()
         
         expect(sut, toCompleteWith: .failure(expectedError)) {
-            client.didFinishLoadImageWithFailure(expectedError)
+            client.complete(with: expectedError)
         }
     }
     
@@ -52,7 +52,7 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         let samples = [199, 201, 300, 400, 500]
         samples.enumerated().forEach { index, statusCode in
             expect(sut, toCompleteWith: .failure(expectedError)) {
-                client.didFinishLoadImageWithStatusCode(statusCode, data: self.makeAnyData(), at: index)
+                client.complete(with: statusCode, data: self.makeAnyData(), at: index)
             }
         }
     }
@@ -62,7 +62,7 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         let expectedError = RemoteFeedImageDataLoader.Error.invalidData
         
         expect(sut, toCompleteWith: .failure(expectedError)) {
-            client.didFinishLoadImageWithStatusCode(200, data: Data())
+            client.complete(with: 200, data: Data())
         }
     }
     
@@ -71,7 +71,7 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         let expectedImageData = makeAnyData()
         
         expect(sut, toCompleteWith: .success(expectedImageData)) {
-            client.didFinishLoadImageWithStatusCode(200, data: expectedImageData)
+            client.complete(with: 200, data: expectedImageData)
         }
     }
     
@@ -83,7 +83,7 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         sut?.loadImageData(from: makeAnyUrl(), completion: { capturedResult = $0 })
         sut = nil
         
-        client.didFinishLoadImageWithStatusCode(200, data: makeAnyData())
+        client.complete(with: 200, data: makeAnyData())
         
         XCTAssertNil(capturedResult)
     }
@@ -107,7 +107,7 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         let task = sut.loadImageData(from: imageURL, completion: { receivedResults.append($0) })
         task.cancel()
         
-        client.didFinishLoadImageWithStatusCode(200, data: nonEmptyData)
+        client.complete(with: 200, data: nonEmptyData)
         
         XCTAssertTrue(receivedResults.isEmpty, "Expect Received result to be empty")
     }
@@ -116,8 +116,8 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
 // MARK: - Helpers
 extension RemoteFeedImageDataLoaderTests {
     
-    func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: RemoteFeedImageDataLoader, client: ClientSpy) {
-        let client = ClientSpy()
+    func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: RemoteFeedImageDataLoader, client: HTTPClientSpy) {
+        let client = HTTPClientSpy()
         let loader = RemoteFeedImageDataLoader(client: client)
         
         trackForMemoryLeaks(loader, file: file, line: line)
@@ -171,40 +171,6 @@ extension RemoteFeedImageDataLoaderTests {
                 file: file,
                 line: line
             )
-        }
-    }
-    
-    final class ClientSpy: HTTPClient {
-        
-        private struct Task: HTTPClientTask {
-            let callback: () -> Void
-            func cancel() {
-                callback()
-            }
-        }
-    
-        var requestedURLs: [URL] {
-            messages.map(\.url)
-        }
-        
-        private(set) var cancelledURLs = [URL]()
-        private var messages: [(url: URL, completion:  (HTTPClient.Result) -> Void)] = []
-        
-        func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
-            messages.append((url, completion))
-            
-            return Task { [weak self] in
-                self?.cancelledURLs.append(url)
-            }
-        }
-        
-        func didFinishLoadImageWithFailure(_ error: Error, at index: Int = 0) {
-            messages[index].completion(.failure(error))
-        }
-        
-        func didFinishLoadImageWithStatusCode(_ code: Int, data: Data, at index: Int = 0) {
-            let response = HTTPURLResponse(url: requestedURLs[index], statusCode: code, httpVersion: nil, headerFields: nil)!
-            messages[index].completion(.success((response, data)))
         }
     }
 }
