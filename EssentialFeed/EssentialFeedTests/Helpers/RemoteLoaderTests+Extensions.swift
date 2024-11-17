@@ -8,7 +8,7 @@ import Foundation
 import XCTest
 @testable import EssentialFeed
 
-extension RemoteLoaderTests {
+extension LoadFeedFromRemoteUseCase {
     func makeSUT(
         url: URL = URL(string: "https://a-url.com")!,
         file: StaticString = #filePath,
