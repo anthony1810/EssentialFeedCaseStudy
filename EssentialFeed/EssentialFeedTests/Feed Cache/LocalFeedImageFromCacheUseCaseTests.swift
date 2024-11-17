@@ -16,7 +16,7 @@ class LocalFeedImageStoreSpy {
         case retrieveData(for: URL)
     }
     
-    typealias Result = Swift.Result<Data, Error>
+    typealias Result = Swift.Result<Data?, Error>
     
     func retrieveData(for url: URL, completion: @escaping (Result) -> Void) {
         receivedMessages.append(.retrieveData(for: url))
@@ -31,8 +31,9 @@ class LocalFeedImageStoreSpy {
 final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
     private let store: LocalFeedImageStoreSpy
     
-    enum Error: Swift.Error {
+    enum Error: Swift.Error, Equatable {
         case failed
+        case notFound
     }
     
     private class Task: ImageLoadingDataTaskProtocol {
@@ -45,7 +46,16 @@ final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
     
     func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> any ImageLoadingDataTaskProtocol {
         store.retrieveData(for: url, completion: { result in
-            completion(.failure(Error.failed))
+            switch result {
+            case .failure:
+                completion(.failure(Error.failed))
+            case let .success(data):
+                if let data {
+                    completion(.success(data))
+                } else {
+                    completion(.failure(Error.notFound))
+                }
+            }
         })
         return Task()
     }
@@ -71,8 +81,16 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
     func test_loadImageFromURL_deliversErrorOnStoreError() {
         let (store, sut) = makeSUT()
         
-        expect(sut: sut, toFinishWith: .failure(makeAnyError())) {
+        expect(sut: sut, toFinishWith: failed()) {
             store.complete(with: .failure(makeAnyError()))
+        }
+    }
+    
+    func test_loadImageFromURL_deliversNotFoundErrorOnNoData() {
+        let (store, sut) = makeSUT()
+        
+        expect(sut: sut, toFinishWith: notFound()) {
+            store.complete(with: .success(.none))
         }
     }
 }
@@ -87,6 +105,14 @@ extension LocalFeedImageFromCacheUseCaseTests {
         trackForMemoryLeaks(store, file: file, line: line)
         
         return (store, sut)
+    }
+    
+    func notFound() -> LocalFeedImageDataLoader.Result {
+        .failure(LocalFeedImageDataLoader.Error.notFound)
+    }
+    
+    func failed() -> LocalFeedImageDataLoader.Result {
+        .failure(LocalFeedImageDataLoader.Error.failed)
     }
     
     func expect(
@@ -109,8 +135,11 @@ extension LocalFeedImageFromCacheUseCaseTests {
         wait(for: [exp], timeout: 1.0)
         
         switch (capturedResult, expectedResult) {
-        case (.failure, .failure):
-            break
+        case let (
+            .failure(capturedError as LocalFeedImageDataLoader.Error),
+            .failure(expectedError as LocalFeedImageDataLoader.Error)
+        ):
+            XCTAssertEqual(capturedError, expectedError, file: file, line: line)
         case let (.success(capturedData), .success(expectedData)):
             XCTAssertEqual(capturedData, expectedData, file: file, line: line)
         default: XCTFail("expected \(expectedResult), got \(String(describing: capturedResult)) result", file: file, line: line)
