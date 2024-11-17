@@ -82,6 +82,16 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
         
         XCTAssertTrue(receivedResults.isEmpty, "Expect Received result to be empty")
     }
+    
+    func test_saveImageData_requestsURLInsertionIntoStore() {
+        let (store, sut) = makeSUT()
+        let imageData = makeAnyData()
+        let imageURL = makeAnyUrl()
+        
+        sut.save(imageData, for: imageURL){ _ in }
+        
+        XCTAssertEqual(store.receivedMessages, [.insert(imageData, for: imageURL)])
+    }
 }
 
 extension LocalFeedImageFromCacheUseCaseTests {

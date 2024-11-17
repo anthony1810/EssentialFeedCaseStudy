@@ -9,6 +9,8 @@ import Foundation
 public final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
     private let store: LocalFeedImageStoreProtocol
     
+    public typealias SaveResult = Swift.Result<Data, Error>
+    
     public enum Error: Swift.Error, Equatable {
         case failed
         case notFound
@@ -52,5 +54,9 @@ public final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
         })
         
         return task
+    }
+    
+    public func save(_ data: Data, for url: URL, completion: @escaping (SaveResult) -> Void) {
+        store.insert(data, for: url) { _ in }
     }
 }
