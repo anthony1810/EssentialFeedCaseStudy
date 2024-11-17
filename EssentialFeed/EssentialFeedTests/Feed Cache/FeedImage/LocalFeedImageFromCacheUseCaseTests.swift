@@ -9,6 +9,7 @@ import Foundation
 import EssentialFeed
 import XCTest
 
+// MARK: - Load
 class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
     
     func test_init_doesNotMessageStoreUponCreating() {
@@ -30,7 +31,7 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
         let (store, sut) = makeSUT()
         
         expect(sut: sut, toFinishWith: failed()) {
-            store.complete(with: .failure(makeAnyError()))
+            store.completeRetrieval(with: .failure(makeAnyError()))
         }
     }
     
@@ -38,7 +39,7 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
         let (store, sut) = makeSUT()
         
         expect(sut: sut, toFinishWith: notFound()) {
-            store.complete(with: .success(.none))
+            store.completeRetrieval(with: .success(.none))
         }
     }
     
@@ -47,7 +48,7 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
         let imageData = makeAnyData()
         
         expect(sut: sut, toFinishWith: .success(imageData)) {
-            store.complete(with: .success(imageData))
+            store.completeRetrieval(with: .success(imageData))
         }
     }
     
@@ -61,9 +62,9 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
         }
         task.cancel()
         
-        store.complete(with: .success(imageData))
-        store.complete(with: .success(.none))
-        store.complete(with: .failure(makeAnyError()))
+        store.completeRetrieval(with: .success(imageData))
+        store.completeRetrieval(with: .success(.none))
+        store.completeRetrieval(with: .failure(makeAnyError()))
         
         XCTAssertTrue(receivedResults.isEmpty, "Expect Received result to be empty")
     }
@@ -78,11 +79,14 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
         }
         sut = nil
         
-        store.complete(with: .success(makeAnyData()))
+        store.completeRetrieval(with: .success(makeAnyData()))
         
         XCTAssertTrue(receivedResults.isEmpty, "Expect Received result to be empty")
     }
-    
+}
+
+// MARK: - Save
+extension LocalFeedImageFromCacheUseCaseTests {
     func test_saveImageData_requestsURLInsertionIntoStore() {
         let (store, sut) = makeSUT()
         let imageData = makeAnyData()
@@ -94,6 +98,7 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
     }
 }
 
+// MARK: - Helpers
 extension LocalFeedImageFromCacheUseCaseTests {
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> (store: LocalFeedImageStoreSpy, sut: LocalFeedImageDataLoader) {
         
@@ -107,11 +112,11 @@ extension LocalFeedImageFromCacheUseCaseTests {
     }
     
     func notFound() -> LocalFeedImageDataLoader.Result {
-        .failure(LocalFeedImageDataLoader.Error.notFound)
+        .failure(LocalFeedImageDataLoader.LoadError.notFound)
     }
     
     func failed() -> LocalFeedImageDataLoader.Result {
-        .failure(LocalFeedImageDataLoader.Error.failed)
+        .failure(LocalFeedImageDataLoader.LoadError.failed)
     }
     
     func expect(
@@ -135,8 +140,8 @@ extension LocalFeedImageFromCacheUseCaseTests {
         
         switch (capturedResult, expectedResult) {
         case let (
-            .failure(capturedError as LocalFeedImageDataLoader.Error),
-            .failure(expectedError as LocalFeedImageDataLoader.Error)
+            .failure(capturedError as LocalFeedImageDataLoader.LoadError),
+            .failure(expectedError as LocalFeedImageDataLoader.LoadError)
         ):
             XCTAssertEqual(capturedError, expectedError, file: file, line: line)
         case let (.success(capturedData), .success(expectedData)):

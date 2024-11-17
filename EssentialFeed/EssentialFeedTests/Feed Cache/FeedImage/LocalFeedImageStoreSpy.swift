@@ -10,7 +10,7 @@ import EssentialFeed
 class LocalFeedImageStoreSpy: LocalFeedImageStoreProtocol {
 
     private(set) var receivedMessages: [Message] = []
-    private var completions = [(Result) -> Void]()
+    private var retrievalCompletions = [(RetrievalResult) -> Void]()
     
     enum Message: Equatable {
         case retrieveData(for: URL)
@@ -22,11 +22,11 @@ class LocalFeedImageStoreSpy: LocalFeedImageStoreProtocol {
     // MARK: - Retrieve
     func retrieveData(for url: URL, completion: @escaping (Result) -> Void) {
         receivedMessages.append(.retrieveData(for: url))
-        completions.append(completion)
+        retrievalCompletions.append(completion)
     }
     
-    func complete(with result: Result, at index: Int = 0) {
-        completions[index](result)
+    func completeRetrieval(with result: Result, at index: Int = 0) {
+        retrievalCompletions[index](result)
     }
     
     // MARK: - Insert

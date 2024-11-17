@@ -6,15 +6,7 @@
 //
 import Foundation
 
-public final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
-    private let store: LocalFeedImageStoreProtocol
-    
-    public typealias SaveResult = Swift.Result<Data, Error>
-    
-    public enum Error: Swift.Error, Equatable {
-        case failed
-        case notFound
-    }
+public final class LocalFeedImageDataLoader {
     
     private class Task: ImageLoadingDataTaskProtocol {
         private var completion: ((FeedImageLoaderProtocol.Result) -> Void)?
@@ -36,8 +28,18 @@ public final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
         }
     }
     
+    private let store: LocalFeedImageStoreProtocol
+    
     public init(store: LocalFeedImageStoreProtocol) {
         self.store = store
+    }
+}
+
+extension LocalFeedImageDataLoader: FeedImageLoaderProtocol {
+
+    public enum LoadError: Swift.Error, Equatable {
+        case failed
+        case notFound
     }
     
     public func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> any ImageLoadingDataTaskProtocol {
@@ -47,14 +49,18 @@ public final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
             guard self != nil else { return }
             
             task.complete(with: result
-                .mapError { _ in Error.failed }
+                .mapError { _ in LoadError.failed }
                 .flatMap { data -> FeedImageLoaderProtocol.Result in
-                    data.map { .success($0) } ?? .failure(Error.notFound)
+                    data.map { .success($0) } ?? .failure(LoadError.notFound)
                 })
         })
         
         return task
     }
+}
+
+extension LocalFeedImageDataLoader {
+    public typealias SaveResult = Swift.Result<Data, LoadError>
     
     public func save(_ data: Data, for url: URL, completion: @escaping (SaveResult) -> Void) {
         store.insert(data, for: url) { _ in }
