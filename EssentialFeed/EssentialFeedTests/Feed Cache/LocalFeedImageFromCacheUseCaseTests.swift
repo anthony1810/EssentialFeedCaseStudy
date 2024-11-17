@@ -11,17 +11,29 @@ import XCTest
 
 class RealmFeedImageStoreSpy {
     private(set) var receivedMessages: [Message] = []
+    private var completions = [(Result) -> Void]()
     enum Message: Equatable {
         case retrieveData(for: URL)
     }
     
-    func retrieveData(for url: URL) {
+    typealias Result = Swift.Result<Data, Error>
+    
+    func retrieveData(for url: URL, completion: @escaping (Result) -> Void) {
         receivedMessages.append(.retrieveData(for: url))
+        completions.append(completion)
+    }
+    
+    func complete(with result: Result, at index: Int = 0) {
+        completions[index](result)
     }
 }
 
 final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
     private let store: RealmFeedImageStoreSpy
+    
+    enum Error: Swift.Error {
+        case failed
+    }
     
     private class Task: ImageLoadingDataTaskProtocol {
         func cancel() {}
@@ -32,7 +44,9 @@ final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
     }
     
     func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> any ImageLoadingDataTaskProtocol {
-        store.retrieveData(for: url)
+        store.retrieveData(for: url, completion: { result in
+            completion(.failure(Error.failed))
+        })
         return Task()
     }
 }
@@ -53,7 +67,25 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
         
         XCTAssertEqual(store.receivedMessages, [.retrieveData(for: requestedURL)])
     }
+    
+    func test_loadImageFromURL_deliversErrorOnStoreError() {
+        let (store, sut) = makeSUT()
+        let requestedURL = makeAnyUrl()
         
+        var capturedResult: FeedImageLoaderProtocol.Result?
+        let exp = expectation(description: "wait for loading image from cache")
+        _ = sut.loadImageData(from: requestedURL, completion: { result in
+            capturedResult = result
+            exp.fulfill()
+        })
+        store.complete(with: .failure(makeAnyError()))
+        wait(for: [exp], timeout: 1.0)
+        
+        switch capturedResult {
+        case .failure: break
+        default: XCTFail("expected .failure, got unexpected result")
+        }
+    }
 }
 
 extension LocalFeedImageFromCacheUseCaseTests {
