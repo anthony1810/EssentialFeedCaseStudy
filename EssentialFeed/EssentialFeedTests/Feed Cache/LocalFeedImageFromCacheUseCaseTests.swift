@@ -37,7 +37,23 @@ final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
     }
     
     private class Task: ImageLoadingDataTaskProtocol {
-        func cancel() {}
+        private var completion: ((FeedImageLoaderProtocol.Result) -> Void)?
+        
+        init(completion: @escaping ((FeedImageLoaderProtocol.Result) -> Void)) {
+            self.completion = completion
+        }
+        
+        func complete(with result: FeedImageLoaderProtocol.Result) {
+            self.completion?(result)
+        }
+        
+        func cancel() {
+            preventFurtherCompletions()
+        }
+        
+        func preventFurtherCompletions() {
+            completion = nil
+        }
     }
     
     init(store: LocalFeedImageStoreSpy) {
@@ -45,19 +61,25 @@ final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
     }
     
     func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> any ImageLoadingDataTaskProtocol {
+        let task = Task(completion: completion)
+        
         store.retrieveData(for: url, completion: { result in
             switch result {
             case .failure:
-                completion(.failure(Error.failed))
+//                completion(.failure(Error.failed))
+                task.complete(with: .failure(Error.failed))
             case let .success(data):
                 if let data {
-                    completion(.success(data))
+//                    completion(.success(data))
+                    task.complete(with: .success(data))
                 } else {
-                    completion(.failure(Error.notFound))
+//                    completion(.failure(Error.notFound))
+                    task.complete(with: .failure(Error.notFound))
                 }
             }
         })
-        return Task()
+        
+        return task
     }
 }
 
@@ -101,6 +123,23 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
         expect(sut: sut, toFinishWith: .success(imageData)) {
             store.complete(with: .success(imageData))
         }
+    }
+    
+    func test_loadImageDataFromURL_doesNotDeliverResultWhenTaskIsCancelled() {
+        let (store, sut) = makeSUT()
+        let imageData = makeAnyData()
+        
+        var receivedResults = [FeedImageLoaderProtocol.Result?]()
+        let task = sut.loadImageData(from: makeAnyUrl()) { result in
+            receivedResults.append(result)
+        }
+        task.cancel()
+        
+        store.complete(with: .success(imageData))
+        store.complete(with: .success(.none))
+        store.complete(with: .failure(makeAnyError()))
+        
+        XCTAssertTrue(receivedResults.isEmpty, "Expect Received result to be empty")
     }
 }
 
