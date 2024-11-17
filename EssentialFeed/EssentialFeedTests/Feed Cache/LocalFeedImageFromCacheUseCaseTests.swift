@@ -10,23 +10,50 @@ import EssentialFeed
 import XCTest
 
 class RealmFeedImageStoreSpy {
-    var receivedMessages: [Any] = []
+    private(set) var receivedMessages: [Message] = []
+    enum Message: Equatable {
+        case retrieveData(for: URL)
+    }
+    
+    func retrieveData(for url: URL) {
+        receivedMessages.append(.retrieveData(for: url))
+    }
 }
 
-class LocalFeedImageDataLoader {
-    let store: RealmFeedImageStoreSpy
+final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
+    private let store: RealmFeedImageStoreSpy
+    
+    private class Task: ImageLoadingDataTaskProtocol {
+        func cancel() {}
+    }
     
     init(store: RealmFeedImageStoreSpy) {
         self.store = store
     }
+    
+    func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> any ImageLoadingDataTaskProtocol {
+        store.retrieveData(for: url)
+        return Task()
+    }
 }
 
 class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
+    
     func test_init_doesNotMessageStoreUponCreating() {
         let (store, _) = makeSUT()
         
         XCTAssertTrue(store.receivedMessages.isEmpty)
     }
+    
+    func test_loadImageFromURL_messagesStoreWithURL() {
+        let (store, sut) = makeSUT()
+        let requestedURL = makeAnyUrl()
+        
+        _ = sut.loadImageData(from: requestedURL, completion: {_ in })
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieveData(for: requestedURL)])
+    }
+        
 }
 
 extension LocalFeedImageFromCacheUseCaseTests {
