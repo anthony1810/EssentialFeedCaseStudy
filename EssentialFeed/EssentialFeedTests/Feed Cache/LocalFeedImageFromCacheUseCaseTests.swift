@@ -63,7 +63,9 @@ final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
     func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> any ImageLoadingDataTaskProtocol {
         let task = Task(completion: completion)
         
-        store.retrieveData(for: url, completion: { result in
+        store.retrieveData(for: url, completion: { [weak self] result in
+            guard self != nil else { return }
+            
             task.complete(with: result
                 .mapError { _ in Error.failed }
                 .flatMap { data -> FeedImageLoaderProtocol.Result in
@@ -130,6 +132,21 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
         store.complete(with: .success(imageData))
         store.complete(with: .success(.none))
         store.complete(with: .failure(makeAnyError()))
+        
+        XCTAssertTrue(receivedResults.isEmpty, "Expect Received result to be empty")
+    }
+    
+    func test_loadImageDataFromURL_doesNotDeliverResultWhenInstanceIsDeallocated() {
+        let store = LocalFeedImageStoreSpy()
+        var sut: LocalFeedImageDataLoader? = LocalFeedImageDataLoader(store: store)
+        
+        var receivedResults: [FeedImageLoaderProtocol.Result?] = []
+        _ = sut?.loadImageData(from: makeAnyUrl()) { result in
+            receivedResults.append(result)
+        }
+        sut = nil
+        
+        store.complete(with: .success(makeAnyData()))
         
         XCTAssertTrue(receivedResults.isEmpty, "Expect Received result to be empty")
     }
