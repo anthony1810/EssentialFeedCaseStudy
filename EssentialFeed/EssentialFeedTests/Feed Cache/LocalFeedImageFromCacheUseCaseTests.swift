@@ -83,13 +83,19 @@ extension LocalFeedImageFromCacheUseCaseTests {
         let store = LocalFeedImageStoreSpy()
         let sut = LocalFeedImageDataLoader(store: store)
         
-        trackForMemoryLeaks(sut)
-        trackForMemoryLeaks(store)
+        trackForMemoryLeaks(sut, file: file, line: line)
+        trackForMemoryLeaks(store, file: file, line: line)
         
         return (store, sut)
     }
     
-    func expect(sut: LocalFeedImageDataLoader, toFinishWith expectedResult: FeedImageLoaderProtocol.Result, when action: () -> Void) {
+    func expect(
+        sut: LocalFeedImageDataLoader,
+        toFinishWith expectedResult: FeedImageLoaderProtocol.Result,
+        when action: () -> Void,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
       
         var capturedResult: FeedImageLoaderProtocol.Result?
         let exp = expectation(description: "wait for loading image from cache")
@@ -106,8 +112,8 @@ extension LocalFeedImageFromCacheUseCaseTests {
         case (.failure, .failure):
             break
         case let (.success(capturedData), .success(expectedData)):
-            XCTAssertEqual(capturedData, expectedData)
-        default: XCTFail("expected \(expectedResult), got \(String(describing: capturedResult)) result")
+            XCTAssertEqual(capturedData, expectedData, file: file, line: line)
+        default: XCTFail("expected \(expectedResult), got \(String(describing: capturedResult)) result", file: file, line: line)
         }
     }
 }
