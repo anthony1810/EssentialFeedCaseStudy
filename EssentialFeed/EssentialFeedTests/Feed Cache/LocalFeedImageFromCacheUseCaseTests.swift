@@ -93,6 +93,15 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
             store.complete(with: .success(.none))
         }
     }
+    
+    func test_loadImageFromURL_deliversImageDataOnSuccess() {
+        let (store, sut) = makeSUT()
+        let imageData = makeAnyData()
+        
+        expect(sut: sut, toFinishWith: .success(imageData)) {
+            store.complete(with: .success(imageData))
+        }
+    }
 }
 
 extension LocalFeedImageFromCacheUseCaseTests {
