@@ -9,7 +9,7 @@ import Foundation
 import EssentialFeed
 import XCTest
 
-class RealmFeedImageStoreSpy {
+class LocalFeedImageStoreSpy {
     private(set) var receivedMessages: [Message] = []
     private var completions = [(Result) -> Void]()
     enum Message: Equatable {
@@ -29,7 +29,7 @@ class RealmFeedImageStoreSpy {
 }
 
 final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
-    private let store: RealmFeedImageStoreSpy
+    private let store: LocalFeedImageStoreSpy
     
     enum Error: Swift.Error {
         case failed
@@ -39,7 +39,7 @@ final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
         func cancel() {}
     }
     
-    init(store: RealmFeedImageStoreSpy) {
+    init(store: LocalFeedImageStoreSpy) {
         self.store = store
     }
     
@@ -78,9 +78,9 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
 }
 
 extension LocalFeedImageFromCacheUseCaseTests {
-    func makeSUT(file: StaticString = #file, line: UInt = #line) -> (store: RealmFeedImageStoreSpy, sut: LocalFeedImageDataLoader) {
+    func makeSUT(file: StaticString = #file, line: UInt = #line) -> (store: LocalFeedImageStoreSpy, sut: LocalFeedImageDataLoader) {
         
-        let store = RealmFeedImageStoreSpy()
+        let store = LocalFeedImageStoreSpy()
         let sut = LocalFeedImageDataLoader(store: store)
         
         trackForMemoryLeaks(sut)
