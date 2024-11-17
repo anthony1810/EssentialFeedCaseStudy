@@ -9,7 +9,6 @@ import Foundation
 import EssentialFeed
 import XCTest
 
-// MARK: - Load
 class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
     
     func test_init_doesNotMessageStoreUponCreating() {
@@ -82,19 +81,6 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
         store.completeRetrieval(with: .success(makeAnyData()))
         
         XCTAssertTrue(receivedResults.isEmpty, "Expect Received result to be empty")
-    }
-}
-
-// MARK: - Save
-extension LocalFeedImageFromCacheUseCaseTests {
-    func test_saveImageData_requestsURLInsertionIntoStore() {
-        let (store, sut) = makeSUT()
-        let imageData = makeAnyData()
-        let imageURL = makeAnyUrl()
-        
-        sut.save(imageData, for: imageURL){ _ in }
-        
-        XCTAssertEqual(store.receivedMessages, [.insert(imageData, for: imageURL)])
     }
 }
 
