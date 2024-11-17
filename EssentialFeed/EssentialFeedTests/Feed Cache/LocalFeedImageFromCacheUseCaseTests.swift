@@ -64,19 +64,11 @@ final class LocalFeedImageDataLoader: FeedImageLoaderProtocol {
         let task = Task(completion: completion)
         
         store.retrieveData(for: url, completion: { result in
-            switch result {
-            case .failure:
-//                completion(.failure(Error.failed))
-                task.complete(with: .failure(Error.failed))
-            case let .success(data):
-                if let data {
-//                    completion(.success(data))
-                    task.complete(with: .success(data))
-                } else {
-//                    completion(.failure(Error.notFound))
-                    task.complete(with: .failure(Error.notFound))
-                }
-            }
+            task.complete(with: result
+                .mapError { _ in Error.failed }
+                .flatMap { data -> FeedImageLoaderProtocol.Result in
+                    data.map { .success($0) } ?? .failure(Error.notFound)
+                })
         })
         
         return task
