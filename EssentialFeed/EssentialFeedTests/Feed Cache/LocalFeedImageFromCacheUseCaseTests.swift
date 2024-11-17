@@ -70,20 +70,9 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
     
     func test_loadImageFromURL_deliversErrorOnStoreError() {
         let (store, sut) = makeSUT()
-        let requestedURL = makeAnyUrl()
         
-        var capturedResult: FeedImageLoaderProtocol.Result?
-        let exp = expectation(description: "wait for loading image from cache")
-        _ = sut.loadImageData(from: requestedURL, completion: { result in
-            capturedResult = result
-            exp.fulfill()
-        })
-        store.complete(with: .failure(makeAnyError()))
-        wait(for: [exp], timeout: 1.0)
-        
-        switch capturedResult {
-        case .failure: break
-        default: XCTFail("expected .failure, got unexpected result")
+        expect(sut: sut, toFinishWith: .failure(makeAnyError())) {
+            store.complete(with: .failure(makeAnyError()))
         }
     }
 }
@@ -98,5 +87,27 @@ extension LocalFeedImageFromCacheUseCaseTests {
         trackForMemoryLeaks(store)
         
         return (store, sut)
+    }
+    
+    func expect(sut: LocalFeedImageDataLoader, toFinishWith expectedResult: FeedImageLoaderProtocol.Result, when action: () -> Void) {
+      
+        var capturedResult: FeedImageLoaderProtocol.Result?
+        let exp = expectation(description: "wait for loading image from cache")
+        _ = sut.loadImageData(from: makeAnyUrl(), completion: { result in
+            capturedResult = result
+            exp.fulfill()
+        })
+       
+        action()
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        switch (capturedResult, expectedResult) {
+        case (.failure, .failure):
+            break
+        case let (.success(capturedData), .success(expectedData)):
+            XCTAssertEqual(capturedData, expectedData)
+        default: XCTFail("expected \(expectedResult), got \(String(describing: capturedResult)) result")
+        }
     }
 }
