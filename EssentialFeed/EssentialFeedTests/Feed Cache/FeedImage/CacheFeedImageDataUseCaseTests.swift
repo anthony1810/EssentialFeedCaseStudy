@@ -28,20 +28,9 @@ class CacheFeedImageDataUseCaseTests: XCTestCase {
     
     func test_saveImageData_failsOnStoreInsertionError() {
         let (store, sut) = makeSUT()
-        let imageData = makeAnyData()
-        let imageURL = makeAnyUrl()
-        
-        var expectedResult: LocalFeedImageDataLoader.SaveResult?
-        let exp = expectation(description: "Waiting for saving new image")
-        sut.save(imageData, for: imageURL, completion: { expectedResult = $0; exp.fulfill() })
-        store.completeInsert(with: .failure(LocalFeedImageDataLoader.SaveError.failed))
-        wait(for: [exp], timeout: 1.0)
-        
-        switch expectedResult {
-        case .failure(let error):
-            XCTAssertEqual(error as LocalFeedImageDataLoader.SaveError, .failed)
-        default:
-            XCTFail("Unexpected result: \(String(describing: expectedResult))")
+      
+        expect(sut: sut, toFinishSaveImageWith: saveFailed()) {
+            store.completeInsert(with: .failure(LocalFeedImageDataLoader.SaveError.failed))
         }
     }
 }
@@ -57,5 +46,36 @@ extension CacheFeedImageDataUseCaseTests {
         
         return (store, sut)
     }
+    
+    func saveFailed() -> LocalFeedImageDataLoader.SaveResult {
+        .failure(.failed)
+    }
+    
+    func expect(sut: LocalFeedImageDataLoader, toFinishSaveImageWith expectedResult: LocalFeedImageDataLoader.SaveResult, when action: () -> Void) {
 
+        let imageData = makeAnyData()
+        let imageURL = makeAnyUrl()
+        
+        var capturedResult: LocalFeedImageDataLoader.SaveResult?
+        let exp = expectation(description: "Waiting for saving new image")
+        sut.save(
+            imageData,
+            for: imageURL,
+            completion: {
+                capturedResult = $0
+                exp.fulfill() })
+       
+        action()
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        switch (expectedResult, capturedResult) {
+        case let (.failure(expectedError), .failure(capturedError)):
+            XCTAssertEqual(expectedError, capturedError)
+        case let (.success(expectedData), .success(capturedData)):
+            XCTAssertEqual(expectedData, capturedData)
+        default:
+            XCTFail("Unexpected result: \(String(describing: expectedResult))")
+        }
+    }
 }
