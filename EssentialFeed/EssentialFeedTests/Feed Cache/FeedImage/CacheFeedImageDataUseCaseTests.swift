@@ -25,6 +25,25 @@ class CacheFeedImageDataUseCaseTests: XCTestCase {
         
         XCTAssertEqual(store.receivedMessages, [.insert(imageData, for: imageURL)])
     }
+    
+    func test_saveImageData_failsOnStoreInsertionError() {
+        let (store, sut) = makeSUT()
+        let imageData = makeAnyData()
+        let imageURL = makeAnyUrl()
+        
+        var expectedResult: LocalFeedImageDataLoader.SaveResult?
+        let exp = expectation(description: "Waiting for saving new image")
+        sut.save(imageData, for: imageURL, completion: { expectedResult = $0; exp.fulfill() })
+        store.completeInsert(with: .failure(LocalFeedImageDataLoader.SaveError.failed))
+        wait(for: [exp], timeout: 1.0)
+        
+        switch expectedResult {
+        case .failure(let error):
+            XCTAssertEqual(error as LocalFeedImageDataLoader.SaveError, .failed)
+        default:
+            XCTFail("Unexpected result: \(String(describing: expectedResult))")
+        }
+    }
 }
 
 extension CacheFeedImageDataUseCaseTests {
@@ -38,4 +57,5 @@ extension CacheFeedImageDataUseCaseTests {
         
         return (store, sut)
     }
+
 }
