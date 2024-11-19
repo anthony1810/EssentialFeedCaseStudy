@@ -28,6 +28,16 @@ class RealmFeedImageDataStoreTests: XCTestCase {
         expect(sut: store, toCompleteRetrievalWith: notFoundResult(), for: makeAnyUrl())
     }
     
+    func test_retrieveImageData_deliversNotFoundWhenURLNotMatched() {
+        let store = RealmFeedStore()
+        let imageData = makeAnyData()
+        
+        let url = makeAnyUrl()
+        let nonMatchingURL = makeAnyUrl()
+        
+        insert(imageData, url: url, into: store)
+        expect(sut: store, toCompleteRetrievalWith: notFoundResult(), for: nonMatchingURL)
+    }
 }
 
 // MARK: - Helpers
@@ -35,18 +45,33 @@ extension RealmFeedImageDataStoreTests {
     
     func expect(sut: RealmFeedStore, toCompleteRetrievalWith expectedResult: FeedImageLoaderProtocol.Result, for url: URL, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Retrieval completed")
-      
+        
         sut.retrieveData(for: url, completion: { capturedResult in
             switch (capturedResult, expectedResult) {
             case let (.success(actualResult), .success(expectedResult)):
-                XCTAssertEqual(actualResult, expectedResult)
+                XCTAssertEqual(actualResult, expectedResult, file: file, line: line)
             default:
-                XCTFail("expected \(expectedResult) but got \(capturedResult) instrad")
+                XCTFail("expected \(expectedResult) but got \(capturedResult) instrad", file: file, line: line)
             }
             exp.fulfill()
         })
         
         wait(for: [exp], timeout: 1.0)
+    }
+    
+    func insert(_ data: Data, url: URL, into sut: RealmFeedStore, file: StaticString = #file, line: UInt = #line) {
+        let image = localImage(url: url)
+        sut.insertCache([image], timestamp: Date()) { error in
+            if let error {
+                XCTFail("Failed to save \(image) with error = \(error)")
+            } else {
+                sut.insert(data, for: url) { result in
+                    if case let .failure(error) = result {
+                        XCTFail("Failed to insert data with error = \(error)")
+                    }
+                }
+            }
+        }
     }
     
     private func makeSUT(
@@ -57,7 +82,7 @@ extension RealmFeedImageDataStoreTests {
         
         let sut = RealmFeedStore(realmConfig: configuration)
         trackForMemoryLeaks(sut)
-
+        
         return sut
     }
     
@@ -67,15 +92,19 @@ extension RealmFeedImageDataStoreTests {
     
     private static var realmTestConfiguration: Realm.Configuration {
         Realm.Configuration(
-           fileURL: FileManager.default.temporaryDirectory.appendingPathComponent("\(type(of: self)).realm"),
-           inMemoryIdentifier: nil,
-           schemaVersion: 1,
-           migrationBlock: nil,
-           deleteRealmIfMigrationNeeded: true
-       )
+            fileURL: FileManager.default.temporaryDirectory.appendingPathComponent("\(type(of: self)).realm"),
+            inMemoryIdentifier: nil,
+            schemaVersion: 1,
+            migrationBlock: nil,
+            deleteRealmIfMigrationNeeded: true
+        )
     }
     
-    func notFoundResult() -> FeedImageLoaderProtocol.Result {
+    private func notFoundResult() -> FeedImageLoaderProtocol.Result {
         .success(.none)
+    }
+    
+    private func localImage(url: URL) -> LocalFeedImage {
+        LocalFeedImage(id: UUID(), description: "any", location: "any", url: url)
     }
 }

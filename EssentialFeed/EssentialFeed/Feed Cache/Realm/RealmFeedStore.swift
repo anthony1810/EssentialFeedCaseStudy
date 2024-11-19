@@ -26,7 +26,7 @@ public class RealmFeedStore {
 extension RealmFeedStore: FeedStoreProtocol {
     public func deleteCache(completion: @escaping DeletionCacheCompletion) {
         do {
-            let realm = try Realm(configuration: realmConfig)
+            let realm = try makeRealm()
            
             let deleteAction = {
                 realm.deleteAll()
@@ -47,7 +47,7 @@ extension RealmFeedStore: FeedStoreProtocol {
     
     public func insertCache(_ items: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCacheCompletion) {
         do {
-            let realm = try Realm(configuration: realmConfig)
+            let realm = try makeRealm()
             
             let cache = RealmCache()
             cache.timestamp = timestamp
@@ -73,7 +73,7 @@ extension RealmFeedStore: FeedStoreProtocol {
     
     public func retrieve(completion: @escaping RetrievalCompletion) {
         do {
-            let realm = try Realm(configuration: realmConfig)
+            let realm = try makeRealm()
             if let cache = realm.objects(RealmCache.self).first {
                 completion(.success(.found(cache.feeds.map(\.local), cache.timestamp)))
             } else {
@@ -82,5 +82,12 @@ extension RealmFeedStore: FeedStoreProtocol {
         } catch {
             completion(.failure(error))
         }
+    }
+}
+
+extension RealmFeedStore {
+    public func makeRealm() throws -> Realm {
+        let realm = try Realm(configuration: realmConfig)
+        return realm
     }
 }
