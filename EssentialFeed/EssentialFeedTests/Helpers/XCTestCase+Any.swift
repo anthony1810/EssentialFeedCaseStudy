@@ -9,11 +9,11 @@ import XCTest
 
 extension XCTestCase {
     func makeAnyError() -> NSError {
-        NSError(domain: "any error", code: 0, userInfo: nil)
+        NSError(domain: "any error", code: Int.random(in: 0..<Int.max), userInfo: nil)
     }
     
     func makeAnyUrl() -> URL {
-        URL(string: "https://any-url.com")!
+        URL(string: "https://any-url.com\(Int.random(in: 0..<Int.max))")!
     }
     
     func makeAnyData() -> Data {
