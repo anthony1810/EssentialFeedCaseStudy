@@ -47,7 +47,7 @@ final class FeedAPIEndToEndTests: XCTestCase {
         
         switch getFeedImageResult(from: testServerURL) {
         case .success(let imageData)?:
-            XCTAssertEqual(imageData.isEmpty, false, "Expected received image data to be non-empty")
+            XCTAssertEqual(imageData?.isEmpty, false, "Expected received image data to be non-empty")
         case .failure(let error):
             XCTFail("Expected image loader to succeed, but received error: \(error) instead")
         default:
