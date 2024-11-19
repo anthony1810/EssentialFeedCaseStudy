@@ -148,7 +148,7 @@ class RealmFeedStoreUseCaseTests: FeedCacheTests, FailableFeedStore, FeedStoreTe
 }
 
 extension RealmFeedStoreUseCaseTests {
-    private func makeSUT(configuration: Realm.Configuration = .defaultConfiguration) -> FeedStoreProtocol {
+    private func makeSUT(configuration: Realm.Configuration = RealmFeedStoreUseCaseTests.realmTestConfiguration) -> FeedStoreProtocol {
         let sut = RealmFeedStore(realmConfig: configuration)
         trackForMemoryLeaks(sut)
        
@@ -156,8 +156,18 @@ extension RealmFeedStoreUseCaseTests {
     }
     
     private func clearCache() {
-        try? Realm().write {
-            try? Realm().deleteAll()
+        if let fileURL = RealmFeedStoreUseCaseTests.realmTestConfiguration.fileURL {
+            try? FileManager.default.removeItem(at: fileURL)
         }
+    }
+    
+    private static var realmTestConfiguration: Realm.Configuration {
+        Realm.Configuration(
+           fileURL: FileManager.default.temporaryDirectory.appendingPathComponent("\(type(of: self)).realm"),
+           inMemoryIdentifier: nil,
+           schemaVersion: 1,
+           migrationBlock: nil,
+           deleteRealmIfMigrationNeeded: true
+       )
     }
 }
