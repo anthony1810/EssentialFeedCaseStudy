@@ -88,6 +88,17 @@ class RealmFeedImageDataStoreTests: XCTestCase {
         insert(imageData, url: url, into: store)
         expect(sut: store, toCompleteRetrievalWith: foundResult(data: imageData), for: url)
     }
+    
+    func test_retrieveImageData_deliversLastInsertedValue() {
+        let store = makeSUT()
+        let firstStoreImageData = makeAnyData()
+        let lastStoreImageData = makeAnyData()
+        let url = makeAnyUrl()
+        
+        insert(firstStoreImageData, url: url, into: store)
+        insert(lastStoreImageData, url: url, into: store)
+        expect(sut: store, toCompleteRetrievalWith: foundResult(data: lastStoreImageData), for: url)
+    }
 }
 
 // MARK: - Helpers
