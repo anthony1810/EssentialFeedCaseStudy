@@ -99,6 +99,22 @@ class RealmFeedImageDataStoreTests: XCTestCase {
         insert(lastStoreImageData, url: url, into: store)
         expect(sut: store, toCompleteRetrievalWith: foundResult(data: lastStoreImageData), for: url)
     }
+    
+    func test_retrieveImageData_runSeriallyWithoutSideEffects() {
+        let sut = makeSUT()
+        let url = makeAnyUrl()
+        
+        let op1 = expectation(description: "op1")
+        sut.insert(makeAnyData(), for: url, completion: {_ in op1.fulfill() })
+        
+        let op2 = expectation(description: "op2")
+        sut.insert(makeAnyData(), for: url, completion: {_ in op2.fulfill() })
+        
+        let op3 = expectation(description: "op3")
+        sut.insert(makeAnyData(), for: url, completion: {_ in op3.fulfill() })
+        
+        wait(for: [op1, op2, op3], timeout: 5.0, enforceOrder: true)
+    }
 }
 
 // MARK: - Helpers
