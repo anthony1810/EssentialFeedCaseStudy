@@ -23,13 +23,13 @@ extension RealmFeedStore: LocalFeedImageStoreProtocol {
 class RealmFeedImageDataStoreTests: XCTestCase {
     
     func test_retrieveImageData_deliversNotFoundWhenEmpty() {
-        let store = RealmFeedStore()
+        let store = makeSUT()
         
         expect(sut: store, toCompleteRetrievalWith: notFoundResult(), for: makeAnyUrl())
     }
     
     func test_retrieveImageData_deliversNotFoundWhenURLNotMatched() {
-        let store = RealmFeedStore()
+        let store = makeSUT()
         let imageData = makeAnyData()
         
         let url = makeAnyUrl()
@@ -78,7 +78,7 @@ extension RealmFeedImageDataStoreTests {
         configuration: Realm.Configuration = RealmFeedImageDataStoreTests.realmTestConfiguration,
         file: StaticString = #file,
         line: UInt = #line
-    ) -> FeedStoreProtocol {
+    ) -> RealmFeedStore {
         
         let sut = RealmFeedStore(realmConfig: configuration)
         trackForMemoryLeaks(sut)

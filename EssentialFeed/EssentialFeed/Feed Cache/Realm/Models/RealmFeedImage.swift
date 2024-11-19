@@ -13,6 +13,7 @@ class RealmFeedImage: Object, ObjectKeyIdentifiable {
     @Persisted var imageDescription: String?
     @Persisted var location: String?
     @Persisted var url: String
+    @Persisted var data: Data?
     
     var local: LocalFeedImage {
         LocalFeedImage(id: id, description: imageDescription, location: location, url: URL(string: url)!)
