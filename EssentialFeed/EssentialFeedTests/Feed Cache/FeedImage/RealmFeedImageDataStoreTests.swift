@@ -25,7 +25,7 @@ class RealmFeedImageDataStoreTests: XCTestCase {
     func test_retrieveImageData_deliversNotFoundWhenEmpty() {
         let store = RealmFeedStore()
         
-        expect(sut: store, toCompleteRetrievalWith: .success(.none), for: makeAnyUrl())
+        expect(sut: store, toCompleteRetrievalWith: notFoundResult(), for: makeAnyUrl())
     }
     
 }
@@ -73,5 +73,9 @@ extension RealmFeedImageDataStoreTests {
            migrationBlock: nil,
            deleteRealmIfMigrationNeeded: true
        )
+    }
+    
+    func notFoundResult() -> FeedImageLoaderProtocol.Result {
+        .success(.none)
     }
 }
