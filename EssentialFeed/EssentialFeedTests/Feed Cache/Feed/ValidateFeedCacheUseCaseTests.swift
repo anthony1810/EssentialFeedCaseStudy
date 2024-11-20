@@ -104,6 +104,19 @@ final class EssentialFeedTests: FeedCacheTests {
             store.completeRetrieval(with: [expectedFeed.localModel], timestamp: nonExpiredTimestamp)
         }
     }
+    
+    func test_validateCache_failsDeletionErrorOnExpiredCache() {
+        let (store, sut) = makeSUT()
+        let expectedFeed = uniqueItem()
+        
+        let expiredTimestamp = Date().minusCacheMaxAgeInDays.minusCacheMaxAgeInDays.addingSeconds(-1)
+        let deletionError = makeAnyError()
+        
+        expectValidationResult(.failure(deletionError), on: sut) {
+            store.completeRetrieval(with: [expectedFeed.localModel], timestamp: expiredTimestamp)
+            store.completeDeletion(error: deletionError)
+        }
+    }
 }
 
 extension EssentialFeedTests {
