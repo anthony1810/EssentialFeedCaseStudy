@@ -66,4 +66,33 @@ final class EssentialFeedTests: FeedCacheTests {
         
         XCTAssertEqual(store.receivedMessages, [.retrieved])
     }
+    
+    func test_validateCache_failsOnDeletionErrorOfFailedRetrieval() {
+        let (store, sut) = makeSUT()
+        let deletionError = makeAnyError()
+        
+        expectValidationResult(.failure(deletionError), on: sut) {
+            store.completeRetrieval(error: deletionError)
+            store.completeDeletion(error: deletionError)
+        }
+    }
+}
+
+extension EssentialFeedTests {
+    func expectValidationResult(_ expectedResult: LocalFeedLoader.ValidateResult, on sut: LocalFeedLoader, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "validateCache")
+        sut.validateCache { actualResult in
+            switch(actualResult, expectedResult) {
+            case (.success, .success):
+                break
+            case let (.failure(actualError as NSError), .failure(expectedError as NSError)):
+                XCTAssertEqual(actualError, expectedError, file: file, line: line)
+            default:
+                XCTFail("Expected \(expectedResult) but got \(actualResult) instead", file: file, line: line)
+            }
+            exp.fulfill()
+        }
+        action()
+        wait(for: [exp], timeout: 1.0)
+    }
 }

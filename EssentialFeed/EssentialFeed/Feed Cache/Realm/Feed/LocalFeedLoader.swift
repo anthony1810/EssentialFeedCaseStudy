@@ -68,19 +68,15 @@ extension LocalFeedLoader {
         store.retrieve(completion: { [weak self] result in
             guard let self else { return }
             switch result {
-            case .failure:
-                store.deleteCache(completion: { _ in completion(self.successValidation()) })
+            case .failure(let error):
+                store.deleteCache(completion: { _ in completion(.failure(error)) })
             case let .success(.found(_, timestamp))
-                where !FeedCachePolicy.validate(timestamp, against: Date()):
-                store.deleteCache(completion: { _ in completion(self.successValidation()) })
+                where !FeedCachePolicy.validate(timestamp, against: self.timestamp()):
+                store.deleteCache(completion: { _ in completion(.success(())) })
             case .success:
-                completion(self.successValidation())
+                completion(.success(()))
             }
         })
-    }
-    
-    private func successValidation() -> ValidateResult {
-        .success(())
     }
 }
 
