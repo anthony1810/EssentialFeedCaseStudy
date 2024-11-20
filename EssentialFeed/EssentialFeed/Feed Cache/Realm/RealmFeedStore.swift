@@ -16,15 +16,11 @@ public class RealmFeedStore {
     }
     
     public func clearCache() {
-        guard let realm = try? Realm(configuration: realmConfig) else { return }
-        try? realm.write {
-            realm.deleteAll()
+        if let fileURL = realmConfig.fileURL {
+            try? FileManager.default.removeItem(at: fileURL)
         }
     }
-}
-
-
-extension RealmFeedStore {
+    
     public func makeRealm() throws -> Realm {
         let realm = try Realm(configuration: realmConfig)
         return realm
