@@ -76,6 +76,15 @@ final class EssentialFeedTests: FeedCacheTests {
             store.completeDeletion(error: deletionError)
         }
     }
+    
+   func test_validateCache_succeedsOnDeletionSuccessOfFailedRetrieval() {
+        let (store, sut) = makeSUT()
+        
+       expectValidationResult(.success(()), on: sut) {
+            store.completeRetrieval(error: makeAnyError())
+            store.completeDeletionSuccessfully()
+        }
+    }
 }
 
 extension EssentialFeedTests {
