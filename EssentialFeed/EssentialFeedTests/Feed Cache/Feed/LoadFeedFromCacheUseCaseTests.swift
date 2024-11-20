@@ -35,7 +35,7 @@ class LoadFeedFromCacheUseCaseTests: FeedCacheTests {
     func test_load_deliverNoImageOnEmptyCache() {
         let (store, sut) = makeSUT()
         expect(sut: sut, toCompleteWith: .success([])) {
-            store.completeRetrievalSuccessfully()
+            store.completeRetrievalWithEmptyFeedSuccessfully()
         }
     }
     
@@ -84,7 +84,7 @@ class LoadFeedFromCacheUseCaseTests: FeedCacheTests {
         let (store, sut) = makeSUT()
         
         expect(sut: sut, toCompleteWith: .success([])) {
-            store.completeRetrievalSuccessfully()
+            store.completeRetrievalWithEmptyFeedSuccessfully()
         }
         
         XCTAssertEqual(store.receivedMessages, [.retrieved])
@@ -121,7 +121,7 @@ class LoadFeedFromCacheUseCaseTests: FeedCacheTests {
         sut?.load(completion: { captureResult.append($0) })
         
         sut = nil
-        store.completeRetrievalSuccessfully()
+        store.completeRetrievalWithEmptyFeedSuccessfully()
         
         XCTAssertTrue(captureResult.isEmpty)
     }

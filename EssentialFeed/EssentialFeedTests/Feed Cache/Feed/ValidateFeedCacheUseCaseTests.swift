@@ -40,7 +40,7 @@ final class EssentialFeedTests: FeedCacheTests {
         let (store, sut) = makeSUT()
         
         sut.validateCache(completion: {_ in })
-        store.completeRetrievalSuccessfully()
+        store.completeRetrievalWithEmptyFeedSuccessfully()
         
         XCTAssertEqual(store.receivedMessages, [.retrieved])
     }
@@ -62,7 +62,7 @@ final class EssentialFeedTests: FeedCacheTests {
         
         sut?.validateCache(completion: {_ in })
         sut = nil
-        store.completeRetrievalSuccessfully()
+        store.completeRetrievalWithEmptyFeedSuccessfully()
         
         XCTAssertEqual(store.receivedMessages, [.retrieved])
     }
@@ -83,6 +83,14 @@ final class EssentialFeedTests: FeedCacheTests {
        expectValidationResult(.success(()), on: sut) {
             store.completeRetrieval(error: makeAnyError())
             store.completeDeletionSuccessfully()
+        }
+    }
+    
+    func test_validateCache_succeedsOnEmptyCache() {
+        let (store, sut) = makeSUT()
+        
+       expectValidationResult(.success(()), on: sut) {
+           store.completeRetrievalWithEmptyFeedSuccessfully()
         }
     }
 }
