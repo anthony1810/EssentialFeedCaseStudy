@@ -49,10 +49,75 @@ final class FeedCacheIntegrationTests: XCTestCase {
         expect(sut: sutToPerformSecondSave, withExpectedItems: [latestFeed], toCompleteSaveWith: nil)
         expect(sut: sutToLoad, toCompleteLoadWith: .success([latestFeed]))
     }
+    
+    func test_loadImageData_deliversSaveDataOnSeperateInstance() {
+        let sutToSave = makeFeedImageLoader()
+        let sutToLoad = makeFeedImageLoader()
+        
+        let feedLoader = makeFeedLoader()
+        let feedItem = uniqueItem().domainModel
+        
+        let expectedImageData = makeAnyData()
+        
+        expect(sut: feedLoader, withExpectedItems: [feedItem], toCompleteSaveWith: nil)
+        save(expectedImageData, with: feedItem.imageURL, with: sutToSave)
+        expect(sut: sutToLoad, toLoad: .success(expectedImageData), for: feedItem.imageURL)
+    }
 
 }
 
+// MARK: - FeedImageDataLoaer
 extension FeedCacheIntegrationTests {
+    private func makeFeedImageLoader() -> LocalFeedImageDataLoader {
+        let cacheStore = RealmFeedStore(realmConfig: FeedCacheIntegrationTests.realmTestConfiguration)
+        let feedImageLoader = LocalFeedImageDataLoader(store: cacheStore)
+        
+        trackForMemoryLeaks(feedImageLoader)
+        trackForMemoryLeaks(cacheStore)
+        
+        return feedImageLoader
+    }
+    
+    private func save(_ data: Data, with url: URL, with sut: LocalFeedImageDataLoader, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "Wait for save completion")
+        sut.save(data, for: url) { result in
+            if case let .failure(error) = result {
+                XCTFail("Unexpected error: \(error)", file: file, line: line)
+            }
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    private func expect(sut: LocalFeedImageDataLoader, toLoad expectedResult: LocalFeedImageDataLoader.Result, for url: URL, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "Wait for save completion")
+        _ = sut.loadImageData(from: url) { actualResult in
+            switch (actualResult, expectedResult) {
+            case let (.failure(actualError as LocalFeedImageDataLoader.LoadError), .failure(expectedError as LocalFeedImageDataLoader.LoadError)):
+                XCTAssertEqual(actualError, expectedError, file: file, line: line)
+            case let (.success(actualData), .success(expectedData)):
+                XCTAssertEqual(actualData, expectedData, file: file, line: line)
+            default:
+                XCTFail("Expected \(expectedResult), got \(actualResult) instead", file: file, line: line)
+            }
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+    }
+}
+
+// MARK: - FeedLoader
+extension FeedCacheIntegrationTests {
+    
+    private func makeFeedLoader() -> LocalFeedLoader {
+        let cacheStore = RealmFeedStore(realmConfig: FeedCacheIntegrationTests.realmTestConfiguration)
+        let feedloader = LocalFeedLoader(store: cacheStore, timestamp: Date.init)
+        
+        trackForMemoryLeaks(feedloader)
+        trackForMemoryLeaks(cacheStore)
+        
+        return feedloader
+    }
     
     private func expect(sut: FeedLoader, toCompleteLoadWith expectedResult: FeedLoader.Result, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for load completion")
@@ -91,16 +156,6 @@ extension FeedCacheIntegrationTests {
         default:
             XCTFail("expect \(String(describing: capturedError)) and \(String(describing: expectedError)) to be equal but they are not")
         }
-    }
-    
-    private func makeFeedLoader() -> LocalFeedLoader {
-        let cacheStore = RealmFeedStore(realmConfig: FeedCacheIntegrationTests.realmTestConfiguration)
-        let feedloader = LocalFeedLoader(store: cacheStore, timestamp: Date.init)
-        
-        trackForMemoryLeaks(feedloader)
-        trackForMemoryLeaks(cacheStore)
-        
-        return feedloader
     }
     
     func uniqueItem() -> (domainModel: FeedImage, localModel: LocalFeedImage) {
