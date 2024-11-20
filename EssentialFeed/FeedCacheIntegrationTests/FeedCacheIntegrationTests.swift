@@ -64,7 +64,23 @@ final class FeedCacheIntegrationTests: XCTestCase {
         expect(sut: sutToLoad, toLoad: .success(expectedImageData), for: feedItem.imageURL)
     }
     
-
+    func test_loadFeedImageData_deliversOverrideSavedImageOnSeparateInstance() {
+        let sutToPerformFirstSave = makeFeedImageLoader()
+        let sutToPerformSecondSave = makeFeedImageLoader()
+        let sutToLoad = makeFeedImageLoader()
+        
+        let feedLoader = makeFeedLoader()
+        let feedItem = uniqueItem().domainModel
+        
+        let firstFeedImageData = makeAnyData()
+        let lastFeedImageData = makeAnyData()
+        
+        expect(sut: feedLoader, withExpectedItems: [feedItem], toCompleteSaveWith: nil)
+        save(firstFeedImageData, with: feedItem.imageURL, with: sutToPerformFirstSave)
+        save(lastFeedImageData, with: feedItem.imageURL, with: sutToPerformSecondSave)
+        
+        expect(sut: sutToLoad, toLoad: .success(lastFeedImageData), for: feedItem.imageURL)
+    }
 }
 
 // MARK: - FeedImageDataLoaer
