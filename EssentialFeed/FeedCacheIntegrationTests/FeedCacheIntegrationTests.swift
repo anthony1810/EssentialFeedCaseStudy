@@ -24,14 +24,14 @@ final class FeedCacheIntegrationTests: XCTestCase {
     }
 
     func test_load_deliversNoItemsOnEmptyCache() throws {
-        let sut = makeSUT()
+        let sut = makeFeedLoader()
         
         expect(sut: sut, toCompleteLoadWith: .success([]))
     }
     
     func test_load_deliversItemsSavedOnSeperateInstance() {
-        let sutToSave = makeSUT()
-        let sutToLoad = makeSUT()
+        let sutToSave = makeFeedLoader()
+        let sutToLoad = makeFeedLoader()
         let expectedItem = uniqueItem().domainModel
         
         expect(sut: sutToSave, withExpectedItems: [expectedItem], toCompleteSaveWith: nil)
@@ -39,9 +39,9 @@ final class FeedCacheIntegrationTests: XCTestCase {
     }
     
     func test_save_overridesItemsSavedOnSeperateInstance() {
-        let sutToPerformFirstSave = makeSUT()
-        let sutToPerformSecondSave = makeSUT()
-        let sutToLoad = makeSUT()
+        let sutToPerformFirstSave = makeFeedLoader()
+        let sutToPerformSecondSave = makeFeedLoader()
+        let sutToLoad = makeFeedLoader()
         let expectedItem = uniqueItem().domainModel
         let latestFeed = uniqueItem().domainModel
         
@@ -76,7 +76,7 @@ extension FeedCacheIntegrationTests {
     }
     
     private func expect(sut: LocalFeedLoader, withExpectedItems items: [FeedImage], toCompleteSaveWith expectedError: Error?) {
-        let sutToSave = makeSUT()
+        let sutToSave = makeFeedLoader()
         
         var capturedError: Error?
         sutToSave.save(items, completion: { error in
@@ -93,7 +93,7 @@ extension FeedCacheIntegrationTests {
         }
     }
     
-    private func makeSUT() -> LocalFeedLoader {
+    private func makeFeedLoader() -> LocalFeedLoader {
         let cacheStore = RealmFeedStore(realmConfig: FeedCacheIntegrationTests.realmTestConfiguration)
         let feedloader = LocalFeedLoader(store: cacheStore, timestamp: Date.init)
         
