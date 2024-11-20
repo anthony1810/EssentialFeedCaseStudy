@@ -93,6 +93,17 @@ final class EssentialFeedTests: FeedCacheTests {
            store.completeRetrievalWithEmptyFeedSuccessfully()
         }
     }
+    
+    func test_validateCache_succeedsOnNonExpiredCache() {
+        let (store, sut) = makeSUT()
+        let expectedFeed = uniqueItem()
+        
+        let nonExpiredTimestamp = Date().minusCacheMaxAgeInDays.addingSeconds(1)
+        
+        expectValidationResult(.success(()), on: sut) {
+            store.completeRetrieval(with: [expectedFeed.localModel], timestamp: nonExpiredTimestamp)
+        }
+    }
 }
 
 extension EssentialFeedTests {
