@@ -81,6 +81,20 @@ final class FeedCacheIntegrationTests: XCTestCase {
         
         expect(sut: sutToLoad, toLoad: .success(lastFeedImageData), for: feedItem.imageURL)
     }
+    
+    func test_saveFeedImageData_doesNotDeleteRecentSavedImageOnValidatingCache() {
+        let feedLoader = makeFeedLoader()
+        let feedImageLoader = makeFeedImageLoader()
+        
+        let feedItem = uniqueItem().domainModel
+        
+        let expectedImageData = makeAnyData()
+        
+        expect(sut: feedLoader, withExpectedItems: [feedItem], toCompleteSaveWith: nil)
+        save(expectedImageData, with: feedItem.imageURL, with: feedImageLoader)
+        
+        expect(sut: feedImageLoader, toLoad: .success(expectedImageData), for: feedItem.imageURL)
+    }
 }
 
 // MARK: - FeedImageDataLoaer
@@ -134,6 +148,19 @@ extension FeedCacheIntegrationTests {
         trackForMemoryLeaks(cacheStore)
         
         return feedloader
+    }
+    
+    private func validateCache(with loader: LocalFeedLoader, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "Wait for load completion")
+        
+        loader.validateCache { result in
+            if case let .failure(error) = result {
+                XCTFail("Unexpected error: \(error)", file: file, line: line)
+            }
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
     }
     
     private func expect(sut: FeedLoader, toCompleteLoadWith expectedResult: FeedLoader.Result, file: StaticString = #file, line: UInt = #line) {
