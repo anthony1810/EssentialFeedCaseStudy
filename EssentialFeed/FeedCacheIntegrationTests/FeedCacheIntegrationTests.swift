@@ -23,13 +23,13 @@ final class FeedCacheIntegrationTests: XCTestCase {
         clearStoreArtifacts()
     }
 
-    func test_load_deliversNoItemsOnEmptyCache() throws {
+    func test_loadFeed_deliversNoItemsOnEmptyCache() throws {
         let sut = makeFeedLoader()
         
         expect(sut: sut, toCompleteLoadWith: .success([]))
     }
     
-    func test_load_deliversItemsSavedOnSeperateInstance() {
+    func test_loadFeed_deliversItemsSavedOnSeperateInstance() {
         let sutToSave = makeFeedLoader()
         let sutToLoad = makeFeedLoader()
         let expectedItem = uniqueItem().domainModel
@@ -38,7 +38,7 @@ final class FeedCacheIntegrationTests: XCTestCase {
         expect(sut: sutToLoad, toCompleteLoadWith: .success([expectedItem]))
     }
     
-    func test_save_overridesItemsSavedOnSeperateInstance() {
+    func test_saveFeed_overridesItemsSavedOnSeperateInstance() {
         let sutToPerformFirstSave = makeFeedLoader()
         let sutToPerformSecondSave = makeFeedLoader()
         let sutToLoad = makeFeedLoader()
@@ -50,7 +50,7 @@ final class FeedCacheIntegrationTests: XCTestCase {
         expect(sut: sutToLoad, toCompleteLoadWith: .success([latestFeed]))
     }
     
-    func test_loadImageData_deliversSaveDataOnSeperateInstance() {
+    func test_loadFeedImageData_deliversSaveDataOnSeperateInstance() {
         let sutToSave = makeFeedImageLoader()
         let sutToLoad = makeFeedImageLoader()
         
@@ -63,6 +63,7 @@ final class FeedCacheIntegrationTests: XCTestCase {
         save(expectedImageData, with: feedItem.imageURL, with: sutToSave)
         expect(sut: sutToLoad, toLoad: .success(expectedImageData), for: feedItem.imageURL)
     }
+    
 
 }
 
