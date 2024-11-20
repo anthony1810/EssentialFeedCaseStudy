@@ -11,7 +11,7 @@ public class RealmFeedStore {
     
     let realmConfig: Realm.Configuration
     
-    public init (realmConfig: Realm.Configuration = .defaultConfiguration) {
+    public init (realmConfig: Realm.Configuration) {
         self.realmConfig = realmConfig
     }
     

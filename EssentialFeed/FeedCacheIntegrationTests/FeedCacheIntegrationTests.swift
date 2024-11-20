@@ -94,7 +94,7 @@ extension FeedCacheIntegrationTests {
     }
     
     private func makeSUT() -> LocalFeedLoader {
-        let cacheStore = RealmFeedStore()
+        let cacheStore = RealmFeedStore(realmConfig: FeedCacheIntegrationTests.realmTestConfiguration)
         let feedloader = LocalFeedLoader(store: cacheStore, timestamp: Date.init)
         
         trackForMemoryLeaks(feedloader)
@@ -111,12 +111,18 @@ extension FeedCacheIntegrationTests {
     }
     
     func clearStoreArtifacts() {
-        if try! Realm().isInWriteTransaction {
-            try? Realm().deleteAll()
-        } else {
-            try? Realm().write({
-                try? Realm().deleteAll()
-            })
+       if let fileURL = FeedCacheIntegrationTests.realmTestConfiguration.fileURL {
+            try? FileManager.default.removeItem(at: fileURL)
         }
+    }
+    
+    private static var realmTestConfiguration: Realm.Configuration {
+        Realm.Configuration(
+            fileURL: FileManager.default.temporaryDirectory.appendingPathComponent("\(type(of: self)).realm"),
+            inMemoryIdentifier: nil,
+            schemaVersion: 1,
+            migrationBlock: nil,
+            deleteRealmIfMigrationNeeded: true
+        )
     }
 }
