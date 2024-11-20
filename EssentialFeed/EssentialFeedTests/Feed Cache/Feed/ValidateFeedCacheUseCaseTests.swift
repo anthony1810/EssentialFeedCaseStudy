@@ -20,7 +20,7 @@ final class EssentialFeedTests: FeedCacheTests {
         let (store, sut) = makeSUT()
         let expectedError = makeAnyError()
         
-        sut.validateCache()
+        sut.validateCache(completion: {_ in })
         store.completeRetrieval(error: expectedError)
         
         XCTAssertEqual(store.receivedMessages, [.retrieved, .deletedCache])
@@ -30,7 +30,7 @@ final class EssentialFeedTests: FeedCacheTests {
         let sevenDaysBeforeToday = Date().minusCacheMaxAgeInDays.addingSeconds(-1)
         let (store, sut) = makeSUT(timestamp: Date.init)
     
-        sut.validateCache()
+        sut.validateCache(completion: {_ in })
         store.completeRetrieval(with: [], timestamp: sevenDaysBeforeToday)
         
         XCTAssertEqual(store.receivedMessages, [.retrieved, .deletedCache])
@@ -39,7 +39,7 @@ final class EssentialFeedTests: FeedCacheTests {
     func test_load_doesNotDeleteCacheOnRetrieveSuccess() {
         let (store, sut) = makeSUT()
         
-        sut.validateCache()
+        sut.validateCache(completion: {_ in })
         store.completeRetrievalSuccessfully()
         
         XCTAssertEqual(store.receivedMessages, [.retrieved])
@@ -50,7 +50,7 @@ final class EssentialFeedTests: FeedCacheTests {
         let expectedFeed = uniqueItem()
         let sevenDaysBeforeToday = Date().minusCacheMaxAgeInDays.addingSeconds(1)
         
-        sut.validateCache()
+        sut.validateCache(completion: {_ in })
         store.completeRetrieval(with: [expectedFeed.localModel], timestamp: sevenDaysBeforeToday)
         
         XCTAssertEqual(store.receivedMessages, [.retrieved])
@@ -60,7 +60,7 @@ final class EssentialFeedTests: FeedCacheTests {
         let store = FeedStoreSpy()
         var sut: LocalFeedLoader? = LocalFeedLoader(store: store, timestamp: Date.init)
         
-        sut?.validateCache()
+        sut?.validateCache(completion: {_ in })
         sut = nil
         store.completeRetrievalSuccessfully()
         
