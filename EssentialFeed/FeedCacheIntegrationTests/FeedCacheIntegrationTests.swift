@@ -92,8 +92,24 @@ final class FeedCacheIntegrationTests: XCTestCase {
         
         expect(sut: feedLoader, withExpectedItems: [feedItem], toCompleteSaveWith: nil)
         save(expectedImageData, with: feedItem.imageURL, with: feedImageLoader)
+        validateCache(with: feedLoader)
         
         expect(sut: feedImageLoader, toLoad: .success(expectedImageData), for: feedItem.imageURL)
+    }
+    
+    func test_saveFeedImageData_deletesDistancePastSavedImageOnInvalidatingCache() {
+        let feedLoader = makeFeedLoader(currentDate: .distantPast)
+        let feedImageLoader = makeFeedImageLoader()
+        
+        let feedItem = uniqueItem().domainModel
+        
+        let expectedImageData = makeAnyData()
+        
+        expect(sut: feedLoader, withExpectedItems: [feedItem], toCompleteSaveWith: nil)
+        save(expectedImageData, with: feedItem.imageURL, with: feedImageLoader)
+        validateCache(with: feedLoader)
+        
+        expect(sut: feedImageLoader, toLoad: notFoundImageData(), for: feedItem.imageURL)
     }
 }
 
@@ -135,17 +151,21 @@ extension FeedCacheIntegrationTests {
         }
         wait(for: [exp], timeout: 1.0)
     }
+    
+    private func notFoundImageData() -> LocalFeedImageDataLoader.Result {
+        .failure(LocalFeedImageDataLoader.LoadError.notFound)
+    }
 }
 
 // MARK: - FeedLoader
 extension FeedCacheIntegrationTests {
     
-    private func makeFeedLoader() -> LocalFeedLoader {
+    private func makeFeedLoader(currentDate: Date = Date(), file: StaticString = #file, line: UInt = #line) -> LocalFeedLoader {
         let cacheStore = RealmFeedStore(realmConfig: FeedCacheIntegrationTests.realmTestConfiguration)
-        let feedloader = LocalFeedLoader(store: cacheStore, timestamp: Date.init)
+        let feedloader = LocalFeedLoader(store: cacheStore, timestamp: { currentDate })
         
-        trackForMemoryLeaks(feedloader)
-        trackForMemoryLeaks(cacheStore)
+        trackForMemoryLeaks(feedloader, file: file, line: line)
+        trackForMemoryLeaks(cacheStore, file: file, line: line)
         
         return feedloader
     }
@@ -185,10 +205,9 @@ extension FeedCacheIntegrationTests {
     }
     
     private func expect(sut: LocalFeedLoader, withExpectedItems items: [FeedImage], toCompleteSaveWith expectedError: Error?) {
-        let sutToSave = makeFeedLoader()
         
         var capturedError: Error?
-        sutToSave.save(items, completion: { error in
+        sut.save(items, completion: { error in
             capturedError = error
         })
         

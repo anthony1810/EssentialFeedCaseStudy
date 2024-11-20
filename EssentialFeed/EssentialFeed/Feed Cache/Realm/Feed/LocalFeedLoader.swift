@@ -71,7 +71,7 @@ extension LocalFeedLoader {
             case .failure:
                 store.deleteCache(completion: { _ in completion(self.successValidation()) })
             case let .success(.found(_, timestamp))
-                where !FeedCachePolicy.validate(timestamp, against: self.timestamp()):
+                where !FeedCachePolicy.validate(timestamp, against: Date()):
                 store.deleteCache(completion: { _ in completion(self.successValidation()) })
             case .success:
                 completion(self.successValidation())
