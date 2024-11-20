@@ -29,19 +29,23 @@ extension RealmFeedStore: LocalFeedImageStoreProtocol {
     public func insert(_ data: Data, for url: URL, completion: @escaping (InsertionResult) -> Void) {
         do {
             let realm = try makeRealm()
-            
-            guard let realmImage = realm
-                .objects(RealmFeedImage.self)
-                .where({ $0.url == url.absoluteString })
-                .first
-            else { return completion(.success(.none)) }
+            let insertion = {
+                let result = realm
+                    .objects(RealmFeedImage.self)
+                    .where({ $0.url == url.absoluteString })
+                    .first
+                    .flatMap { foundRealmImage -> Data? in
+                        foundRealmImage.data = data
+                        return data
+                    }
+                
+                completion(.success(result))
+            }
             
             if realm.isInWriteTransaction {
-                realmImage.data = data
+                insertion()
             } else {
-                try realm.write {
-                    realmImage.data = data
-                }
+                try realm.write { insertion() }
             }
         } catch {
             completion(.failure(error))
@@ -158,7 +162,7 @@ extension RealmFeedImageDataStoreTests {
     ) -> RealmFeedStore {
         
         let sut = RealmFeedStore(realmConfig: configuration)
-        trackForMemoryLeaks(sut)
+        trackForMemoryLeaks(sut, file: file, line: line)
         
         return sut
     }
