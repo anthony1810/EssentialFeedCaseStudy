@@ -36,37 +36,14 @@ class FeedLoaderWithFallbackCompositeTests: XCTestCase {
         
         let sut = makeSUT(primaryResult: .success([expectedFeed]), fallbackResult: .success([]))
         
-        let exp = expectation(description: "waiting for load")
-        sut.load { actualResult in
-            switch actualResult {
-                case .success(let actualFeeds):
-                XCTAssertEqual(actualFeeds, [expectedFeed])
-            default:
-                XCTFail("Expect \(expectedFeed), got \(actualResult) instead")
-            }
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
+        expect(sut: sut, toFinishWith: .success([expectedFeed]))
     }
     
     func test_loadFeed_deliversFallbackFeedOnPrimaryLoaderFailure() {
         let expectedFeed = uniqueItem().domainModel
         
         let sut = makeSUT(primaryResult: .failure(makeAnyError()), fallbackResult: .success([expectedFeed]))
-        
-        let exp = expectation(description: "waiting for load")
-        sut.load { actualResult in
-            switch actualResult {
-                case .success(let actualFeeds):
-                XCTAssertEqual(actualFeeds, [expectedFeed])
-            default:
-                XCTFail("Expect \(expectedFeed), got \(actualResult) instead")
-            }
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
+        expect(sut: sut, toFinishWith: .success([expectedFeed]))
     }
 }
 
@@ -87,6 +64,23 @@ extension FeedLoaderWithFallbackCompositeTests {
         trackForMemoryLeaks(localFeedLoader)
         
         return sut
+    }
+    
+    func expect(sut: FeedLoaderWithFallbackComposite, toFinishWith expectedResult: FeedLoader.Result, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "waiting for load")
+        sut.load { actualResult in
+            switch (actualResult, expectedResult) {
+            case let (.success(actualFeeds), .success(expectedFeeds)):
+                XCTAssertEqual(actualFeeds, expectedFeeds, file: file, line: line)
+            case let (.failure(actualError as NSError), .failure(expectedError as NSError)):
+                XCTAssertEqual(actualError, expectedError)
+            default:
+                XCTFail("Expect \(expectedResult), got \(actualResult) instead")
+            }
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
     }
     
     private class FeedLoaderStub: FeedLoader {
