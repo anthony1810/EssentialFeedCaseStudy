@@ -15,14 +15,10 @@ class FeedImageDataLoaderWithFallbackComposite: FeedImageLoaderProtocol {
     let fallback: FeedImageLoaderProtocol
     
     private class Task: ImageLoadingDataTaskProtocol {
-        let wrapped: ImageLoadingDataTaskProtocol
-        
-        init(wrapped: ImageLoadingDataTaskProtocol) {
-            self.wrapped = wrapped
-        }
+        var wrapped: ImageLoadingDataTaskProtocol?
         
         func cancel() {
-            wrapped.cancel()
+            wrapped?.cancel()
         }
     }
     
@@ -32,15 +28,16 @@ class FeedImageDataLoaderWithFallbackComposite: FeedImageLoaderProtocol {
     }
     
     func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> ImageLoadingDataTaskProtocol {
+        let task = Task()
 
-        let task = Task(wrapped: primary.loadImageData(from: url, completion: { [weak self] result in
+        task.wrapped = primary.loadImageData(from: url, completion: { [weak self] result in
             switch result {
             case .success(let data):
                 completion(.success(data))
             case .failure:
-                _ = self?.fallback.loadImageData(from: url, completion: completion)
+                task.wrapped = self?.fallback.loadImageData(from: url, completion: completion)
             }
-        }))
+        })
         
         return task
     }
@@ -96,6 +93,17 @@ class FeedImageLoaderWithFallbackCompositetests: XCTestCase {
         primary.completeLoad(with: .success(makeAnyData()))
         
         XCTAssertEqual(primary.cancelledURLs,  [expectedImageURL])
+    }
+    
+    func test_loadImageData_cencelsTaskCancelFallbackLoadOnPrimaryFailure() {
+        let expectedImageURL = makeAnyUrl()
+        let (sut, primary, fallback) = makeSUT()
+        
+        let task = sut.loadImageData(from: expectedImageURL, completion: {_ in })
+        primary.completeLoad(with: .failure(makeAnyError()))
+        task.cancel()
+        
+        XCTAssertEqual(fallback.cancelledURLs,  [expectedImageURL])
     }
 }
 
