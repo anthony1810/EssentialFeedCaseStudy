@@ -15,8 +15,14 @@ class FeedImageDataLoaderWithFallbackComposite: FeedImageLoaderProtocol {
     let fallback: FeedImageLoaderProtocol
     
     private class Task: ImageLoadingDataTaskProtocol {
+        let wrapped: ImageLoadingDataTaskProtocol
+        
+        init(wrapped: ImageLoadingDataTaskProtocol) {
+            self.wrapped = wrapped
+        }
+        
         func cancel() {
-            
+            wrapped.cancel()
         }
     }
     
@@ -26,15 +32,17 @@ class FeedImageDataLoaderWithFallbackComposite: FeedImageLoaderProtocol {
     }
     
     func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> ImageLoadingDataTaskProtocol {
-        _ = primary.loadImageData(from: url, completion: { [weak self] result in
+
+        let task = Task(wrapped: primary.loadImageData(from: url, completion: { [weak self] result in
             switch result {
             case .success(let data):
                 completion(.success(data))
             case .failure:
                 _ = self?.fallback.loadImageData(from: url, completion: completion)
             }
-        })
-        return Task()
+        }))
+        
+        return task
     }
 }
 
@@ -43,8 +51,8 @@ class FeedImageLoaderWithFallbackCompositetests: XCTestCase {
     func test_loadImageData_doesNotRequestImageURLWhenInit() {
         let (_, primary, fallback) = makeSUT()
         
-        XCTAssertTrue(primary.requestedURLs.isEmpty)
-        XCTAssertTrue(fallback.requestedURLs.isEmpty)
+        XCTAssertTrue(primary.loadedURLs.isEmpty)
+        XCTAssertTrue(fallback.loadedURLs.isEmpty)
     }
     
     func test_loadImageData_loadsFromPrimaryFirst() {
@@ -54,8 +62,8 @@ class FeedImageLoaderWithFallbackCompositetests: XCTestCase {
         
         _ = sut.loadImageData(from: expectedImageURL, completion: {_ in })
         
-        XCTAssertEqual(primary.requestedURLs, [expectedImageURL])
-        XCTAssertTrue(fallback.requestedURLs.isEmpty)
+        XCTAssertEqual(primary.loadedURLs, [expectedImageURL])
+        XCTAssertTrue(fallback.loadedURLs.isEmpty)
     }
     
     func test_loadImageData_loadsFromFallBackOnPrimaryFails() {
@@ -76,7 +84,18 @@ class FeedImageLoaderWithFallbackCompositetests: XCTestCase {
         _ = sut.loadImageData(from: expectedImageURL, completion: {_ in })
         primary.completeLoad(with: .failure(makeAnyError()))
         
-        XCTAssertEqual(fallback.requestedURLs,  [expectedImageURL])
+        XCTAssertEqual(fallback.loadedURLs,  [expectedImageURL])
+    }
+    
+    func test_loadImageData_cancelsTaskCancelPrimaryLoad() {
+        let expectedImageURL = makeAnyUrl()
+        let (sut, primary, _) = makeSUT()
+        
+        let task = sut.loadImageData(from: expectedImageURL, completion: {_ in })
+        task.cancel()
+        primary.completeLoad(with: .success(makeAnyData()))
+        
+        XCTAssertEqual(primary.cancelledURLs,  [expectedImageURL])
     }
 }
 
@@ -115,20 +134,29 @@ extension FeedImageLoaderWithFallbackCompositetests {
     
     private class LoaderSpy: FeedImageLoaderProtocol {
         var messages = [(url: URL, completion: ((FeedImageLoaderProtocol.Result) -> Void))]()
-        var requestedURLs: [URL] {
+        var loadedURLs: [URL] {
             messages.map(\.url)
         }
+        private(set) var cancelledURLs = [URL]()
         
         private class Task: ImageLoadingDataTaskProtocol {
+            let callback: () -> Void
+            
+            init(callback: @escaping () -> Void) {
+                self.callback = callback
+            }
+            
             func cancel() {
-                
+                callback()
             }
         }
         
         func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> ImageLoadingDataTaskProtocol {
             messages.append((url, completion))
             
-            return Task()
+            return Task(callback: { [weak self] in
+                self?.cancelledURLs.append(url)
+            })
         }
         
         func completeLoad(with result: FeedImageLoaderProtocol.Result, at index: Int = 0) {
