@@ -25,20 +25,17 @@ final class FeedLoaderWithFallbackComposite: FeedLoader {
 class FeedLoaderWithFallbackCompositeTests: XCTestCase {
     
     func test_loadFeed_deliversSuccessWhenPrimarySuccess() {
-        let uniqueFeed = uniqueItem().domainModel
+        let expectedFeed = uniqueItem().domainModel
         
-        let remoteFeedLoader = FeedLoaderStub(result: FeedLoader.Result.success([uniqueFeed]))
-        let localFeedLoader = FeedLoaderStub(result: FeedLoader.Result.success([]))
-        
-        let sut = FeedLoaderWithFallbackComposite(primary: remoteFeedLoader, fallback: localFeedLoader)
+        let sut = makeSUT(primaryResult: .success([expectedFeed]), fallbackResult: .success([]))
         
         let exp = expectation(description: "waiting for load")
-        sut.load { result in
-            switch result {
-                case .success(let feeds):
-                XCTAssertEqual(feeds, [uniqueFeed])
+        sut.load { actualResult in
+            switch actualResult {
+                case .success(let actualFeeds):
+                XCTAssertEqual(actualFeeds, [expectedFeed])
             default:
-                XCTFail("Expect \(uniqueFeed), got \(result) instead")
+                XCTFail("Expect \(expectedFeed), got \(actualResult) instead")
             }
             exp.fulfill()
         }
@@ -48,8 +45,30 @@ class FeedLoaderWithFallbackCompositeTests: XCTestCase {
 }
 
 extension FeedLoaderWithFallbackCompositeTests {
-    private struct FeedLoaderStub: FeedLoader {
-        var result: FeedLoader.Result
+    func makeSUT(
+        primaryResult: FeedLoader.Result,
+        fallbackResult: FeedLoader.Result,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) -> FeedLoaderWithFallbackComposite {
+        let remoteFeedLoader = FeedLoaderStub(result: primaryResult)
+        let localFeedLoader = FeedLoaderStub(result: fallbackResult)
+        
+        let sut = FeedLoaderWithFallbackComposite(primary: remoteFeedLoader, fallback: localFeedLoader)
+        
+        trackForMemoryLeaks(sut)
+        trackForMemoryLeaks(remoteFeedLoader)
+        trackForMemoryLeaks(localFeedLoader)
+        
+        return sut
+    }
+    
+    private class FeedLoaderStub: FeedLoader {
+        let result: FeedLoader.Result
+        
+        init(result: FeedLoader.Result) {
+            self.result = result
+        }
         
         func load(completion: @escaping (FeedLoader.Result) -> Void) {
             completion(result)
