@@ -105,6 +105,16 @@ class FeedImageLoaderWithFallbackCompositetests: XCTestCase {
         
         XCTAssertEqual(fallback.cancelledURLs,  [expectedImageURL])
     }
+    
+    func test_loadImageData_deliversPrimaryDataOnPrimarySucceeds() {
+        let expectedImageURL = makeAnyUrl()
+        let expectedImageData = makeAnyData()
+        let (sut, primary, fallback) = makeSUT()
+        
+        expect(sut: sut, toLoad: expectedImageURL, with: .success(expectedImageData)) {
+            primary.completeLoad(with: .success(expectedImageData))
+        }
+    }
 }
 
 extension FeedImageLoaderWithFallbackCompositetests {
