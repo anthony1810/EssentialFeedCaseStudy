@@ -68,6 +68,16 @@ class FeedImageLoaderWithFallbackCompositetests: XCTestCase {
             fallback.completeLoad(with: .success(expectedData))
         }
     }
+    
+    func test_loadImageData_loadsfromFallBackOnPrimaryFails2() {
+        let expectedImageURL = makeAnyUrl()
+        let (sut, primary, fallback) = makeSUT()
+        
+        _ = sut.loadImageData(from: expectedImageURL, completion: {_ in })
+        primary.completeLoad(with: .failure(makeAnyError()))
+        
+        XCTAssertEqual(fallback.requestedURLs,  [expectedImageURL])
+    }
 }
 
 extension FeedImageLoaderWithFallbackCompositetests {
