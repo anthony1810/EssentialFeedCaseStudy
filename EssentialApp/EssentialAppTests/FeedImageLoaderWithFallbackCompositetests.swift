@@ -26,7 +26,7 @@ class FeedImageDataLoaderWithFallbackComposite: FeedImageLoaderProtocol {
     }
     
     func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> ImageLoadingDataTaskProtocol {
-        
+        _ = primary.loadImageData(from: url, completion: completion)
         return Task()
     }
 }
@@ -43,6 +43,17 @@ class FeedImageLoaderWithFallbackCompositetests: XCTestCase {
         XCTAssertTrue(fallback.requestedURLs.isEmpty)
     }
     
+    func test_loadImageData_loadsFromPrimaryFirst() {
+        let primary = LoaderSpy()
+        let fallback = LoaderSpy()
+        let expectedImageURL = makeAnyUrl()
+        
+        let sut = FeedImageDataLoaderWithFallbackComposite(primary: primary, fallback: fallback)
+        _ = sut.loadImageData(from: expectedImageURL, completion: {_ in })
+        
+        XCTAssertEqual(primary.requestedURLs, [expectedImageURL])
+        XCTAssertTrue(fallback.requestedURLs.isEmpty)
+    }
 }
 
 extension FeedImageLoaderWithFallbackCompositetests {
