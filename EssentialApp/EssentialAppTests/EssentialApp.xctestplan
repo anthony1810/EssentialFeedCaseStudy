@@ -23,14 +23,6 @@
         "identifier" : "92D73C232CEE1C1D002A03B4",
         "name" : "EssentialAppTests"
       }
-    },
-    {
-      "parallelizable" : true,
-      "target" : {
-        "containerPath" : "container:EssentialApp.xcodeproj",
-        "identifier" : "92D73C2D2CEE1C1D002A03B4",
-        "name" : "EssentialAppUITests"
-      }
     }
   ],
   "version" : 1
