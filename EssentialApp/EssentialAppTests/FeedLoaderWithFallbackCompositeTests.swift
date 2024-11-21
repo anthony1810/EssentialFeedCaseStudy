@@ -45,6 +45,13 @@ class FeedLoaderWithFallbackCompositeTests: XCTestCase {
         let sut = makeSUT(primaryResult: .failure(makeAnyError()), fallbackResult: .success([expectedFeed]))
         expect(sut: sut, toFinishWith: .success([expectedFeed]))
     }
+    
+    func test_loadFeed_deliversErrorWhenPrimaryAndFallbackFailures() {
+        let expectedError = makeAnyError()
+        
+        let sut = makeSUT(primaryResult: .failure(expectedError), fallbackResult: .failure(expectedError))
+        expect(sut: sut, toFinishWith: .failure(expectedError))
+    }
 }
 
 extension FeedLoaderWithFallbackCompositeTests {
@@ -73,9 +80,9 @@ extension FeedLoaderWithFallbackCompositeTests {
             case let (.success(actualFeeds), .success(expectedFeeds)):
                 XCTAssertEqual(actualFeeds, expectedFeeds, file: file, line: line)
             case let (.failure(actualError as NSError), .failure(expectedError as NSError)):
-                XCTAssertEqual(actualError, expectedError)
+                XCTAssertEqual(actualError, expectedError, file: file, line: line)
             default:
-                XCTFail("Expect \(expectedResult), got \(actualResult) instead")
+                XCTFail("Expect \(expectedResult), got \(actualResult) instead", file: file, line: line)
             }
             exp.fulfill()
         }
