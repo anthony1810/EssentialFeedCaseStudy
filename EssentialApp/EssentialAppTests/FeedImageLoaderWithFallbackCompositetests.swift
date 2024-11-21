@@ -34,21 +34,17 @@ class FeedImageDataLoaderWithFallbackComposite: FeedImageLoaderProtocol {
 class FeedImageLoaderWithFallbackCompositetests: XCTestCase {
     
     func test_loadImageData_doesNotRequestImageURLWhenInit() {
-        let primary = LoaderSpy()
-        let fallback = LoaderSpy()
-        
-        let _ = FeedImageDataLoaderWithFallbackComposite(primary: primary, fallback: fallback)
+        let (_, primary, fallback) = makeSUT()
         
         XCTAssertTrue(primary.requestedURLs.isEmpty)
         XCTAssertTrue(fallback.requestedURLs.isEmpty)
     }
     
     func test_loadImageData_loadsFromPrimaryFirst() {
-        let primary = LoaderSpy()
-        let fallback = LoaderSpy()
+     
         let expectedImageURL = makeAnyUrl()
+        let (sut, primary, fallback) = makeSUT()
         
-        let sut = FeedImageDataLoaderWithFallbackComposite(primary: primary, fallback: fallback)
         _ = sut.loadImageData(from: expectedImageURL, completion: {_ in })
         
         XCTAssertEqual(primary.requestedURLs, [expectedImageURL])
@@ -58,6 +54,17 @@ class FeedImageLoaderWithFallbackCompositetests: XCTestCase {
 
 extension FeedImageLoaderWithFallbackCompositetests {
     
+    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedImageDataLoaderWithFallbackComposite, primary: LoaderSpy, fallback: LoaderSpy) {
+        let primary = LoaderSpy()
+        let fallback = LoaderSpy()
+        
+        let sut = FeedImageDataLoaderWithFallbackComposite(primary: primary, fallback: fallback)
+        trackForMemoryLeaks(sut, file: file, line: line)
+        trackForMemoryLeaks(primary, file: file, line: line)
+        trackForMemoryLeaks(fallback, file: file, line: line)
+        
+        return (sut, primary, fallback)
+    }
     
     private class LoaderSpy: FeedImageLoaderProtocol {
         var messages = [(url: URL, completion: ((FeedImageLoaderProtocol.Result) -> Void))]()
