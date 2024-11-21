@@ -116,7 +116,7 @@ class FeedImageLoaderWithFallbackCompositetests: XCTestCase {
         }
     }
     
-    func test_loadImageData_deliversFallbackDataOnPrimaryFails() {
+    func test_loadImageData_deliversFallbackDataOnFallBackSucceeds() {
         let expectedImageURL = makeAnyUrl()
         let expectedImageData = makeAnyData()
         let (sut, primary, fallback) = makeSUT()
@@ -124,6 +124,17 @@ class FeedImageLoaderWithFallbackCompositetests: XCTestCase {
         expect(sut: sut, toLoad: expectedImageURL, with: .success(expectedImageData)) {
             primary.completeLoad(with: .failure(makeAnyError()))
             fallback.completeLoad(with: .success(expectedImageData))
+        }
+    }
+    
+    func test_loadImageData_deliversErrorWhenBothPrimaryAndFallBackFailure() {
+        let expectedImageURL = makeAnyUrl()
+        let error = makeAnyError()
+        let (sut, primary, fallback) = makeSUT()
+        
+        expect(sut: sut, toLoad: expectedImageURL, with: .failure(error)) {
+            primary.completeLoad(with: .failure(error))
+            fallback.completeLoad(with: .failure(error))
         }
     }
 }
