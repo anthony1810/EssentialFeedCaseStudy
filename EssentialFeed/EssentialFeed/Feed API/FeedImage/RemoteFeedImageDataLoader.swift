@@ -6,7 +6,7 @@
 //
 import Foundation
 
-public final class RemoteFeedImageDataLoader: FeedImageLoaderProtocol {
+public final class RemoteFeedImageDataLoader: FeedImageDataLoaderProtocol {
 
     let client: HTTPClient
     
@@ -22,13 +22,13 @@ public final class RemoteFeedImageDataLoader: FeedImageLoaderProtocol {
     private final class HTTPTaskWrapper: ImageLoadingDataTaskProtocol {
         
         var wrapped: HTTPClientTask?
-        private var completion: ((FeedImageLoaderProtocol.Result) -> Void)?
+        private var completion: ((FeedImageDataLoaderProtocol.Result) -> Void)?
         
-        init(completion: @escaping ((FeedImageLoaderProtocol.Result) -> Void)) {
+        init(completion: @escaping ((FeedImageDataLoaderProtocol.Result) -> Void)) {
             self.completion = completion
         }
         
-        func complete(with result: FeedImageLoaderProtocol.Result) {
+        func complete(with result: FeedImageDataLoaderProtocol.Result) {
             self.completion?(result)
         }
         
@@ -42,7 +42,7 @@ public final class RemoteFeedImageDataLoader: FeedImageLoaderProtocol {
         }
     }
     
-    public func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> ImageLoadingDataTaskProtocol {
+    public func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoaderProtocol.Result) -> Void) -> ImageLoadingDataTaskProtocol {
         let task = HTTPTaskWrapper(completion: completion)
         
         task.wrapped = client.get(from: url) { [weak self] result in

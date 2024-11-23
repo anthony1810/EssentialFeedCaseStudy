@@ -32,8 +32,8 @@ extension MainThreadDecorator: FeedLoaderProtocol where T == FeedLoaderProtocol 
     }
 }
 
-extension MainThreadDecorator: FeedImageLoaderProtocol where T == FeedImageLoaderProtocol {
-    func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> any ImageLoadingDataTaskProtocol {
+extension MainThreadDecorator: FeedImageDataLoaderProtocol where T == FeedImageDataLoaderProtocol {
+    func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoaderProtocol.Result) -> Void) -> any ImageLoadingDataTaskProtocol {
         decoratee.loadImageData(from: url) { [weak self] result in
             self?.dispatch {completion(result)}
         }

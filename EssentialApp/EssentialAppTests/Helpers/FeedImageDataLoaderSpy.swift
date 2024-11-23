@@ -7,8 +7,8 @@
 import Foundation
 import EssentialFeed
 
-final class FeedImageDataLoaderSpy: FeedImageLoaderProtocol {
-    var messages = [(url: URL, completion: ((FeedImageLoaderProtocol.Result) -> Void))]()
+final class FeedImageDataLoaderSpy: FeedImageDataLoaderProtocol {
+    var messages = [(url: URL, completion: ((FeedImageDataLoaderProtocol.Result) -> Void))]()
     var loadedURLs: [URL] {
         messages.map(\.url)
     }
@@ -26,7 +26,7 @@ final class FeedImageDataLoaderSpy: FeedImageLoaderProtocol {
         }
     }
     
-    func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> ImageLoadingDataTaskProtocol {
+    func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoaderProtocol.Result) -> Void) -> ImageLoadingDataTaskProtocol {
         messages.append((url, completion))
         
         return Task(callback: { [weak self] in
@@ -34,7 +34,7 @@ final class FeedImageDataLoaderSpy: FeedImageLoaderProtocol {
         })
     }
     
-    func completeLoad(with result: FeedImageLoaderProtocol.Result, at index: Int = 0) {
+    func completeLoad(with result: FeedImageDataLoaderProtocol.Result, at index: Int = 0) {
         messages[index].completion(result)
     }
 }

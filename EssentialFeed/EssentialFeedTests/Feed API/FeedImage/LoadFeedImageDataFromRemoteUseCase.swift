@@ -79,7 +79,7 @@ class LoadFeedImageDataFromRemoteUseCase: XCTestCase {
         let (_, client) = makeSUT()
         var sut: RemoteFeedImageDataLoader? = RemoteFeedImageDataLoader(client: client)
         
-        var capturedResult: FeedImageLoaderProtocol.Result?
+        var capturedResult: FeedImageDataLoaderProtocol.Result?
         _ = sut?.loadImageData(from: makeAnyUrl(), completion: { capturedResult = $0 })
         sut = nil
         
@@ -103,7 +103,7 @@ class LoadFeedImageDataFromRemoteUseCase: XCTestCase {
         let imageURL = makeAnyUrl()
         let nonEmptyData = makeAnyData()
         
-        var receivedResults = [FeedImageLoaderProtocol.Result?]()
+        var receivedResults = [FeedImageDataLoaderProtocol.Result?]()
         let task = sut.loadImageData(from: imageURL, completion: { receivedResults.append($0) })
         task.cancel()
         
@@ -137,13 +137,13 @@ extension LoadFeedImageDataFromRemoteUseCase {
     
     func expect(
         _ sut: RemoteFeedImageDataLoader,
-        toCompleteWith expectedResult: FeedImageLoaderProtocol.Result,
+        toCompleteWith expectedResult: FeedImageDataLoaderProtocol.Result,
         when action: @escaping () -> Void,
         file: StaticString = #file,
         line: UInt = #line
     ) {
         let url = makeAnyUrl()
-        var result: FeedImageLoaderProtocol.Result?
+        var result: FeedImageDataLoaderProtocol.Result?
         let exp = expectation(description: "Waiting for load image data completion")
        
         _ = sut.loadImageData(from: url) { receivedResult in

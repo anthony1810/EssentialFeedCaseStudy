@@ -7,10 +7,10 @@
 import Foundation
 import EssentialFeed
 
-final public class FeedImageDataLoaderWithFallbackComposite: FeedImageLoaderProtocol {
+final public class FeedImageDataLoaderWithFallbackComposite: FeedImageDataLoaderProtocol {
     
-    let primary: FeedImageLoaderProtocol
-    let fallback: FeedImageLoaderProtocol
+    let primary: FeedImageDataLoaderProtocol
+    let fallback: FeedImageDataLoaderProtocol
     
     private class Task: ImageLoadingDataTaskProtocol {
         var wrapped: ImageLoadingDataTaskProtocol?
@@ -20,12 +20,12 @@ final public class FeedImageDataLoaderWithFallbackComposite: FeedImageLoaderProt
         }
     }
     
-    public init(primary: FeedImageLoaderProtocol, fallback: FeedImageLoaderProtocol) {
+    public init(primary: FeedImageDataLoaderProtocol, fallback: FeedImageDataLoaderProtocol) {
         self.primary = primary
         self.fallback = fallback
     }
     
-    public func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> ImageLoadingDataTaskProtocol {
+    public func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoaderProtocol.Result) -> Void) -> ImageLoadingDataTaskProtocol {
         let task = Task()
 
         task.wrapped = primary.loadImageData(from: url, completion: { [weak self] result in

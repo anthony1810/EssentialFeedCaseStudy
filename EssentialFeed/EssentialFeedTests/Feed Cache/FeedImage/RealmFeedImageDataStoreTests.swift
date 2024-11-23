@@ -81,7 +81,7 @@ class RealmFeedImageDataStoreTests: XCTestCase {
 // MARK: - Helpers
 extension RealmFeedImageDataStoreTests {
     
-    func expect(sut: RealmFeedStore, toCompleteRetrievalWith expectedResult: FeedImageLoaderProtocol.Result, for url: URL, file: StaticString = #file, line: UInt = #line) {
+    func expect(sut: RealmFeedStore, toCompleteRetrievalWith expectedResult: FeedImageDataLoaderProtocol.Result, for url: URL, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Retrieval completed")
         
         sut.retrieveData(for: url, completion: { capturedResult in
@@ -140,11 +140,11 @@ extension RealmFeedImageDataStoreTests {
         )
     }
     
-    private func notFoundResult() -> FeedImageLoaderProtocol.Result {
+    private func notFoundResult() -> FeedImageDataLoaderProtocol.Result {
         .success(.none)
     }
     
-    private func foundResult(data: Data) -> FeedImageLoaderProtocol.Result {
+    private func foundResult(data: Data) -> FeedImageDataLoaderProtocol.Result {
         .success(data)
     }
     

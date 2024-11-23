@@ -10,9 +10,9 @@ import EssentialFeed
 
 final class FeedFetchView: FeedFetchingViewProtocol {
     private weak var feedViewController: FeedViewController?
-    private var imageLoader: FeedImageLoaderProtocol
+    private var imageLoader: FeedImageDataLoaderProtocol
     
-    init(feedViewController: FeedViewController, imageLoader: FeedImageLoaderProtocol) {
+    init(feedViewController: FeedViewController, imageLoader: FeedImageDataLoaderProtocol) {
         self.feedViewController = feedViewController
         self.imageLoader = imageLoader
     }

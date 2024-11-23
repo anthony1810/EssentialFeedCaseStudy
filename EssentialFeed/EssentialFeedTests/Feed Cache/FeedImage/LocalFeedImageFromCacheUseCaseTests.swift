@@ -55,7 +55,7 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
         let (store, sut) = makeSUT()
         let imageData = makeAnyData()
         
-        var receivedResults = [FeedImageLoaderProtocol.Result?]()
+        var receivedResults = [FeedImageDataLoaderProtocol.Result?]()
         let task = sut.loadImageData(from: makeAnyUrl()) { result in
             receivedResults.append(result)
         }
@@ -72,7 +72,7 @@ class LocalFeedImageFromCacheUseCaseTests: XCTestCase {
         let store = LocalFeedImageStoreSpy()
         var sut: LocalFeedImageDataLoader? = LocalFeedImageDataLoader(store: store)
         
-        var receivedResults: [FeedImageLoaderProtocol.Result?] = []
+        var receivedResults: [FeedImageDataLoaderProtocol.Result?] = []
         _ = sut?.loadImageData(from: makeAnyUrl()) { result in
             receivedResults.append(result)
         }
@@ -107,13 +107,13 @@ extension LocalFeedImageFromCacheUseCaseTests {
     
     func expect(
         sut: LocalFeedImageDataLoader,
-        toFinishWith expectedResult: FeedImageLoaderProtocol.Result,
+        toFinishWith expectedResult: FeedImageDataLoaderProtocol.Result,
         when action: () -> Void,
         file: StaticString = #file,
         line: UInt = #line
     ) {
       
-        var capturedResult: FeedImageLoaderProtocol.Result?
+        var capturedResult: FeedImageDataLoaderProtocol.Result?
         let exp = expectation(description: "wait for loading image from cache")
         _ = sut.loadImageData(from: makeAnyUrl(), completion: { result in
             capturedResult = result

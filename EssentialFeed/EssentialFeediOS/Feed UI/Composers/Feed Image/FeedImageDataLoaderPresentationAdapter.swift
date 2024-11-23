@@ -13,13 +13,13 @@ protocol FeedImageDataControllerDelegate {
 }
 
 class FeedImageDataLoaderPresentationAdapter<View: FeedImageView, Image> where View.Image == Image {
-    private var imageLoader: FeedImageLoaderProtocol
+    private var imageLoader: FeedImageDataLoaderProtocol
     private var loadingImageTask: ImageLoadingDataTaskProtocol?
     private var feed: FeedImage
     
     var presenter: FeedImagePresenter<Image, View>?
     
-    init(feed: FeedImage, imageLoader: FeedImageLoaderProtocol) {
+    init(feed: FeedImage, imageLoader: FeedImageDataLoaderProtocol) {
         self.feed = feed
         self.imageLoader = imageLoader
     }

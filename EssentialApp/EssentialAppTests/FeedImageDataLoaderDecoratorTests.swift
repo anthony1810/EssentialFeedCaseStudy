@@ -80,7 +80,7 @@ final class FeedImageDataLoaderDecoratorTests: XCTestCase, FeedImageDataLoaderTe
 }
 
 extension FeedImageDataLoaderDecoratorTests {
-    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedImageLoaderProtocol, feedImageDataLoader: FeedImageDataLoaderSpy, cacheSpy: CacheSpy) {
+    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedImageDataLoaderProtocol, feedImageDataLoader: FeedImageDataLoaderSpy, cacheSpy: CacheSpy) {
         
         let cacheSpy = CacheSpy()
         let feedImageDataLoader = FeedImageDataLoaderSpy()

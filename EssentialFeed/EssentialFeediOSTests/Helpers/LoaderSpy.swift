@@ -9,7 +9,7 @@ import EssentialFeed
 import EssentialFeediOS
 import UIKit
 
-final class LoaderSpy: FeedLoaderProtocol, FeedImageLoaderProtocol {
+final class LoaderSpy: FeedLoaderProtocol, FeedImageDataLoaderProtocol {
 
     private(set) var feedRequests = [(FeedLoaderProtocol.Result) -> Void]()
     
@@ -26,7 +26,7 @@ final class LoaderSpy: FeedLoaderProtocol, FeedImageLoaderProtocol {
     }
     
     // MARK: - Image Loader
-    private(set) var imageRequests = [(url: URL, completion: (FeedImageLoaderProtocol.Result) -> Void)]()
+    private(set) var imageRequests = [(url: URL, completion: (FeedImageDataLoaderProtocol.Result) -> Void)]()
     var loadedImageURLs: [URL] { imageRequests.map(\.url) }
     private(set) var cancelLoadedImageURLs = [URL]()
     
@@ -37,7 +37,7 @@ final class LoaderSpy: FeedLoaderProtocol, FeedImageLoaderProtocol {
         }
     }
     
-    func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void ) -> ImageLoadingDataTaskProtocol {
+    func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoaderProtocol.Result) -> Void ) -> ImageLoadingDataTaskProtocol {
         
         imageRequests.append((url, completion))
         

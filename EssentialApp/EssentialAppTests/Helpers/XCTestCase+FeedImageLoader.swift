@@ -13,7 +13,7 @@ import EssentialApp
 protocol FeedImageDataLoaderTest: XCTestCase {}
 
 extension FeedImageDataLoaderTest {
-    func expect(sut: FeedImageLoaderProtocol, toLoad url: URL, with expectedResult: FeedImageLoaderProtocol.Result, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
+    func expect(sut: FeedImageDataLoaderProtocol, toLoad url: URL, with expectedResult: FeedImageDataLoaderProtocol.Result, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for load")
         _ = sut.loadImageData(from: url, completion: { actualResult in
             switch (actualResult, expectedResult) {

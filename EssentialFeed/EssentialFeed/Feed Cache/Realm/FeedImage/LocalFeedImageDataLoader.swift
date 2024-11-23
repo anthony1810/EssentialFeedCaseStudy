@@ -9,13 +9,13 @@ import Foundation
 public final class LocalFeedImageDataLoader {
     
     private class Task: ImageLoadingDataTaskProtocol {
-        private var completion: ((FeedImageLoaderProtocol.Result) -> Void)?
+        private var completion: ((FeedImageDataLoaderProtocol.Result) -> Void)?
         
-        init(completion: @escaping ((FeedImageLoaderProtocol.Result) -> Void)) {
+        init(completion: @escaping ((FeedImageDataLoaderProtocol.Result) -> Void)) {
             self.completion = completion
         }
         
-        func complete(with result: FeedImageLoaderProtocol.Result) {
+        func complete(with result: FeedImageDataLoaderProtocol.Result) {
             self.completion?(result)
         }
         
@@ -35,14 +35,14 @@ public final class LocalFeedImageDataLoader {
     }
 }
 
-extension LocalFeedImageDataLoader: FeedImageLoaderProtocol {
+extension LocalFeedImageDataLoader: FeedImageDataLoaderProtocol {
 
     public enum LoadError: Swift.Error, Equatable {
         case failed
         case notFound
     }
     
-    public func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> any ImageLoadingDataTaskProtocol {
+    public func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoaderProtocol.Result) -> Void) -> any ImageLoadingDataTaskProtocol {
         let task = Task(completion: completion)
         
         store.retrieveData(for: url, completion: { [weak self] result in
@@ -50,7 +50,7 @@ extension LocalFeedImageDataLoader: FeedImageLoaderProtocol {
             
             task.complete(with: result
                 .mapError { _ in LoadError.failed }
-                .flatMap { data -> FeedImageLoaderProtocol.Result in
+                .flatMap { data -> FeedImageDataLoaderProtocol.Result in
                     data.map { .success($0) } ?? .failure(LoadError.notFound)
                 })
         })

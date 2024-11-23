@@ -7,16 +7,16 @@
 import Foundation
 import EssentialFeed
 
-public final class FeedImageDataLoaderDecorator: FeedImageLoaderProtocol {
-    private let decoratee: FeedImageLoaderProtocol
+public final class FeedImageDataLoaderDecorator: FeedImageDataLoaderProtocol {
+    private let decoratee: FeedImageDataLoaderProtocol
     private let cache: FeedImageDataCacheProtocol
     
-    public init(decoratee: FeedImageLoaderProtocol, cache: FeedImageDataCacheProtocol) {
+    public init(decoratee: FeedImageDataLoaderProtocol, cache: FeedImageDataCacheProtocol) {
         self.decoratee = decoratee
         self.cache = cache
     }
     
-    public func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> any ImageLoadingDataTaskProtocol {
+    public func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoaderProtocol.Result) -> Void) -> any ImageLoadingDataTaskProtocol {
         
         decoratee.loadImageData(from: url, completion: { [weak self] result in
             completion(result.map { data in
