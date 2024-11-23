@@ -16,7 +16,7 @@ public final class LocalFeedLoader: FeedLoaderProtocol {
     }
 }
 
-extension LocalFeedLoader {
+extension LocalFeedLoader: FeedCacheProtocol {
     public typealias SaveResult = Error?
     
     public func save(_ items: [FeedImage], completion: @escaping (SaveResult) -> Void) {
