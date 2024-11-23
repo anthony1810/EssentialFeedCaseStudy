@@ -23,11 +23,15 @@ final class FeedLoaderCacheDecorator: FeedLoaderProtocol {
         decoratee.load(completion: { [weak self] result in
             completion(
                 result.map { feeds in
-                    self?.cache.save(feeds, completion: { _ in })
+                    self?.saveCacheIgnoreCompletion(feeds: feeds)
                     return feeds
                 }
             )
         })
+    }
+    
+    func saveCacheIgnoreCompletion(feeds: [FeedImage]) {
+        cache.save(feeds, completion: { _ in })
     }
 }
 
