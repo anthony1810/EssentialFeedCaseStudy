@@ -96,7 +96,7 @@ final class FeedImageDataLoaderDecoratorTests: XCTestCase, FeedImageDataLoaderTe
       _ = sut.loadImageData(from: expectedImageURL, completion: { _ in })
         feedImageDataLoader.completeLoad(with: .success(expectedImageData))
         
-        XCTAssertEqual(cacheSpy.messages, [.saved(expectedImageData)])
+        XCTAssertEqual(cacheSpy.messages, [.saved(expectedImageData, expectedImageURL)])
     }
     
 }
@@ -117,13 +117,13 @@ extension FeedImageDataLoaderDecoratorTests {
     
     private class CacheSpy: FeedImageDataCacheProtocol {
         enum Message: Equatable {
-            case saved(Data)
+            case saved(Data, URL)
         }
         
         var messages: [Message] = []
         
         func save(_ data: Data, for url: URL, completion: @escaping (SaveResult) -> Void) {
-            messages.append(.saved(data))
+            messages.append(.saved(data, url))
         }
     }
 }
