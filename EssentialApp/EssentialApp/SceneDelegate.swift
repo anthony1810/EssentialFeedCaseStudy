@@ -37,6 +37,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             decoratee: remoteFeedLoader,
             cache: localFeedLoader
         )
+        let remoteFeedImageDataLoaderWithLocalCache = FeedImageDataLoaderDecorator(
+            decoratee: remoteFeedImageDataLoader,
+            cache: localFeedImageDataLoader
+        )
         
         //composite
         let feedLoaderWithFallBack = FeedLoaderWithFallbackComposite(
@@ -45,7 +49,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
         
         let feedImageDataLoaderWithFallback = FeedImageDataLoaderWithFallbackComposite(
-            primary: remoteFeedImageDataLoader,
+            primary: remoteFeedImageDataLoaderWithLocalCache,
             fallback: localFeedImageDataLoader
         )
         
