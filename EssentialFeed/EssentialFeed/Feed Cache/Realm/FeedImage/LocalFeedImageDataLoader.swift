@@ -59,8 +59,8 @@ extension LocalFeedImageDataLoader: FeedImageLoaderProtocol {
     }
 }
 
-extension LocalFeedImageDataLoader {
-    public typealias SaveResult = Swift.Result<Data, SaveError>
+extension LocalFeedImageDataLoader: FeedImageDataCacheProtocol {
+    public typealias SaveResult = FeedImageDataCacheProtocol.SaveResult
     
     public enum SaveError: Swift.Error {
         case failed

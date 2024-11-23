@@ -9,12 +9,6 @@ import Foundation
 import XCTest
 import EssentialFeed
 
-protocol FeedImageDataCacheProtocol {
-    typealias SaveResult = Swift.Result<Data, Error>
-    
-    func save(_ data: Data, for url: URL, completion: @escaping (SaveResult) -> Void)
-}
-
 final class FeedImageDataLoaderDecorator: FeedImageLoaderProtocol {
     let decoratee: FeedImageLoaderProtocol
     let cache: FeedImageDataCacheProtocol
