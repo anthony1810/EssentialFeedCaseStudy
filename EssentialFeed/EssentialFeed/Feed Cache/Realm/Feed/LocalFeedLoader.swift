@@ -6,7 +6,7 @@
 //
 import Foundation
 
-public final class LocalFeedLoader: FeedLoaderProtocol {
+public final class LocalFeedLoader {
     private let store: FeedStoreProtocol
     private let timestamp: () -> Date
     
@@ -17,7 +17,7 @@ public final class LocalFeedLoader: FeedLoaderProtocol {
 }
 
 extension LocalFeedLoader: FeedCacheProtocol {
-    public typealias SaveResult = Error?
+    public typealias SaveResult = FeedCacheProtocol.SaveResult
     
     public func save(_ items: [FeedImage], completion: @escaping (SaveResult) -> Void) {
         store.deleteCache(completion: { [weak self] error in
@@ -40,7 +40,7 @@ extension LocalFeedLoader: FeedCacheProtocol {
     }
 }
 
-extension LocalFeedLoader {
+extension LocalFeedLoader: FeedLoaderProtocol {
     public typealias LoadResult = FeedLoaderProtocol.Result
     
     public func load(completion: @escaping (LoadResult) -> Void) {
