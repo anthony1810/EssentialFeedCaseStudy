@@ -108,9 +108,9 @@ class FeedImageLoaderWithFallbackCompositetests: XCTestCase {
 
 extension FeedImageLoaderWithFallbackCompositetests {
     
-    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedImageDataLoaderWithFallbackComposite, primary: LoaderSpy, fallback: LoaderSpy) {
-        let primary = LoaderSpy()
-        let fallback = LoaderSpy()
+    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedImageDataLoaderWithFallbackComposite, primary: FeedImageDataLoaderSpy, fallback: FeedImageDataLoaderSpy) {
+        let primary = FeedImageDataLoaderSpy()
+        let fallback = FeedImageDataLoaderSpy()
         
         let sut = FeedImageDataLoaderWithFallbackComposite(primary: primary, fallback: fallback)
         trackForMemoryLeaks(sut, file: file, line: line)
@@ -137,37 +137,5 @@ extension FeedImageLoaderWithFallbackCompositetests {
         action()
         
         wait(for: [exp], timeout: 1.0)
-    }
-    
-    private class LoaderSpy: FeedImageLoaderProtocol {
-        var messages = [(url: URL, completion: ((FeedImageLoaderProtocol.Result) -> Void))]()
-        var loadedURLs: [URL] {
-            messages.map(\.url)
-        }
-        private(set) var cancelledURLs = [URL]()
-        
-        private class Task: ImageLoadingDataTaskProtocol {
-            let callback: () -> Void
-            
-            init(callback: @escaping () -> Void) {
-                self.callback = callback
-            }
-            
-            func cancel() {
-                callback()
-            }
-        }
-        
-        func loadImageData(from url: URL, completion: @escaping (FeedImageLoaderProtocol.Result) -> Void) -> ImageLoadingDataTaskProtocol {
-            messages.append((url, completion))
-            
-            return Task(callback: { [weak self] in
-                self?.cancelledURLs.append(url)
-            })
-        }
-        
-        func completeLoad(with result: FeedImageLoaderProtocol.Result, at index: Int = 0) {
-            messages[index].completion(result)
-        }
     }
 }
