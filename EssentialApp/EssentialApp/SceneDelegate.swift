@@ -32,9 +32,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let localFeedLoader = LocalFeedLoader(store: feedStore, timestamp: Date.init)
         let localFeedImageDataLoader = LocalFeedImageDataLoader(store: feedStore)
         
+        // Decorator RemoteLoad with localCache
+        let remoteFeedLoaderWithLocalCache = FeedLoaderCacheDecorator(
+            decoratee: remoteFeedLoader,
+            cache: localFeedLoader
+        )
+        
         //composite
         let feedLoaderWithFallBack = FeedLoaderWithFallbackComposite(
-            primary: remoteFeedLoader,
+            primary: remoteFeedLoaderWithLocalCache,
             fallback: localFeedLoader
         )
         
