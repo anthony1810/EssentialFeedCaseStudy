@@ -8,6 +8,7 @@
 import UIKit
 import EssentialFeed
 import EssentialFeediOS
+import RealmSwift
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -19,11 +20,36 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
         
+        // Remote
         let session = URLSession(configuration: .ephemeral)
         let client = URLSessionHTTPClient(session: session)
-        let feedImageDataLoader = RemoteFeedImageDataLoader(client: client)
-        let feedLoader = RemoteFeedLoader(httpClient: client, url: url)
-        let feedVC = FeedUIComposer.composeFeedViewController(loader: feedLoader, imageLoader: feedImageDataLoader)
+        let remoteFeedImageDataLoader = RemoteFeedImageDataLoader(client: client)
+        let remoteFeedLoader = RemoteFeedLoader(httpClient: client, url: url)
+        
+        // Local
+        let realmPath = FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: "group.yourAppGroup")?
+            .appendingPathComponent("custom.realm")
+        let realmConfig = Realm.Configuration(fileURL: realmPath)
+        let feedStore = RealmFeedStore(realmConfig: realmConfig)
+        let localFeedLoader = LocalFeedLoader(store: feedStore, timestamp: Date.init)
+        let localFeedImageDataLoader = LocalFeedImageDataLoader(store: feedStore)
+        
+        //composite
+        let feedLoaderWithFallBack = FeedLoaderWithFallbackComposite(
+            primary: remoteFeedLoader,
+            fallback: localFeedLoader
+        )
+        
+        let feedImageDataLoaderWithFallback = FeedImageDataLoaderWithFallbackComposite(
+            primary: remoteFeedImageDataLoader,
+            fallback: localFeedImageDataLoader
+        )
+        
+        let feedVC = FeedUIComposer.composeFeedViewController(
+            loader: feedLoaderWithFallBack,
+            imageLoader: feedImageDataLoaderWithFallback
+        )
         
         window?.rootViewController = feedVC
     }
