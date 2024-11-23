@@ -6,11 +6,11 @@
 //
 import Foundation
 
-public final class RemoteFeedLoader: FeedLoader {
+public final class RemoteFeedLoader: FeedLoaderProtocol {
     let httpClient: HTTPClient
     let url: URL
     
-    typealias Result = FeedLoader.Result
+    typealias Result = FeedLoaderProtocol.Result
     
     public enum Error: Swift.Error {
         case connectivity
@@ -22,7 +22,7 @@ public final class RemoteFeedLoader: FeedLoader {
         self.url = url
     }
     
-    public func load(completion: @escaping (FeedLoader.Result) -> Void) {
+    public func load(completion: @escaping (FeedLoaderProtocol.Result) -> Void) {
         httpClient.get(from: self.url, completion: { [weak self] httpCompletion in
             guard let self else { return }
             switch httpCompletion {

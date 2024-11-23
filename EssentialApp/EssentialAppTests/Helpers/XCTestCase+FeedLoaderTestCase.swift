@@ -10,7 +10,7 @@ import XCTest
 protocol FeedLoaderTestCase: XCTestCase {}
 
 extension FeedLoaderTestCase {
-    func expect(sut: FeedLoader, toFinishWith expectedResult: FeedLoader.Result, file: StaticString = #file, line: UInt = #line) {
+    func expect(sut: FeedLoaderProtocol, toFinishWith expectedResult: FeedLoaderProtocol.Result, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "waiting for load")
         sut.load { actualResult in
             switch (actualResult, expectedResult) {

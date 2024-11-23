@@ -7,16 +7,16 @@
 import Foundation
 import EssentialFeed
 
-public final class FeedLoaderWithFallbackComposite: FeedLoader {
-    let primary: FeedLoader
-    let fallback: FeedLoader
+public final class FeedLoaderWithFallbackComposite: FeedLoaderProtocol {
+    let primary: FeedLoaderProtocol
+    let fallback: FeedLoaderProtocol
     
-    public init(primary: FeedLoader, fallback: FeedLoader) {
+    public init(primary: FeedLoaderProtocol, fallback: FeedLoaderProtocol) {
         self.primary = primary
         self.fallback = fallback
     }
     
-    public func load(completion: @escaping (FeedLoader.Result) -> Void) {
+    public func load(completion: @escaping (FeedLoaderProtocol.Result) -> Void) {
         primary.load { [weak self] primaryResult in
             switch primaryResult {
             case .success:

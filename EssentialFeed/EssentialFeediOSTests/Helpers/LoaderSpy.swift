@@ -9,11 +9,11 @@ import EssentialFeed
 import EssentialFeediOS
 import UIKit
 
-final class LoaderSpy: FeedLoader, FeedImageLoaderProtocol {
+final class LoaderSpy: FeedLoaderProtocol, FeedImageLoaderProtocol {
 
-    private(set) var feedRequests = [(FeedLoader.Result) -> Void]()
+    private(set) var feedRequests = [(FeedLoaderProtocol.Result) -> Void]()
     
-    func load(completion: @escaping (FeedLoader.Result) -> Void) {
+    func load(completion: @escaping (FeedLoaderProtocol.Result) -> Void) {
         feedRequests.append(completion)
     }
     

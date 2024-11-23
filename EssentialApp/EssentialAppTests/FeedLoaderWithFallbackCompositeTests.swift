@@ -36,8 +36,8 @@ class FeedLoaderWithFallbackCompositeTests: XCTestCase, FeedLoaderTestCase {
 
 extension FeedLoaderWithFallbackCompositeTests {
     func makeSUT(
-        primaryResult: FeedLoader.Result,
-        fallbackResult: FeedLoader.Result,
+        primaryResult: FeedLoaderProtocol.Result,
+        fallbackResult: FeedLoaderProtocol.Result,
         file: StaticString = #file,
         line: UInt = #line
     ) -> FeedLoaderWithFallbackComposite {

@@ -11,7 +11,7 @@ import EssentialFeed
 
 public enum FeedUIComposer {
     public static func composeFeedViewController(
-        loader: FeedLoader,
+        loader: FeedLoaderProtocol,
         imageLoader: FeedImageLoaderProtocol
     ) -> FeedViewController {
         let feedLoaderPresentationAdapter = FeedLoaderPresentationAdapter(loader: MainThreadDecorator(loader))

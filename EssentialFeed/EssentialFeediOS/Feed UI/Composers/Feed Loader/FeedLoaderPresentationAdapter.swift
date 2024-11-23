@@ -9,10 +9,10 @@ import UIKit
 import EssentialFeed
 
 final class FeedLoaderPresentationAdapter: FeedRefreshDelegate {
-    private let loader: FeedLoader
+    private let loader: FeedLoaderProtocol
     var presenter: FeedPresenter?
     
-    init(loader: FeedLoader) {
+    init(loader: FeedLoaderProtocol) {
         self.loader = loader
     }
     

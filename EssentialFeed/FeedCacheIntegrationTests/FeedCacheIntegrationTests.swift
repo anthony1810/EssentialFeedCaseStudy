@@ -183,10 +183,10 @@ extension FeedCacheIntegrationTests {
         wait(for: [exp], timeout: 1.0)
     }
     
-    private func expect(sut: FeedLoader, toCompleteLoadWith expectedResult: FeedLoader.Result, file: StaticString = #file, line: UInt = #line) {
+    private func expect(sut: FeedLoaderProtocol, toCompleteLoadWith expectedResult: FeedLoaderProtocol.Result, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for load completion")
         
-        var actualResult: FeedLoader.Result?
+        var actualResult: FeedLoaderProtocol.Result?
         sut.load { result in
             actualResult = result
             exp.fulfill()

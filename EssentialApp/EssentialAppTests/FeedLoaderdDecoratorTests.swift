@@ -10,16 +10,16 @@ import XCTest
 import EssentialFeed
 import EssentialApp
 
-final class FeedLoaderCacheDecorator: FeedLoader {
-    let decoratee: FeedLoader
+final class FeedLoaderCacheDecorator: FeedLoaderProtocol {
+    let decoratee: FeedLoaderProtocol
     let cache: FeedCacheProtocol
     
-    init(decoratee: FeedLoader, cache: FeedCacheProtocol) {
+    init(decoratee: FeedLoaderProtocol, cache: FeedCacheProtocol) {
         self.decoratee = decoratee
         self.cache = cache
     }
     
-    func load(completion: @escaping (FeedLoader.Result) -> Void) {
+    func load(completion: @escaping (FeedLoaderProtocol.Result) -> Void) {
         decoratee.load(completion: { [weak self] result in
             completion(
                 result.map { feeds in
@@ -67,7 +67,7 @@ final class FeedLoaderdDecoratorTests: XCTestCase, FeedLoaderTestCase {
 }
 
 extension FeedLoaderdDecoratorTests {
-    private func makeSUT(loaderResult: FeedLoader.Result, file: StaticString = #file, line: UInt = #line) -> (sut: FeedLoaderCacheDecorator, cache: CacheSpy) {
+    private func makeSUT(loaderResult: FeedLoaderProtocol.Result, file: StaticString = #file, line: UInt = #line) -> (sut: FeedLoaderCacheDecorator, cache: CacheSpy) {
         let feedLoader = FeedLoaderStub(result: loaderResult)
         let cache = CacheSpy()
         let sut = FeedLoaderCacheDecorator(decoratee: feedLoader, cache: cache)

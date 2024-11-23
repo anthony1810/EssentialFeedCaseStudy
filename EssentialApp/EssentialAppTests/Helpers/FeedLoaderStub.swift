@@ -6,14 +6,14 @@
 //
 import EssentialFeed
 
-class FeedLoaderStub: FeedLoader {
-    let result: FeedLoader.Result
+class FeedLoaderStub: FeedLoaderProtocol {
+    let result: FeedLoaderProtocol.Result
     
-    init(result: FeedLoader.Result) {
+    init(result: FeedLoaderProtocol.Result) {
         self.result = result
     }
     
-    func load(completion: @escaping (FeedLoader.Result) -> Void) {
+    func load(completion: @escaping (FeedLoaderProtocol.Result) -> Void) {
         completion(result)
     }
 }

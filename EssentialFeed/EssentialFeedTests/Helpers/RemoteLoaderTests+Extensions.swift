@@ -25,7 +25,7 @@ extension LoadFeedFromRemoteUseCase {
     
     func expect(
         sut: RemoteFeedLoader,
-        toCompleteWith expectedResult: FeedLoader.Result,
+        toCompleteWith expectedResult: FeedLoaderProtocol.Result,
         when action: () -> Void,
         file: StaticString = #filePath,
         line: UInt = #line
@@ -79,7 +79,7 @@ extension LoadFeedFromRemoteUseCase {
         return try! JSONSerialization.data(withJSONObject: json)
     }
     
-    func failure(_ error: RemoteFeedLoader.Error) -> FeedLoader.Result {
+    func failure(_ error: RemoteFeedLoader.Error) -> FeedLoaderProtocol.Result {
         .failure(error)
     }
 }

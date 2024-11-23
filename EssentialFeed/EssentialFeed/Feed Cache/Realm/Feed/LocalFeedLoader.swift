@@ -6,7 +6,7 @@
 //
 import Foundation
 
-public final class LocalFeedLoader: FeedLoader {
+public final class LocalFeedLoader: FeedLoaderProtocol {
     private let store: FeedStoreProtocol
     private let timestamp: () -> Date
     
@@ -41,7 +41,7 @@ extension LocalFeedLoader {
 }
 
 extension LocalFeedLoader {
-    public typealias LoadResult = FeedLoader.Result
+    public typealias LoadResult = FeedLoaderProtocol.Result
     
     public func load(completion: @escaping (LoadResult) -> Void) {
         store.retrieve(completion: { [weak self] result in

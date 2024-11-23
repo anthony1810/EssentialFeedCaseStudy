@@ -24,8 +24,8 @@ class MainThreadDecorator<T> {
     }
 }
 
-extension MainThreadDecorator: FeedLoader where T == FeedLoader {
-    func load(completion: @escaping (FeedLoader.Result) -> Void) {
+extension MainThreadDecorator: FeedLoaderProtocol where T == FeedLoaderProtocol {
+    func load(completion: @escaping (FeedLoaderProtocol.Result) -> Void) {
         decoratee.load { [weak self] result in
             self?.dispatch { completion(result) }
         }

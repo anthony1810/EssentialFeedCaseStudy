@@ -103,7 +103,7 @@ class LoadFeedFromRemoteUseCase: XCTestCase {
         let url = URL(string: "https://any-url.com")!
         let client = HTTPClientSpy()
         var sut: RemoteFeedLoader? = RemoteFeedLoader(httpClient: client, url: url)
-        var capturedResults = [FeedLoader.Result]()
+        var capturedResults = [FeedLoaderProtocol.Result]()
         sut?.load(completion: {
             capturedResults.append($0)
         })
