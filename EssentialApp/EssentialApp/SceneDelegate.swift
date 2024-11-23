@@ -27,10 +27,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let remoteFeedLoader = RemoteFeedLoader(httpClient: client, url: url)
         
         // Local
-        let realmPath = FileManager.default
-            .containerURL(forSecurityApplicationGroupIdentifier: "group.yourAppGroup")?
-            .appendingPathComponent("custom.realm")
-        let realmConfig = Realm.Configuration(fileURL: realmPath)
+        let realmConfig = Realm.Configuration.defaultConfiguration
         let feedStore = RealmFeedStore(realmConfig: realmConfig)
         let localFeedLoader = LocalFeedLoader(store: feedStore, timestamp: Date.init)
         let localFeedImageDataLoader = LocalFeedImageDataLoader(store: feedStore)
