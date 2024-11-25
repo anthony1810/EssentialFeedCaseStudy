@@ -13,14 +13,9 @@ final class EssentialAppUITests: XCTestCase {
     func test_onLaunch_displaysRemoteFeedWhenCustomerHasConnectivity() throws {
         let app = XCUIApplication()
         app.launch()
-        
-        let feedCells = app.cells.matching(identifier: "feed-image-cell")
-        let firstCell = feedCells.element(boundBy: 0)
-        XCTAssertTrue(firstCell.waitForExistence(timeout: 5), "No feed cells appeared within the timeout.")
-        XCTAssertEqual(feedCells.count, 22, "Unexpected number of feed cells.")
-        
-        let firstImage = app.images.matching(identifier: "feed-image-view").firstMatch.waitForExistence(timeout: 5.0)
-        XCTAssertTrue(firstImage)
+       
+        expectFeedsExisted(in: app)
+        expectFeedImagesExisted(in: app)
     }
     
     func test_onLaunch_displaysCachedFeedWhenCustomerHasNoConnectivity() throws {
@@ -31,13 +26,21 @@ final class EssentialAppUITests: XCTestCase {
         offlineApp.launchArguments = ["-connectivity", "offline"]
         offlineApp.launch()
         
-        let feedCells = offlineApp.cells.matching(identifier: "feed-image-cell")
+        expectFeedsExisted(in: offlineApp)
+        expectFeedImagesExisted(in: offlineApp)
+    }
+}
+
+extension EssentialAppUITests {
+    func expectFeedsExisted(in app: XCUIApplication, file: StaticString = #file, line: UInt = #line) {
+        let feedCells = app.cells.matching(identifier: "feed-image-cell")
         let firstCell = feedCells.element(boundBy: 0)
         XCTAssertTrue(firstCell.waitForExistence(timeout: 5), "No feed cells appeared within the timeout.")
-        XCTAssertEqual(feedCells.count, 22, "Unexpected number of feed cells.")
-        
-        let firstImage = offlineApp.images.matching(identifier: "feed-image-view").firstMatch.waitForExistence(timeout: 5.0)
-        XCTAssertTrue(firstImage)
+        XCTAssertEqual(feedCells.count, 22, "Unexpected number of feed cells.", file: file, line: line)
     }
     
+    func expectFeedImagesExisted(in app: XCUIApplication, file: StaticString = #file, line: UInt = #line) {
+        let firstImage = app.images.matching(identifier: "feed-image-view").firstMatch.waitForExistence(timeout: 5.0)
+        XCTAssertTrue(firstImage, "Unexpected number of feed images.", file: file, line: line)
+    }
 }
