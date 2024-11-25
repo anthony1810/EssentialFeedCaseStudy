@@ -21,8 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
         
         // Remote
-        let session = URLSession(configuration: .ephemeral)
-        let client = URLSessionHTTPClient(session: session)
+        let client = makeHTTPClient()
         let remoteFeedImageDataLoader = RemoteFeedImageDataLoader(client: client)
         let remoteFeedLoader = RemoteFeedLoader(httpClient: client, url: url)
         
@@ -88,7 +87,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
     }
-
-
 }
 
+private func makeHTTPClient() -> HTTPClient {
+    switch UserDefaults.standard.string(forKey: "connectivity") {
+    case "offline": return AlwaysFailedHTTPClient()
+    default: return URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
+    }
+}
+
+private class AlwaysFailedHTTPClient: HTTPClient {
+    
+    private class Task: HTTPClientTask {
+        func cancel() {}
+    }
+    
+    func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
+        completion(.failure(NSError(domain: "offline", code: 0)))
+        
+        return Task()
+    }
+}

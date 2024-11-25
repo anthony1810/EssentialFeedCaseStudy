@@ -15,15 +15,28 @@ final class EssentialAppUITests: XCTestCase {
         app.launch()
         
         let feedCells = app.cells.matching(identifier: "feed-image-cell")
-
-        // Wait for at least one feed cell to appear
         let firstCell = feedCells.element(boundBy: 0)
         XCTAssertTrue(firstCell.waitForExistence(timeout: 5), "No feed cells appeared within the timeout.")
-
-        // Now assert the count if needed
         XCTAssertEqual(feedCells.count, 22, "Unexpected number of feed cells.")
         
-        let firstImage = app.images.matching(identifier: "feed-image-view").firstMatch.waitForExistence(timeout: 10.0)
+        let firstImage = app.images.matching(identifier: "feed-image-view").firstMatch.waitForExistence(timeout: 5.0)
+        XCTAssertTrue(firstImage)
+    }
+    
+    func test_onLaunch_displaysCachedFeedWhenCustomerHasNoConnectivity() throws {
+        let onlineApp = XCUIApplication()
+        onlineApp.launch()
+        
+        let offlineApp = XCUIApplication()
+        offlineApp.launchArguments = ["-connectivity", "offline"]
+        offlineApp.launch()
+        
+        let feedCells = offlineApp.cells.matching(identifier: "feed-image-cell")
+        let firstCell = feedCells.element(boundBy: 0)
+        XCTAssertTrue(firstCell.waitForExistence(timeout: 5), "No feed cells appeared within the timeout.")
+        XCTAssertEqual(feedCells.count, 22, "Unexpected number of feed cells.")
+        
+        let firstImage = offlineApp.images.matching(identifier: "feed-image-view").firstMatch.waitForExistence(timeout: 5.0)
         XCTAssertTrue(firstImage)
     }
     
