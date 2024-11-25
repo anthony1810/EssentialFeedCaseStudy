@@ -19,6 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let _ = (scene as? UIWindowScene) else { return }
         
         let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
+       
         
         // Remote
         let client = makeHTTPClient()
@@ -30,6 +31,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let feedStore = RealmFeedStore(realmConfig: realmConfig)
         let localFeedLoader = LocalFeedLoader(store: feedStore, timestamp: Date.init)
         let localFeedImageDataLoader = LocalFeedImageDataLoader(store: feedStore)
+        
+        
+        if CommandLine.arguments.contains("-reset") {
+            feedStore.clearCache()
+        }
         
         // Decorator RemoteLoad with localCache
         let remoteFeedLoaderWithLocalCache = FeedLoaderCacheDecorator(
