@@ -12,14 +12,16 @@ final class EssentialAppUITests: XCTestCase {
     @MainActor
     func test_onLaunch_displaysRemoteFeedWhenCustomerHasConnectivity() throws {
         let app = XCUIApplication()
+        app.launchArguments = ["-connectivity", "online"]
         app.launch()
        
-        expectFeedsCount(22, in: app)
+        expectFeedsCount(2, in: app)
         expectFeedImagesExisted(true, in: app)
     }
     
     func test_onLaunch_displaysCachedFeedWhenCustomerHasNoConnectivity() throws {
         let onlineApp = XCUIApplication()
+        onlineApp.launchArguments = ["-connectivity", "online"]
         onlineApp.launch()
         
         waitUntilIdleByDelay(seconds: 3)
@@ -28,7 +30,7 @@ final class EssentialAppUITests: XCTestCase {
         offlineApp.launchArguments = ["-connectivity", "offline"]
         offlineApp.launch()
         
-        expectFeedsCount(22, in: offlineApp)
+        expectFeedsCount(2, in: offlineApp)
         expectFeedImagesExisted(true, in: offlineApp)
     }
     
