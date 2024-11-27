@@ -61,7 +61,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             imageLoader: feedImageDataLoaderWithFallback
         )
         
-        window?.rootViewController = feedVC
+        window?.rootViewController = UINavigationController(rootViewController: feedVC)
     }
 
     func makeHTTPClient() -> HTTPClient {
