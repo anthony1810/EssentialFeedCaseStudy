@@ -13,13 +13,12 @@ import RealmSwift
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+    let realmConfig = Realm.Configuration.defaultConfiguration
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let _ = (scene as? UIWindowScene) else { return }
         
         let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
-       
         
         // Remote
         let client = makeHTTPClient()
@@ -27,16 +26,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let remoteFeedLoader = RemoteFeedLoader(httpClient: client, url: url)
         
         // Local
-        let realmConfig = Realm.Configuration.defaultConfiguration
+       
         let feedStore = RealmFeedStore(realmConfig: realmConfig)
         let localFeedLoader = LocalFeedLoader(store: feedStore, timestamp: Date.init)
         let localFeedImageDataLoader = LocalFeedImageDataLoader(store: feedStore)
         
-        
-        if CommandLine.arguments.contains("-reset") {
-            feedStore.clearCache()
-        }
-        
+    
         // Decorator RemoteLoad with localCache
         let remoteFeedLoaderWithLocalCache = FeedLoaderCacheDecorator(
             decoratee: remoteFeedLoader,
@@ -93,24 +88,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
     }
-}
 
-private func makeHTTPClient() -> HTTPClient {
-    switch UserDefaults.standard.string(forKey: "connectivity") {
-    case "offline": return AlwaysFailedHTTPClient()
-    default: return URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
+    func makeHTTPClient() -> HTTPClient {
+        URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
     }
-}
 
-private class AlwaysFailedHTTPClient: HTTPClient {
-    
-    private class Task: HTTPClientTask {
-        func cancel() {}
-    }
-    
-    func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
-        completion(.failure(NSError(domain: "offline", code: 0)))
-        
-        return Task()
-    }
 }
