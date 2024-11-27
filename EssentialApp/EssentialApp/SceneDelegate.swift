@@ -14,6 +14,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     let realmConfig = Realm.Configuration.defaultConfiguration
+    
+    lazy var feedStore: FeedStoreProtocol & LocalFeedImageStoreProtocol = {
+        let store = RealmFeedStore(realmConfig: realmConfig)
+        return store
+    }()
+    
+    lazy var httpClient: HTTPClient = {
+        let client = makeHTTPClient()
+        return client
+    }()
+    
+    convenience init(httpClient: HTTPClient, store: FeedStoreProtocol & LocalFeedImageStoreProtocol) {
+        self.init()
+        
+        self.httpClient = httpClient
+        self.feedStore = store
+    }
 
     public func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let _ = (scene as? UIWindowScene) else { return }
@@ -25,16 +42,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
         
         // Remote
-        let client = makeHTTPClient()
-        let remoteFeedImageDataLoader = RemoteFeedImageDataLoader(client: client)
-        let remoteFeedLoader = RemoteFeedLoader(httpClient: client, url: url)
+        let remoteFeedImageDataLoader = RemoteFeedImageDataLoader(client: httpClient)
+        let remoteFeedLoader = RemoteFeedLoader(httpClient: httpClient, url: url)
         
         // Local
-        let feedStore = RealmFeedStore(realmConfig: realmConfig)
         let localFeedLoader = LocalFeedLoader(store: feedStore, timestamp: Date.init)
         let localFeedImageDataLoader = LocalFeedImageDataLoader(store: feedStore)
         
-    
         // Decorator RemoteLoad with localCache
         let remoteFeedLoaderWithLocalCache = FeedLoaderCacheDecorator(
             decoratee: remoteFeedLoader,
