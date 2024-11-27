@@ -14,10 +14,10 @@ public protocol FeedRefreshDelegate {
 
 public final class FeedViewController: UITableViewController {
     
-    var delegate: FeedRefreshDelegate?
+    public var delegate: FeedRefreshDelegate?
     @IBOutlet private(set) public var errorView: ErrorView!
     
-    var tableModels: [FeedImageCellController] = [] {
+    public var tableModels: [FeedImageCellController] = [] {
         didSet { tableView.reloadData() }
     }
 

@@ -70,7 +70,7 @@ extension CacheFeedImageDataUseCaseTests {
     }
     
     func saveFailed() -> LocalFeedImageDataLoader.SaveResult {
-        .failure(.failed)
+        .failure(LocalFeedImageDataLoader.SaveError.failed)
     }
     
     func expect(
@@ -98,7 +98,7 @@ extension CacheFeedImageDataUseCaseTests {
         wait(for: [exp], timeout: 1.0)
         
         switch (expectedResult, capturedResult) {
-        case let (.failure(expectedError), .failure(capturedError)):
+        case let (.failure(expectedError as NSError), .failure(capturedError as NSError)):
             XCTAssertEqual(expectedError, capturedError, file: file, line: line)
         case let (.success(expectedData), .success(capturedData)):
             XCTAssertEqual(expectedData, capturedData, file: file, line: line)

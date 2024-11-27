@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  FeedImageCellController.swift
 //  EssentialFeed
 //
 //  Created by Anthony on 30/10/24.
@@ -9,14 +9,19 @@ import Foundation
 import UIKit
 import EssentialFeed
 
-final class FeedImageCellController: FeedImageView {
+public protocol FeedImageDataControllerDelegate {
+    func didRequestImage()
+    func didCancelImageRequest()
+}
+
+public final class FeedImageCellController: FeedImageView {
     
-    typealias Image = UIImage
+    public typealias Image = UIImage
     private var cell: FeedImageCell?
     
     private var delegate: FeedImageDataControllerDelegate
     
-    init(delegate: FeedImageDataControllerDelegate) {
+    public init(delegate: FeedImageDataControllerDelegate) {
         self.delegate = delegate
     }
     
@@ -30,7 +35,7 @@ final class FeedImageCellController: FeedImageView {
         return cell!
     }
     
-    func display(_ model: FeedImageViewModel<UIImage>) {
+    public func display(_ model: FeedImageViewModel<UIImage>) {
         cell?.locationLabel.text = model.location
         cell?.descriptionLabel.text = model.description
         cell?.url = model.url

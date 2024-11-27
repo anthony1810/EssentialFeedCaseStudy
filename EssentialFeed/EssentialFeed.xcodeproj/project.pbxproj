@@ -129,7 +129,6 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		92796E4A2CCCAED000123106 /* EssentialFeediOS */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = EssentialFeediOS; sourceTree = "<group>"; };
-		92796E562CCCAED000123106 /* EssentialFeediOSTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = EssentialFeediOSTests; sourceTree = "<group>"; };
 		92D45F972CB76BDD005A78A5 /* FeedAPIEndToEndTests */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (92D45FA62CB77791005A78A5 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = FeedAPIEndToEndTests; sourceTree = "<group>"; };
 		92E08E8C2CE9E9B200F92EC9 /* EssentialFeed */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (92E08EAA2CE9E9B200F92EC9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = EssentialFeed; sourceTree = "<group>"; };
 		92E08EC62CE9E9BB00F92EC9 /* EssentialFeedTests */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (92E08EE22CE9E9BC00F92EC9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 92E08EE32CE9E9BC00F92EC9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 92E08EE42CE9E9BC00F92EC9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 92E08EE52CE9E9BC00F92EC9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = EssentialFeedTests; sourceTree = "<group>"; };
@@ -198,7 +197,6 @@
 				92D45F972CB76BDD005A78A5 /* FeedAPIEndToEndTests */,
 				92EAA27A2CC9E01F002A828E /* FeedCacheIntegrationTests */,
 				92796E4A2CCCAED000123106 /* EssentialFeediOS */,
-				92796E562CCCAED000123106 /* EssentialFeediOSTests */,
 				92796F052CCCF0EB00123106 /* Frameworks */,
 				080EDEF221B6DA7E00813479 /* Products */,
 			);
@@ -324,9 +322,6 @@
 			);
 			dependencies = (
 				92796E552CCCAED000123106 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				92796E562CCCAED000123106 /* EssentialFeediOSTests */,
 			);
 			name = EssentialFeediOSTests;
 			packageProductDependencies = (

@@ -7,6 +7,7 @@
 import Foundation
 import UIKit
 import EssentialFeed
+import EssentialFeediOS
 
 final class FeedFetchView: FeedFetchingViewProtocol {
     private weak var feedViewController: FeedViewController?

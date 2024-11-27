@@ -6,11 +6,7 @@
 //
 import Foundation
 import EssentialFeed
-
-protocol FeedImageDataControllerDelegate {
-    func didRequestImage()
-    func didCancelImageRequest()
-}
+import EssentialFeediOS
 
 class FeedImageDataLoaderPresentationAdapter<View: FeedImageView, Image> where View.Image == Image {
     private var imageLoader: FeedImageDataLoaderProtocol
