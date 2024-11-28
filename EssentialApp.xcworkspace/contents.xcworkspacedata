@@ -10,7 +10,4 @@
    <FileRef
       location = "group:EssentialApp/EssentialAppTests/EssentialApp.xctestplan">
    </FileRef>
-   <FileRef
-      location = "group:EssentialApp/EssentialAppUITests/EssentialAppUITests.xctestplan">
-   </FileRef>
 </Workspace>

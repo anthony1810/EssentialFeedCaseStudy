@@ -13,10 +13,9 @@ import RealmSwift
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-    let realmConfig = Realm.Configuration.defaultConfiguration
-    
+   
     lazy var feedStore: FeedStoreProtocol & LocalFeedImageStoreProtocol = {
-        let store = RealmFeedStore(realmConfig: realmConfig)
+        let store = RealmFeedStore(realmConfig: Realm.Configuration.defaultConfiguration)
         return store
     }()
     

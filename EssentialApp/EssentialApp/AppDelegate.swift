@@ -23,10 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let configuration = UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
         
-        #if DEBUG
-        configuration.delegateClass = DebugSceneDelegate.self
-        #endif
-        
         return configuration
     }
 
