@@ -24,6 +24,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         return client
     }()
     
+    lazy var localFeedLoader: LocalFeedLoader = {
+        LocalFeedLoader(store: feedStore, timestamp: Date.init)
+    }()
+    
     convenience init(httpClient: HTTPClient, store: FeedStoreProtocol & LocalFeedImageStoreProtocol) {
         self.init()
         
@@ -45,7 +49,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let remoteFeedLoader = RemoteFeedLoader(httpClient: httpClient, url: url)
         
         // Local
-        let localFeedLoader = LocalFeedLoader(store: feedStore, timestamp: Date.init)
         let localFeedImageDataLoader = LocalFeedImageDataLoader(store: feedStore)
         
         // Decorator RemoteLoad with localCache
@@ -75,5 +78,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
         
         window?.rootViewController = UINavigationController(rootViewController: feedVC)
+    }
+    
+    func sceneWillResignActive(_ scene: UIScene) {
+        localFeedLoader.validateCache(completion: { _ in })
     }
 }

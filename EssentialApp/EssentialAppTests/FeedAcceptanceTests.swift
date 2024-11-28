@@ -47,6 +47,22 @@ final class FeedAcceptanceTests: XCTestCase {
         
         XCTAssertEqual(feedVC.numberOfRenderedFeedImageViews(), 0)
     }
+    
+    func test_onEnteringBackground_deletesExpiredFeedCache() {
+        let store = InMemoryFeedStore.expired
+        
+        enteringBackground(with: store)
+        
+        XCTAssertNil(store.feedCache, "Expected to delete expired cache")
+    }
+    
+    func test_onEnteringBackground_KeepNonExpiredFeedImageCache() {
+        let store = InMemoryFeedStore.nonExpired
+        
+        enteringBackground(with: store)
+        
+        XCTAssertNotNil(store.feedCache, "Expected to delete expired cache")
+    }
 }
 
 extension FeedAcceptanceTests {
@@ -61,6 +77,11 @@ extension FeedAcceptanceTests {
         let feedVC = nav?.topViewController as! FeedViewController
         
         return feedVC
+    }
+    
+    private func enteringBackground(with store: FeedStoreProtocol & LocalFeedImageStoreProtocol) {
+        let sut = SceneDelegate(httpClient: HTTPClientStub.offline, store: store)
+        sut.sceneWillResignActive(UIApplication.shared.connectedScenes.first!)
     }
     
     private func response(url: URL) -> (HTTPURLResponse, Data) {
@@ -122,11 +143,23 @@ private class HTTPClientStub: HTTPClient {
 
 private class InMemoryFeedStore: FeedStoreProtocol {
         
-    private var feedCache: Cache?
+    private(set) var feedCache: Cache?
     private var feedImageDataCache: [URL: Data] = [:]
+    
+    init(feedCache: Cache? = nil) {
+        self.feedCache = feedCache
+    }
     
     static var empty: InMemoryFeedStore {
         InMemoryFeedStore()
+    }
+    
+    static var expired: InMemoryFeedStore {
+        InMemoryFeedStore(feedCache: .found([], Date.distantPast))
+    }
+    
+    static var nonExpired: InMemoryFeedStore {
+        InMemoryFeedStore(feedCache: .found([], Date()))
     }
     
     func deleteCache(completion: @escaping DeletionCacheCompletion) {
