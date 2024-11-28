@@ -17,6 +17,7 @@ final class FeedAcceptanceTests: XCTestCase {
         let httpClient = HTTPClientStub.online(response)
         
         let feedVC = launch(httpClient: httpClient, store: store)
+        feedVC.triggerViewWillAppear()
         
         XCTAssertEqual(feedVC.numberOfRenderedFeedImageViews(), 2)
         XCTAssertNotNil(feedVC.stimulateVisibleView(at: 0).renderedImage)
