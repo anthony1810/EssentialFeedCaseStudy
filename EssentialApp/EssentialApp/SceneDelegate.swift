@@ -21,7 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }()
     
     lazy var httpClient: HTTPClient = {
-        let client = makeHTTPClient()
+        let client = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
         return client
     }()
     
@@ -77,9 +77,4 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window?.rootViewController = UINavigationController(rootViewController: feedVC)
     }
-
-    func makeHTTPClient() -> HTTPClient {
-        URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
-    }
-
 }

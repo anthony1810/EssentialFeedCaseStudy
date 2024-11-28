@@ -18,15 +18,6 @@ class DebugSceneDelegate: SceneDelegate {
         
         super.scene(scene, willConnectTo: session, options: connectionOptions)
     }
-    
-    override func makeHTTPClient() -> any HTTPClient {
-        
-        if let connectivity = UserDefaults.standard.string(forKey: "connectivity") {
-            return DebuggingHTTPClient(connectivity: connectivity)
-        }
-        
-        return super.makeHTTPClient()
-    }
 }
 
 
