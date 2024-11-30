@@ -24,4 +24,23 @@ final class SceneDelegateTests: XCTestCase {
         XCTAssertNotNil(rootNavigation, "Expect UINavigationController, got \(String(describing: root))")
         XCTAssertTrue(topVC is FeedViewController, "expect FeedViewController, got \(String(describing: topVC))")
     }
+    
+    func test_configuresRootViewController_rendersCustomWindowAsKeyAnDVisible() {
+        let window = WindowSpy()
+        let sut = SceneDelegate()
+        
+        sut.window = window
+        
+        sut.configureWindow()
+        
+        XCTAssertEqual(window.makeKeyAndVisibleCount, 1, "Expect window to be to be key window")
+    }
+}
+
+private class WindowSpy: UIWindow {
+    var makeKeyAndVisibleCount = 0
+    
+    override func makeKeyAndVisible() {
+        makeKeyAndVisibleCount += 1
+    }
 }
