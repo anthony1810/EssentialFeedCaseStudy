@@ -58,6 +58,8 @@ extension FeedSnapshotTests {
         controller.loadViewIfNeeded()
         controller.beginAppearanceTransition(true, animated: false) //view appear again
         controller.endAppearanceTransition()
+        controller.tableView.showsVerticalScrollIndicator = false
+        controller.tableView.showsHorizontalScrollIndicator = false
         
         return controller
     }

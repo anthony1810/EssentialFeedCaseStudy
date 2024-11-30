@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="hfq-XP-Lyi">
-    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <device id="retina6_7" orientation="portrait" appearance="light"/>
+    <accessibilityOverrides dynamicTypePreference="3"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Image references" minToolsVersion="12.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -12,16 +14,17 @@
         <scene sceneID="Dck-aL-ujn">
             <objects>
                 <tableViewController id="hfq-XP-Lyi" customClass="FeedViewController" customModule="EssentialFeediOS" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="kRu-WU-xQj">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="kRu-WU-xQj">
+                        <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="sectionIndexBackgroundColor" systemColor="systemBackgroundColor"/>
                         <view key="tableHeaderView" contentMode="scaleToFill" id="DeW-Fl-JH8" customClass="ErrorView" customModule="EssentialFeediOS">
-                            <rect key="frame" x="0.0" y="0.0" width="393" height="34"/>
+                            <rect key="frame" x="0.0" y="0.0" width="430" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I3q-al-W3d">
-                                    <rect key="frame" x="0.0" y="0.0" width="393" height="34"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="430" height="34"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <inset key="contentEdgeInsets" minX="0.0" minY="8" maxX="0.0" maxY="8"/>
                                     <state key="normal" title="Error label">
@@ -32,7 +35,7 @@
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" red="0.99951404330000004" green="0.41759261489999999" blue="0.4154433012" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" red="1" green="0.41568627450000001" blue="0.41568627450000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <gestureRecognizers/>
                             <constraints>
                                 <constraint firstItem="I3q-al-W3d" firstAttribute="leading" secondItem="DeW-Fl-JH8" secondAttribute="leading" id="DiR-V2-AcO"/>
@@ -45,26 +48,26 @@
                             </connections>
                         </view>
                         <view key="tableFooterView" contentMode="scaleToFill" id="4PB-ja-mxf">
-                            <rect key="frame" x="0.0" y="692" width="393" height="16"/>
+                            <rect key="frame" x="0.0" y="692" width="430" height="16"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         </view>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="FeedImageCell" rowHeight="580" id="98b-hx-mpo" customClass="FeedImageCell" customModule="EssentialFeediOS" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="84" width="393" height="580"/>
+                                <rect key="frame" x="0.0" y="84" width="430" height="580"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="98b-hx-mpo" id="KDq-sr-pwp">
-                                    <rect key="frame" x="0.0" y="0.0" width="393" height="580"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="430" height="580"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="VVs-bh-fCP">
-                                            <rect key="frame" x="20" y="17" width="353" height="546"/>
+                                            <rect key="frame" x="20" y="17" width="390" height="546"/>
                                             <subviews>
                                                 <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="di1-87-2tk" userLabel="Location Container">
-                                                    <rect key="frame" x="0.0" y="0.0" width="353" height="58.333333333333336"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="390" height="36"/>
                                                     <subviews>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1hN-8c-NDd" userLabel="Pin Container">
-                                                            <rect key="frame" x="0.0" y="0.0" width="10" height="50"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="10" height="36"/>
                                                             <subviews>
                                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pin" translatesAutoresizingMaskIntoConstraints="NO" id="3b3-iG-FIM">
                                                                     <rect key="frame" x="0.0" y="3" width="10" height="14"/>
@@ -81,35 +84,37 @@
                                                             </constraints>
                                                         </view>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jr1-AO-XlG">
-                                                            <rect key="frame" x="16" y="0.0" width="337" height="36"/>
+                                                            <rect key="frame" x="16" y="0.0" width="374" height="36"/>
                                                             <string key="text">Location,
 Location</string>
                                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                            <color key="textColor" red="0.60784313729999995" green="0.60784313729999995" blue="0.60784313729999995" alpha="1" colorSpace="calibratedRGB"/>
+                                                            <color key="textColor" systemColor="secondaryLabelColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                     </subviews>
                                                 </stackView>
                                                 <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tfe-Yk-CLd" userLabel="Image Container">
-                                                    <rect key="frame" x="0.0" y="68.333333333333314" width="353" height="353"/>
+                                                    <rect key="frame" x="0.0" y="46" width="390" height="390"/>
                                                     <subviews>
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="NeI-a1-2QO">
+                                                            <rect key="frame" x="0.0" y="0.0" width="390" height="390"/>
+                                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                            <accessibility key="accessibilityConfiguration" identifier="feed-image-view">
+                                                                <bool key="isElement" value="YES"/>
+                                                            </accessibility>
+                                                        </imageView>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9lK-zc-H8P">
-                                                            <rect key="frame" x="0.0" y="0.0" width="353" height="353"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="390" height="390"/>
+                                                            <color key="backgroundColor" systemColor="quaternarySystemFillColor"/>
                                                             <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                             <state key="normal" title="Button"/>
                                                             <buttonConfiguration key="configuration" style="plain">
-                                                                <imageReference key="image" image="arrow.clockwise" catalog="system" renderingMode="original"/>
+                                                                <imageReference key="image" image="arrow.clockwise" catalog="system" renderingMode="template"/>
                                                             </buttonConfiguration>
                                                             <connections>
                                                                 <action selector="retryButtonTapped" destination="98b-hx-mpo" eventType="touchUpInside" id="8v0-mm-0Ma"/>
                                                             </connections>
                                                         </button>
-                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="NeI-a1-2QO">
-                                                            <rect key="frame" x="0.0" y="0.0" width="353" height="353"/>
-                                                            <accessibility key="accessibilityConfiguration" identifier="feed-image-view">
-                                                                <bool key="isElement" value="YES"/>
-                                                            </accessibility>
-                                                        </imageView>
                                                     </subviews>
                                                     <color key="backgroundColor" red="0.89019607840000003" green="0.89019607840000003" blue="0.89019607840000003" alpha="1" colorSpace="calibratedRGB"/>
                                                     <accessibility key="accessibilityConfiguration">
@@ -134,10 +139,10 @@ Location</string>
                                                     </userDefinedRuntimeAttributes>
                                                 </view>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gsV-ol-ENf">
-                                                    <rect key="frame" x="0.0" y="431.33333333333331" width="349" height="114.66666666666669"/>
+                                                    <rect key="frame" x="0.0" y="446" width="387.66666666666669" height="100"/>
                                                     <string key="text">Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description </string>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <color key="textColor" red="0.2901960784" green="0.2901960784" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="16"/>
+                                                    <color key="textColor" systemColor="secondaryLabelColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
@@ -192,5 +197,14 @@ Location</string>
     <resources>
         <image name="arrow.clockwise" catalog="system" width="110" height="128"/>
         <image name="pin" width="10" height="14.333333015441895"/>
+        <systemColor name="quaternarySystemFillColor">
+            <color red="0.4549019608" green="0.4549019608" blue="0.50196078430000002" alpha="0.080000000000000002" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>
