@@ -33,6 +33,14 @@ final class FeedSnapshotTests: XCTestCase {
         
         record(snapshot: sut.snapshot(), named: "FEED_WITH_ERROR_MESSAGE")
     }
+    
+    func test_feedWithFailedImageLoading() {
+        let sut = makeSUT()
+        
+        sut.display(feedWithFailedImageLoading())
+        
+        record(snapshot: sut.snapshot(), named: "FEED_WITH_FAILED_IMAGE_LOADING")
+    }
 }
 
 extension FeedSnapshotTests {
@@ -63,6 +71,23 @@ extension FeedSnapshotTests {
                 description: "Garth Pier is a Grade II listed structure in Bangor, Gwynedd, North Wales.",
                 location: "Garth Pier",
                 image: UIImage.make(withColor: .green), url: URL(string: "http://anyurl.com")!
+            )
+        ]
+    }
+    
+    private func feedWithFailedImageLoading() -> [FeedStub] {
+        [
+            FeedStub(
+                description: "The East Side Gallery is an open-air gallery in Berlin. It consists of a series of murals painted directly on a 1,316 m long remnant of the Berlin Wall, located near the centre of Berlin, on Mühlenstraße in Friedrichshain-Kreuzberg. The gallery has official status as a Denkmal, or heritage-protected landmark.",
+                location: "East Side Gallery\nMemorial in Berlin, Germany",
+                image: nil,
+                url: URL(string: "http://anyurl.com")!
+            ),
+            FeedStub(
+                description: "Garth Pier is a Grade II listed structure in Bangor, Gwynedd, North Wales.",
+                location: "Garth Pier",
+                image: nil,
+                url: URL(string: "http://anyurl.com")!
             )
         ]
     }
