@@ -401,12 +401,31 @@ final class FeedUIIntegrationTests: XCTestCase {
         sut.userInitiatedRefresh()
         XCTAssertEqual(sut.displayedErrorViewMessage, nil)
     }
+    
+    func test_loadFeedCompletion_rendersSuccessfullyLoadedEmptyFeedAfterNonEmptyFeed() throws {
+        let image0 = makeFeedImage(location: "any location", description: "any description", imageURL: makeAnyUrl())
+        let image1 = makeFeedImage(location: nil, description: "any description", imageURL: makeAnyUrl())
+        
+        let (sut, loader) = makeSUT()
+
+        sut.triggerViewWillAppear()
+        loader.completeFeedLoadingSuccess(at: 0, with: [image0, image1])
+        assert(sut: sut, rendering: [image0, image1])
+        
+        sut.userInitiatedRefresh()
+        loader.completeFeedLoadingSuccess(at: 0, with: [])
+        assert(sut: sut, rendering: [])
+    }
 }
 
 // MARK: - Helpers
 
 extension FeedUIIntegrationTests {
     func assert(sut: FeedViewController, rendering images: [FeedImage], file: StaticString = #file, line: UInt = #line) {
+        
+        sut.tableView.layoutIfNeeded()
+        RunLoop.main.run(until: Date())
+        
         XCTAssertEqual(sut.numberOfRenderedFeedImageViews(), images.count, file: file, line: line)
         
         for (index, image) in images.enumerated() {

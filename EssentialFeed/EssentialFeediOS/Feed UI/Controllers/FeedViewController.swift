@@ -20,8 +20,9 @@ public final class FeedViewController: UITableViewController {
     public var tableModels: [FeedImageCellController] = [] {
         didSet { tableView.reloadData() }
     }
-
+    
     private var onViewFirstAppear: (() -> Void)?
+    private var loadingCells = [IndexPath: FeedImageCellController]()
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,12 +48,13 @@ public final class FeedViewController: UITableViewController {
 // MARK: - FeedLoadingViewProtocol
 extension FeedViewController: FeedLoadingViewProtocol {
     public func display(_ viewModel: FeedLoadingViewModel) {
-         if viewModel.isLoading {
-             self.refreshControl?.beginRefreshing()
-         } else {
-             self.refreshControl?.endRefreshing()
-         }
-     }
+        loadingCells.removeAll()
+        if viewModel.isLoading {
+            self.refreshControl?.beginRefreshing()
+        } else {
+            self.refreshControl?.endRefreshing()
+        }
+    }
 }
 
 // MARK: - FeedErrorViewProtocol
@@ -82,7 +84,7 @@ extension FeedViewController {
     }
     
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-      
+        
         cancelLoading(at: indexPath)
     }
     
@@ -107,12 +109,15 @@ extension FeedViewController: UITableViewDataSourcePrefetching {
 // MARK: - Helpers
 extension FeedViewController {
     func cancelLoading(at indexPath: IndexPath) {
-        cellController(at: indexPath).cancelLoading()
+        loadingCells[indexPath]?.cancelLoading()
+        loadingCells[indexPath] = nil
     }
     
     @discardableResult
     func cellController(at indexPath: IndexPath) -> FeedImageCellController {
-        tableModels[indexPath.row]
+        let cellController = tableModels[indexPath.row]
+        loadingCells[indexPath] = cellController
+        return cellController
     }
     
     @objc
