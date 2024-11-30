@@ -430,6 +430,8 @@ extension FeedUIIntegrationTests {
         for (index, image) in images.enumerated() {
             assert(sut: sut, hasConfigureFeedImageViewAt: index, with: image, file: file, line: line)
         }
+        
+        executeRunloopToCleanUpReferrences()
     }
     
     func assert(sut: FeedViewController, hasConfigureFeedImageViewAt index: Int, with image: FeedImage, file: StaticString = #file, line: UInt = #line) {
@@ -466,6 +468,10 @@ extension FeedUIIntegrationTests {
             XCTFail("Missing localized string for key: \(key) in table: \(table)", file: file, line: line)
         }
         return value
+    }
+    
+    func executeRunloopToCleanUpReferrences() {
+        RunLoop.main.run(until: Date())
     }
 }
 
