@@ -423,8 +423,7 @@ final class FeedUIIntegrationTests: XCTestCase {
 extension FeedUIIntegrationTests {
     func assert(sut: FeedViewController, rendering images: [FeedImage], file: StaticString = #file, line: UInt = #line) {
         
-        sut.tableView.layoutIfNeeded()
-        RunLoop.main.run(until: Date())
+        sut.tableView.enforceLayoutCycle()
         
         XCTAssertEqual(sut.numberOfRenderedFeedImageViews(), images.count, file: file, line: line)
         
