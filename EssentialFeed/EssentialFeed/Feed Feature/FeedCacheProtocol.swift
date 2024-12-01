@@ -11,3 +11,9 @@ public protocol FeedCacheProtocol {
     
     func save(_ items: [FeedImage], completion: @escaping (SaveResult) -> Void)
 }
+
+extension FeedCacheProtocol {
+    public func saveCacheIgnoreCompletion(feeds: [FeedImage]) {
+        save(feeds, completion: { _ in })
+    }
+}
