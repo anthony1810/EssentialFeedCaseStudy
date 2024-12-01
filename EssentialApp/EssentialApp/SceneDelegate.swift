@@ -54,20 +54,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Local
         let localFeedImageDataLoader = LocalFeedImageDataLoader(store: feedStore)
         
-        // Decorator RemoteLoad with localCache
-        let remoteFeedLoaderWithLocalCache = FeedLoaderCacheDecorator(
-            decoratee: remoteFeedLoader,
-            cache: localFeedLoader
-        )
         let remoteFeedImageDataLoaderWithLocalCache = FeedImageDataLoaderDecorator(
             decoratee: remoteFeedImageDataLoader,
             cache: localFeedImageDataLoader
-        )
-        
-        //composite
-        let feedLoaderWithFallBack = FeedLoaderWithFallbackComposite(
-            primary: remoteFeedLoaderWithLocalCache,
-            fallback: localFeedLoader
         )
         
         let feedImageDataLoaderWithFallback = FeedImageDataLoaderWithFallbackComposite(
@@ -75,10 +64,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             fallback: localFeedImageDataLoader
         )
         
-//        let feedVC = FeedUIComposer.composeFeedViewController(
-//            loader: feedLoaderWithFallBack,
-//            imageLoader: feedImageDataLoaderWithFallback
-//        )
         let combineLoader = makeCombineRemoteFeedLoaderWithLocalFallback(
             remoteFeedLoader: remoteFeedLoader,
             localFeedCache: localFeedLoader,
@@ -94,6 +79,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         localFeedLoader.validateCache(completion: { _ in })
     }
     
+    // MARK: - Combine
     private func makeCombineRemoteFeedLoaderWithLocalFallback(
         remoteFeedLoader: FeedLoaderProtocol,
         localFeedCache: FeedCacheProtocol,
@@ -105,38 +91,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .cache(to: localFeedCache)
             .fallback(to: localFeedLoader.loadPublisher)
     }
-}
-
-// combine remote feed loader
-public extension FeedLoaderProtocol {
-    typealias Publisher = AnyPublisher<[FeedImage], Error>
-    func loadPublisher() -> Publisher {
-        Deferred {
-            Future { promise in
-                self.load { result in
-                    switch result {
-                    case .success(let feeds):
-                        return promise(.success(feeds))
-                    case .failure(let error):
-                        return promise(.failure(error))
-                    }
-                }
-            }
-        }
-        .eraseToAnyPublisher()
-    }
-}
-
-// combine remote feed loader with caching
-public extension Publisher where Output == [FeedImage] {
-    func cache(to cacher: FeedCacheProtocol) -> AnyPublisher<Output, Failure> {
-        self.handleEvents(receiveOutput: cacher.saveCacheIgnoreCompletion).eraseToAnyPublisher()
-    }
-}
-
-// combine composite feedloader with fallback
-public extension Publisher where Output == [FeedImage] {
-    func fallback(to fallbackPublisher: @escaping () -> AnyPublisher<Output, Failure>) -> AnyPublisher<Output, Failure> {
-        self.catch { _ in fallbackPublisher() }.eraseToAnyPublisher()
+    
+    // MARK: - Closure-based
+    private func makeClosuredBaseRemoteFeedLoaderWithLocalFallback(
+        remoteFeedLoader: FeedLoaderProtocol,
+        localFeedCache: FeedCacheProtocol,
+        localFeedLoader: FeedLoaderProtocol
+    ) -> FeedLoaderProtocol {
+        
+        // Decorator RemoteLoad with localCache
+        let remoteFeedLoaderWithLocalCache = FeedLoaderCacheDecorator(
+            decoratee: remoteFeedLoader,
+            cache: localFeedCache
+        )
+        
+        // Composite RemoteLoader with fallback of local loader
+        let feedLoaderWithFallBack = FeedLoaderWithFallbackComposite(
+            primary: remoteFeedLoaderWithLocalCache,
+            fallback: localFeedLoader
+        )
+        
+        return feedLoaderWithFallBack
     }
 }

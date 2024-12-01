@@ -1,12 +1,13 @@
 //
-//  MainThreadDecorator.swift
-//  EssentialFeed
+//  Publisher+ImmediateWhenOnMainQueue.swift
+//  EssentialApp
 //
-//  Created by Anthony on 3/11/24.
+//  Created by Anthony on 1/12/24.
 //
-import Foundation
-import EssentialFeed
+
 import Combine
+import EssentialFeed
+import Foundation
 
 extension Publisher where Output == [FeedImage] {
     func dispatchToMainThread() -> AnyPublisher<Output, Failure> {
@@ -49,41 +50,6 @@ extension DispatchQueue {
         /// Performs the action at some time after the specified date, at the specified frequency, optionally taking into account tolerance if possible.
         func schedule(after date: Self.SchedulerTimeType, interval: Self.SchedulerTimeType.Stride, tolerance: Self.SchedulerTimeType.Stride, options: Self.SchedulerOptions?, _ action: @escaping () -> Void) -> any Cancellable {
             DispatchQueue.main.schedule(after: date, interval: interval, tolerance: tolerance, options: options, action)
-        }
-    }
-}
-
-
-
-class MainThreadDecorator<T> {
-    let decoratee: T
-    
-    init(_ decoratee: T) {
-        self.decoratee = decoratee
-    }
-    
-    func dispatch(_ block: @escaping () -> Void) {
-        guard Thread.isMainThread else {
-            DispatchQueue.main.async(execute: block)
-            return
-        }
-       
-        block()
-    }
-}
-
-extension MainThreadDecorator: FeedLoaderProtocol where T == FeedLoaderProtocol {
-    func load(completion: @escaping (FeedLoaderProtocol.Result) -> Void) {
-        decoratee.load { [weak self] result in
-            self?.dispatch { completion(result) }
-        }
-    }
-}
-
-extension MainThreadDecorator: FeedImageDataLoaderProtocol where T == FeedImageDataLoaderProtocol {
-    func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoaderProtocol.Result) -> Void) -> any ImageLoadingDataTaskProtocol {
-        decoratee.loadImageData(from: url) { [weak self] result in
-            self?.dispatch {completion(result)}
         }
     }
 }
