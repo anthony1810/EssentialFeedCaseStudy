@@ -38,8 +38,8 @@ public enum FeedUIComposer {
     }
     
     public static func composeFeedViewController(
-        combineLoader: @escaping () -> AnyPublisher<[FeedImage], Error>,
-        imageLoader: FeedImageDataLoaderProtocol
+        combineLoader: @escaping () -> FeedLoaderProtocol.Publisher,
+        combineImageLoader: @escaping (URL) -> FeedImageDataLoaderProtocol.Publisher
     ) -> FeedViewController {
         let feedLoaderPresentationAdapter = CombineFeedLoaderPresentationAdapter(loader: combineLoader().dispatchToMainThread)
     
@@ -52,9 +52,9 @@ public enum FeedUIComposer {
         let feedPresenter = FeedPresenter(
             loadingView: WeakRefVirtualProxy(target: feedViewController),
             errorView: WeakRefVirtualProxy(target: feedViewController),
-            fetchingView: FeedFetchView(
+            fetchingView: CombineFeedFetchView(
                 feedViewController: feedViewController,
-                imageLoader: MainThreadDecorator(imageLoader))
+                combineImageLoader: { url in combineImageLoader(url).dispatchToMainThread() } )
            
         )
         feedLoaderPresentationAdapter.presenter = feedPresenter

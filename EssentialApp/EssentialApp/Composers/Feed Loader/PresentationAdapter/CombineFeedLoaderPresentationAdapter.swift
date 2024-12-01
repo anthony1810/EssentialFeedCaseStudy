@@ -1,35 +1,14 @@
 //
-//  FeedLoaderPresentationAdapter.swift
-//  EssentialFeed
+//  CombineFeedLoaderPresentationAdapter.swift
+//  EssentialApp
 //
-//  Created by Anthony on 2/11/24.
+//  Created by Anthony on 1/12/24.
 //
 import Foundation
 import UIKit
 import EssentialFeed
 import EssentialFeediOS
 import Combine
-
-final class FeedLoaderPresentationAdapter: FeedRefreshDelegate {
-    private let loader: FeedLoaderProtocol
-    var presenter: FeedPresenter?
-    
-    init(loader: FeedLoaderProtocol) {
-        self.loader = loader
-    }
-    
-    func didRequestFeedRefresh() {
-        presenter?.startLoading()
-        loader.load { [weak self] result in
-            switch result {
-            case .success(let feeds):
-                self?.presenter?.finishLoadingSuccessfully(feeds: feeds)
-            case .failure(let error):
-                self?.presenter?.finishLoadingFailure(error: error)
-            }
-        }
-    }
-}
 
 final class CombineFeedLoaderPresentationAdapter: FeedRefreshDelegate {
     private let loader: () -> AnyPublisher<[FeedImage], Error>

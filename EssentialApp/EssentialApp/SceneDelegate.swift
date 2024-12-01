@@ -45,31 +45,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func configureWindow() {
-        let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
-        
-        // Remote
-        let remoteFeedImageDataLoader = RemoteFeedImageDataLoader(client: httpClient)
-        let remoteFeedLoader = RemoteFeedLoader(httpClient: httpClient, url: url)
-        
-        // Local
-        let localFeedImageDataLoader = LocalFeedImageDataLoader(store: feedStore)
-        
-        let remoteFeedImageDataLoaderWithLocalCache = FeedImageDataLoaderDecorator(
-            decoratee: remoteFeedImageDataLoader,
-            cache: localFeedImageDataLoader
+        let feedVC = FeedUIComposer.composeFeedViewController(
+            combineLoader: makeCombineRemoteFeedLoaderWithLocalFallback,
+            combineImageLoader: makeCombineRemoteFeedImageDataLoaderWithLocalFallback
         )
-        
-        let feedImageDataLoaderWithFallback = FeedImageDataLoaderWithFallbackComposite(
-            primary: remoteFeedImageDataLoaderWithLocalCache,
-            fallback: localFeedImageDataLoader
-        )
-        
-        let combineLoader = makeCombineRemoteFeedLoaderWithLocalFallback(
-            remoteFeedLoader: remoteFeedLoader,
-            localFeedCache: localFeedLoader,
-            localFeedLoader: localFeedLoader
-        )
-        let feedVC = FeedUIComposer.composeFeedViewController(combineLoader: { combineLoader }, imageLoader: feedImageDataLoaderWithFallback)
         
         window?.rootViewController = UINavigationController(rootViewController: feedVC)
         window?.makeKeyAndVisible()
@@ -80,16 +59,29 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     // MARK: - Combine
-    private func makeCombineRemoteFeedLoaderWithLocalFallback(
-        remoteFeedLoader: FeedLoaderProtocol,
-        localFeedCache: FeedCacheProtocol,
-        localFeedLoader: FeedLoaderProtocol
-    ) -> FeedLoaderProtocol.Publisher {
-      
+    private func makeCombineRemoteFeedLoaderWithLocalFallback() -> FeedLoaderProtocol.Publisher {
+        
+        let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
+        let remoteFeedLoader = RemoteFeedLoader(httpClient: httpClient, url: url)
+        
         return remoteFeedLoader
             .loadPublisher()
-            .cache(to: localFeedCache)
+            .cache(to: localFeedLoader)
             .fallback(to: localFeedLoader.loadPublisher)
+    }
+    
+    private func makeCombineRemoteFeedImageDataLoaderWithLocalFallback(
+        url: URL
+    ) -> FeedImageDataLoaderProtocol.Publisher {
+        let remoteFeedImageDataLoader = RemoteFeedImageDataLoader(client: httpClient)
+        let localFeedImageDataLoader = LocalFeedImageDataLoader(store: feedStore)
+        
+        return localFeedImageDataLoader
+            .loadImageDataPublisher(from: url)
+            .fallback(to: {
+                remoteFeedImageDataLoader.loadImageDataPublisher(from: url)
+                    .cache(to: localFeedImageDataLoader, with: url) }
+            )
     }
     
     // MARK: - Closure-based
@@ -112,5 +104,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
         
         return feedLoaderWithFallBack
+    }
+}
+
+public extension FeedImageDataLoaderProtocol {
+    typealias Publisher = AnyPublisher<Data?, Error>
+    
+    func loadImageDataPublisher(from url: URL) -> Publisher {
+        var task: ImageLoadingDataTaskProtocol?
+        return Deferred {
+            Future { promise in
+                task = self.loadImageData(from: url, completion: promise)
+            }
+        }
+        .handleEvents(receiveCancel: { task?.cancel() })
+        .eraseToAnyPublisher()
     }
 }

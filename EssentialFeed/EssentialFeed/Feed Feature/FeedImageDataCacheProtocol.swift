@@ -11,3 +11,9 @@ public protocol FeedImageDataCacheProtocol {
     
     func save(_ data: Data, for url: URL, completion: @escaping (SaveResult) -> Void)
 }
+
+extension FeedImageDataCacheProtocol {
+    public func saveCacheIgnoreCompletion(data: Data, url: URL) {
+        save(data, for: url, completion: { _ in })
+    }
+}
