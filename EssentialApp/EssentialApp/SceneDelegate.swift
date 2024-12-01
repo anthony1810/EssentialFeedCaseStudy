@@ -47,7 +47,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func configureWindow() {
-        let feedVC = makeFeedViewController(type: .closuredBase)
+        let feedVC = makeFeedViewController(type: .combine)
         
         window?.rootViewController = UINavigationController(rootViewController: feedVC)
         window?.makeKeyAndVisible()
