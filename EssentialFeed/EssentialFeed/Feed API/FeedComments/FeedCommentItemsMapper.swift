@@ -14,12 +14,16 @@ internal final class FeedCommentItemsMapper {
     }
     
     static func map(_ res: HTTPURLResponse, data: Data) throws -> [RemoteFeedItem] {
-        guard res.isOK, let root = try? JSONDecoder().decode(Root.self, from: data)
+        guard isOkay(res), let root = try? JSONDecoder().decode(Root.self, from: data)
         else {
             throw RemoteImageCommentsLoader.Error.invalidData
         }
        
         return root.items
+    }
+    
+    static func isOkay(_ res: HTTPURLResponse) -> Bool {
+        200...299 ~= res.statusCode
     }
 }
  
