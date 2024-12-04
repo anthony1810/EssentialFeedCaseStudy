@@ -48,12 +48,15 @@ class RemoteLoaderTests: XCTestCase {
         }
     }
     
-    func test_load_deliversEmptyArrayOnHTTPResponseWithEmptyValidJson() {
-        let (client, sut) = makeSUT()
+    func test_load_deliversMappedDataWithValidData() {
         
-        expect(sut: sut, toCompleteWith: .success([])) {
-            let emptyJsonItem = Data("{\"items\": []}".utf8)
-            client.complete(with: 200, data: emptyJsonItem)
+        let expectedResource = "any resource"
+        let (client, sut) = makeSUT(mapper: {_, data in
+            String(data: data, encoding: .utf8)!
+        })
+        
+        expect(sut: sut, toCompleteWith: .success(expectedResource)) {
+            client.complete(with: 200, data: Data(expectedResource.utf8))
         }
     }
 
@@ -61,8 +64,8 @@ class RemoteLoaderTests: XCTestCase {
         
         let url = URL(string: "https://any-url.com")!
         let client = HTTPClientSpy()
-        var sut: RemoteLoader? = RemoteLoader(httpClient: client, url: url)
-        var capturedResults = [RemoteLoader.Result]()
+        var sut: RemoteLoader? = RemoteLoader<String>(httpClient: client, url: url, mapper: {_, _ in "any "})
+        var capturedResults = [RemoteLoader<String>.Result]()
         sut?.load(completion: {
             capturedResults.append($0)
         })
@@ -81,12 +84,12 @@ extension RemoteLoaderTests {
    
     func makeSUT(
         url: URL = URL(string: "https://a-url.com")!,
-        mapper: @escaping RemoteLoader.Mapper = {_, _ in .success([])},
+        mapper: @escaping RemoteLoader<String>.Mapper = {_, _ in "any resource"},
         file: StaticString = #filePath,
         line: UInt = #line
-    ) -> (HTTPClientSpy, RemoteLoader) {
+    ) -> (HTTPClientSpy, RemoteLoader<String>) {
         let client = HTTPClientSpy()
-        let sut = RemoteLoader(httpClient: client, url: url)
+        let sut = RemoteLoader<String>(httpClient: client, url: url, mapper: mapper)
         
         trackForMemoryLeaks(client, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
@@ -95,8 +98,8 @@ extension RemoteLoaderTests {
     }
     
     func expect(
-        sut: RemoteLoader,
-        toCompleteWith expectedResult: RemoteLoader.Result,
+        sut: RemoteLoader<String>,
+        toCompleteWith expectedResult: RemoteLoader<String>.Result,
         when action: () -> Void,
         file: StaticString = #filePath,
         line: UInt = #line
@@ -156,7 +159,7 @@ extension RemoteLoaderTests {
         return try! JSONSerialization.data(withJSONObject: json)
     }
     
-    func failure(_ error: RemoteLoader.Error) -> RemoteLoader.Result {
+    func failure(_ error: RemoteLoader<String>.Error) -> RemoteLoader<String>.Result {
         .failure(error)
     }
 }

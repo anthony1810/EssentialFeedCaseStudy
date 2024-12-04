@@ -7,21 +7,23 @@
 
 import Foundation
 
-public final class RemoteLoader {
+public final class RemoteLoader<Resource> {
     let httpClient: HTTPClient
     let url: URL
+    let mapper: Mapper
     
-    public typealias Result = Swift.Result<[ImageComment], Error>
-    public typealias Mapper = (HTTPURLResponse, Data) throws -> RemoteLoader.Result
+    public typealias Result = Swift.Result<Resource, Error>
+    public typealias Mapper = (HTTPURLResponse, Data) throws -> Resource
     
     public enum Error: Swift.Error {
         case connectivity
         case invalidData
     }
     
-    public init(httpClient: HTTPClient, url: URL) {
+    public init(httpClient: HTTPClient, url: URL, mapper: @escaping Mapper) {
         self.httpClient = httpClient
         self.url = url
+        self.mapper = mapper
     }
     
     public func load(completion: @escaping (Result) -> Void) {
@@ -38,7 +40,7 @@ public final class RemoteLoader {
     
     func toRemoteFeedItemResult(from res: HTTPURLResponse, data: Data) -> Result {
         do {
-            let result = try FeedCommentItemsMapper.map(res, data: data)
+            let result = try self.mapper(res, data)
             return .success(result)
         } catch {
             return .failure(.invalidData)
