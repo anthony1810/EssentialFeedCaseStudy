@@ -12,6 +12,7 @@ public final class RemoteLoader {
     let url: URL
     
     public typealias Result = Swift.Result<[ImageComment], Error>
+    public typealias Mapper = (HTTPURLResponse, Data) throws -> RemoteLoader.Result
     
     public enum Error: Swift.Error {
         case connectivity

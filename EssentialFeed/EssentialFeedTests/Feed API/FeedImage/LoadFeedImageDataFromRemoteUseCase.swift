@@ -52,7 +52,7 @@ class LoadFeedImageDataFromRemoteUseCase: XCTestCase {
         let samples = [199, 201, 300, 400, 500]
         samples.enumerated().forEach { index, statusCode in
             expect(sut, toCompleteWith: .failure(expectedError)) {
-                client.complete(with: statusCode, data: self.makeAnyData(), at: index)
+                client.complete(with: statusCode, data: makeAnyData(), at: index)
             }
         }
     }
