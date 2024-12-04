@@ -111,8 +111,9 @@ extension RemoteLoaderTests {
             case (.success(let actualItems), .success(let expectedItems)):
                 XCTAssertEqual(actualItems, expectedItems)
             case (.failure(let actualError), .failure(let expectedError)):
-                let remoteFeedActualError = actualError as RemoteLoader.Error
-                let remoteFeedExpectedError = expectedError as RemoteLoader.Error
+                guard let remoteFeedActualError = actualError as? RemoteLoader<String>.Error,
+                      let remoteFeedExpectedError = expectedError as? RemoteLoader<String>.Error
+                else { XCTFail("Expected \(expectedError) but got \(actualError) instead", file: file, line: line); return}
                 
                 XCTAssertEqual(remoteFeedActualError, remoteFeedExpectedError, file: file, line: line)
             default:  XCTFail("Expected \(expectedResult) but got \(actualResult) instead", file: file, line: line)

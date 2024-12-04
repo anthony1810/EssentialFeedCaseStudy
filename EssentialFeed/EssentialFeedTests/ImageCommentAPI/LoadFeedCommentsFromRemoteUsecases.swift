@@ -151,8 +151,12 @@ extension LoadFeedCommentsFromRemoteUseCase {
             case (.success(let actualItems), .success(let expectedItems)):
                 XCTAssertEqual(actualItems, expectedItems)
             case (.failure(let actualError), .failure(let expectedError)):
-                let remoteFeedActualError = actualError as RemoteImageCommentsLoader.Error
-                let remoteFeedExpectedError = expectedError as RemoteImageCommentsLoader.Error
+                guard let remoteFeedActualError = actualError as? RemoteImageCommentsLoader.Error,
+                let remoteFeedExpectedError = expectedError as? RemoteImageCommentsLoader.Error
+                else {
+                    XCTFail("Expected \(expectedError) but got \(actualError) instead", file: file, line: line)
+                    return
+                }
                 
                 XCTAssertEqual(remoteFeedActualError, remoteFeedExpectedError)
             default:  XCTFail("Expected \(expectedResult) but got \(actualResult) instead", file: file, line: line)

@@ -12,7 +12,7 @@ public final class RemoteLoader<Resource> {
     let url: URL
     let mapper: Mapper
     
-    public typealias Result = Swift.Result<Resource, Error>
+    public typealias Result = Swift.Result<Resource, Swift.Error>
     public typealias Mapper = (HTTPURLResponse, Data) throws -> Resource
     
     public enum Error: Swift.Error {
@@ -43,7 +43,7 @@ public final class RemoteLoader<Resource> {
             let result = try self.mapper(res, data)
             return .success(result)
         } catch {
-            return .failure(.invalidData)
+            return .failure(Self.Error.invalidData)
         }
     }
 }
