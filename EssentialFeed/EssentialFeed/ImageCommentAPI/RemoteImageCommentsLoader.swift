@@ -40,7 +40,6 @@ public final class RemoteImageCommentsLoader {
             let result = try FeedCommentItemsMapper.map(res, data: data)
             return .success(result)
         } catch {
-            print(error)
             return .failure(.invalidData)
         }
     }
