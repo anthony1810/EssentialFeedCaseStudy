@@ -7,11 +7,11 @@
 
 import Foundation
 
-public final class RemoteImageCommentsLoader: FeedLoaderProtocol {
+public final class RemoteImageCommentsLoader {
     let httpClient: HTTPClient
     let url: URL
     
-    typealias Result = FeedLoaderProtocol.Result
+    public typealias Result = Swift.Result<[ImageComment], Error>
     
     public enum Error: Swift.Error {
         case connectivity
@@ -23,7 +23,7 @@ public final class RemoteImageCommentsLoader: FeedLoaderProtocol {
         self.url = url
     }
     
-    public func load(completion: @escaping (FeedLoaderProtocol.Result) -> Void) {
+    public func load(completion: @escaping (Result) -> Void) {
         httpClient.get(from: self.url, completion: { [weak self] httpCompletion in
             guard let self else { return }
             switch httpCompletion {
@@ -35,12 +35,13 @@ public final class RemoteImageCommentsLoader: FeedLoaderProtocol {
         })
     }
     
-    func toRemoteFeedItemResult(from res: HTTPURLResponse, data: Data) -> RemoteFeedLoader.Result {
+    func toRemoteFeedItemResult(from res: HTTPURLResponse, data: Data) -> Result {
         do {
             let result = try FeedCommentItemsMapper.map(res, data: data)
-            return .success(result.toFeedComments())
+            return .success(result)
         } catch {
-            return .failure(error)
+            print(error)
+            return .failure(.invalidData)
         }
     }
 }

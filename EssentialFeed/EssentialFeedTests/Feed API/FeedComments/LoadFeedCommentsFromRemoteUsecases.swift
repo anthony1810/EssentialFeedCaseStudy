@@ -86,13 +86,9 @@ class LoadFeedCommentsFromRemoteUseCase: XCTestCase {
     func test_load_deliversItemsArrayOn2xxHTTPResponseWithValidJson() {
         let (client, sut) = makeSUT()
         
-        let item1 = makeItems(
-            imageURL: URL(string: "https://aurl.com")!)
+        let item1 = makeItems(message: "a message", createdAt: (Date(timeIntervalSince1970: 1577881882), "2020-01-01T12:31:22+00:00"), username: "a username")
         
-        let item2 = makeItems(
-            description: "this is a description",
-            location: "this is a location",
-            imageURL: URL(string: "https://aurl.com")!)
+        let item2 = makeItems(message: "another message", createdAt: (Date(timeIntervalSince1970: 1598627222), "2020-08-28T15:07:02+00:00"), username: "another username")
         
         let items = [item1, item2]
         
@@ -112,7 +108,7 @@ class LoadFeedCommentsFromRemoteUseCase: XCTestCase {
         let url = URL(string: "https://any-url.com")!
         let client = HTTPClientSpy()
         var sut: RemoteImageCommentsLoader? = RemoteImageCommentsLoader(httpClient: client, url: url)
-        var capturedResults = [FeedLoaderProtocol.Result]()
+        var capturedResults = [RemoteImageCommentsLoader.Result]()
         sut?.load(completion: {
             capturedResults.append($0)
         })
@@ -143,7 +139,7 @@ extension LoadFeedCommentsFromRemoteUseCase {
     
     func expect(
         sut: RemoteImageCommentsLoader,
-        toCompleteWith expectedResult: FeedLoaderProtocol.Result,
+        toCompleteWith expectedResult: RemoteImageCommentsLoader.Result,
         when action: () -> Void,
         file: StaticString = #filePath,
         line: UInt = #line
@@ -155,11 +151,8 @@ extension LoadFeedCommentsFromRemoteUseCase {
             case (.success(let actualItems), .success(let expectedItems)):
                 XCTAssertEqual(actualItems, expectedItems)
             case (.failure(let actualError), .failure(let expectedError)):
-                guard let remoteFeedActualError = actualError as? RemoteImageCommentsLoader.Error,
-                      let remoteFeedExpectedError = expectedError as? RemoteImageCommentsLoader.Error else  {
-                    XCTFail("Expected \(String(reflecting: expectedError)) but got \(String(reflecting: actualError)) instead", file: file, line: line)
-                    return
-                }
+                let remoteFeedActualError = actualError as RemoteImageCommentsLoader.Error
+                let remoteFeedExpectedError = expectedError as RemoteImageCommentsLoader.Error
                 
                 XCTAssertEqual(remoteFeedActualError, remoteFeedExpectedError)
             default:  XCTFail("Expected \(expectedResult) but got \(actualResult) instead", file: file, line: line)
@@ -175,17 +168,26 @@ extension LoadFeedCommentsFromRemoteUseCase {
     
     func makeItems(
         id: UUID = UUID(),
-        description: String? = nil,
-        location: String? = nil,
-        imageURL: URL
-    ) -> (model: FeedImage, json: [String: Any]) {
-        let model = FeedImage(id: id, description: description, location: location, imageURL: imageURL)
-        let json = [
+        message: String,
+        createdAt: (date: Date, iso: String),
+        username: String
+    ) -> (model: ImageComment, json: [String: Any]) {
+        
+        let model = ImageComment(
+            id: id,
+            message: message,
+            createdAt: createdAt.date,
+            author: username
+        
+        )
+        let json: [String: Any] = [
             "id": id.uuidString,
-            "description": description,
-            "location": location,
-            "image": imageURL.absoluteString
-        ].compactMapValues({ $0 })
+            "message": message,
+            "created_at": createdAt.iso,
+            "author": [
+                "username": username
+            ]
+        ]
         
         return (model, json)
     }
@@ -197,7 +199,7 @@ extension LoadFeedCommentsFromRemoteUseCase {
         return try! JSONSerialization.data(withJSONObject: json)
     }
     
-    func failure(_ error: RemoteImageCommentsLoader.Error) -> FeedLoaderProtocol.Result {
+    func failure(_ error: RemoteImageCommentsLoader.Error) -> RemoteImageCommentsLoader.Result {
         .failure(error)
     }
 }
