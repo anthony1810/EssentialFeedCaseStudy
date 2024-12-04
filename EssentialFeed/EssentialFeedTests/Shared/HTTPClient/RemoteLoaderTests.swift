@@ -126,32 +126,6 @@ extension RemoteLoaderTests {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func makeItems(
-        id: UUID = UUID(),
-        message: String,
-        createdAt: (date: Date, iso: String),
-        username: String
-    ) -> (model: ImageComment, json: [String: Any]) {
-        
-        let model = ImageComment(
-            id: id,
-            message: message,
-            createdAt: createdAt.date,
-            author: username
-        
-        )
-        let json: [String: Any] = [
-            "id": id.uuidString,
-            "message": message,
-            "created_at": createdAt.iso,
-            "author": [
-                "username": username
-            ]
-        ]
-        
-        return (model, json)
-    }
-    
     func makeData(
         from items: [[String: Any]]
     ) -> Data {
