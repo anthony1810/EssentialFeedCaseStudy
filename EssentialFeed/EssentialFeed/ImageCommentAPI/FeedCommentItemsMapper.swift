@@ -9,6 +9,10 @@ import Foundation
 
 public final class FeedCommentItemsMapper {
     
+    enum Error: Swift.Error {
+        case invalidData
+    }
+    
     private struct Root: Decodable {
         private let items: [RemoteFeedComment]
         
@@ -33,7 +37,7 @@ public final class FeedCommentItemsMapper {
         decoder.dateDecodingStrategy = .iso8601
         
         guard isOkay(res) else {
-            throw RemoteImageCommentsLoader.Error.invalidData
+            throw Error.invalidData
         }
         
         do {

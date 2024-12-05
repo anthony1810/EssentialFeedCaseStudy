@@ -11,7 +11,7 @@ import EssentialFeed
 final class FeedAPIEndToEndTests: XCTestCase {
     
     func test_endToEndFeedResult_matchesFixedTestSampleData() throws {
-        let loader = RemoteFeedLoader(httpClient: empheralURLSessionHTTPClient(), url: feedTestServerURL)
+        let loader = RemoteLoader(httpClient: empheralURLSessionHTTPClient(), url: feedTestServerURL, mapper: FeedItemsMapper.map)
         
         trackForMemoryLeaks(loader)
         

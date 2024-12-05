@@ -94,9 +94,5 @@ extension FeedCommentItemsMapperTests {
         let json = ["items": items]
         return try! JSONSerialization.data(withJSONObject: json)
     }
-    
-    func failure(_ error: RemoteImageCommentsLoader.Error) -> RemoteImageCommentsLoader.Result {
-        .failure(error)
-    }
 }
 

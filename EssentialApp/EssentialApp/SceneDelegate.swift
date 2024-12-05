@@ -78,7 +78,7 @@ extension SceneDelegate {
     private func makeCombineRemoteFeedLoaderWithLocalFallback() -> FeedLoaderProtocol.Publisher {
         
         let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
-        let remoteFeedLoader = RemoteFeedLoader(httpClient: httpClient, url: url)
+        let remoteFeedLoader = RemoteLoader(httpClient: httpClient, url: url, mapper: FeedItemsMapper.map)
         
         return remoteFeedLoader
             .loadPublisher()
@@ -106,7 +106,7 @@ extension SceneDelegate {
     private func makeClosuredBaseRemoteFeedLoaderWithLocalFallback() -> FeedLoaderProtocol {
         let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
         
-        let remoteFeedLoader = RemoteFeedLoader(httpClient: httpClient, url: url)
+        let remoteFeedLoader = RemoteLoader(httpClient: httpClient, url: url, mapper: FeedItemsMapper.map)
         
         // Decorator RemoteLoad with localCache
         let remoteFeedLoaderWithLocalCache = FeedLoaderCacheDecorator(
@@ -142,4 +142,4 @@ extension SceneDelegate {
         
 }
 
-extension RemoteFeedLoader: @retroactive FeedLoaderProtocol where Resource == [FeedImage] {}
+extension RemoteLoader: @retroactive FeedLoaderProtocol where Resource == [FeedImage] {}
