@@ -78,10 +78,10 @@ extension SceneDelegate {
     private func makeCombineRemoteFeedLoaderWithLocalFallback() -> FeedLoaderProtocol.Publisher {
         
         let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
-        let remoteFeedLoader = RemoteLoader(httpClient: httpClient, url: url, mapper: FeedItemsMapper.map)
         
-        return remoteFeedLoader
-            .loadPublisher()
+        return httpClient
+            .getPublisher(url: url)
+            .tryMap(FeedItemsMapper.map)
             .cache(to: localFeedLoader)
             .fallback(to: localFeedLoader.loadPublisher)
     }
