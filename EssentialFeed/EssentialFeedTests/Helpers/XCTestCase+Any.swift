@@ -24,7 +24,7 @@ func makeAnyURLResponse() -> URLResponse {
 }
 
 func makeAnyHTTPURLResponse(statusCode: Int = 200) -> HTTPURLResponse {
-    HTTPURLResponse(url: makeAnyUrl(), statusCode: 200, httpVersion: nil, headerFields: nil)!
+    HTTPURLResponse(url: makeAnyUrl(), statusCode: statusCode, httpVersion: nil, headerFields: nil)!
 }
 
 func makeItemsJSON(_ items: [[String: Any]]) -> Data {
