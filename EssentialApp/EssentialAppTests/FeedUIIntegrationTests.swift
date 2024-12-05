@@ -446,13 +446,13 @@ extension FeedUIIntegrationTests {
         let loader = LoaderSpy()
         
         // This works
-        //let sut = FeedUIComposer.composeFeedViewController(loader: loader, imageLoader: loader)
+        let sut = FeedUIComposer.composeFeedViewController(loader: loader, imageLoader: loader)
          
         // this doesn't
-        let sut = FeedUIComposer.composeFeedViewController(
-            combineLoader: loader.loadPublisher,
-            combineImageLoader: loader.loadImageDataPublisher
-        )
+//        let sut = FeedUIComposer.composeFeedViewController(
+//            combineLoader: loader.loadPublisher,
+//            combineImageLoader: loader.loadImageDataPublisher
+//        )
         
         trackForMemoryLeaks(loader, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)

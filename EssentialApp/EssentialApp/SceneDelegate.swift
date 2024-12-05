@@ -141,3 +141,5 @@ extension SceneDelegate {
     }
         
 }
+
+extension RemoteFeedLoader: @retroactive FeedLoaderProtocol where Resource == [FeedImage] {}
