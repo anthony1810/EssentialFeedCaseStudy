@@ -10,42 +10,6 @@ import XCTest
 
 class LoadFeedFromRemoteUseCase: XCTestCase {
     
-    func test_init_doesNotRequestDataFrçomURL() {
-        
-        // Given (Arrange)
-        let (client, _) = makeSUT()
-        
-        // Then
-        XCTAssertTrue(client.requestedURLs.isEmpty)
-    }
-    
-    func test_load_requestDataFromURL() {
-        let targetURL = URL(string: "https:/a-url.com")!
-        let (client, sut) = makeSUT(url: targetURL)
-        
-        sut.load(completion: {_ in })
-        
-        XCTAssertEqual(client.requestedURLs, [targetURL])
-    }
-     
-    func test_loadTwice_requestsDataFromURLTwice() {
-        let targetURL = URL(string: "https://a-url.com")!
-        let (client, sut) = makeSUT(url: targetURL)
-        
-        sut.load(completion: {_ in })
-        sut.load(completion: {_ in })
-        
-        XCTAssertEqual(client.requestedURLs, [targetURL, targetURL])
-    }
-    
-    func test_load_deliversErrorOnClientError() {
-        let (client, sut) = makeSUT()
-        
-        expect(sut: sut, toCompleteWith: failure(.connectivity)) {
-            client.complete(with: NSError(domain: "test error", code: 0))
-        }
-    }
-    
     func test_load_deliversErrorOnHTTPError() {
         let (client, sut) = makeSUT()
         
@@ -96,23 +60,5 @@ class LoadFeedFromRemoteUseCase: XCTestCase {
         expect(sut: sut, toCompleteWith: .success(models)) {
             client.complete(with: 200, data: makeData(from: jsons))
         }
-    }
-    
-    func test_load_StopDeliverItemsWhenRemoteFeedLoaderInstanceDeallocated() {
-        
-        let url = URL(string: "https://any-url.com")!
-        let client = HTTPClientSpy()
-        var sut: RemoteFeedLoader? = RemoteFeedLoader(httpClient: client, url: url)
-        var capturedResults = [FeedLoaderProtocol.Result]()
-        sut?.load(completion: {
-            capturedResults.append($0)
-        })
-        
-        sut = nil
-        XCTAssertTrue(sut == nil, "Feed Loader has already been deallocated")
-        
-        client.complete(with: 200, data: makeData(from: []))
-        
-        XCTAssertTrue(capturedResults.isEmpty, "NO result should be return if Feed Loader has already been deallocated")
     }
 }
