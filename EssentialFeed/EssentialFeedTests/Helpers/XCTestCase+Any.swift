@@ -23,6 +23,11 @@ func makeAnyURLResponse() -> URLResponse {
     URLResponse(url: makeAnyUrl(), mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
 }
 
-func makeAnyHTTPURLResponse() -> HTTPURLResponse {
+func makeAnyHTTPURLResponse(statusCode: Int = 200) -> HTTPURLResponse {
     HTTPURLResponse(url: makeAnyUrl(), statusCode: 200, httpVersion: nil, headerFields: nil)!
+}
+
+func makeItemsJSON(_ items: [[String: Any]]) -> Data {
+    let json = ["items": items]
+    return try! JSONSerialization.data(withJSONObject: json)
 }
