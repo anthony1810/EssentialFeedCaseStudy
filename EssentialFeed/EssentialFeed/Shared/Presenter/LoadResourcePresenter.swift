@@ -8,15 +8,16 @@
 import Foundation
 
 public protocol ResourceFetchingViewProtocol {
-    func display(viewModel: String)
+    associatedtype ViewModel
+    func display(viewModel: ViewModel)
 }
 
-public class LoadResourcePresenter {
-    public typealias Mapper = (String) -> String
+public class LoadResourcePresenter<Resource, View: ResourceFetchingViewProtocol> {
+    public typealias Mapper = (Resource) -> View.ViewModel
     
     private var loadingView: FeedLoadingViewProtocol
     private var errorView: FeedErrorViewProtocol
-    private var fetchingView: ResourceFetchingViewProtocol
+    private var fetchingView: View
     
     private var mapper: Mapper
     
@@ -27,7 +28,7 @@ public class LoadResourcePresenter {
     public init(
         loadingView: FeedLoadingViewProtocol,
         errorView: FeedErrorViewProtocol,
-        fetchingView: ResourceFetchingViewProtocol,
+        fetchingView: View,
         mapper: @escaping Mapper
     ) {
         self.loadingView = loadingView
@@ -41,7 +42,7 @@ public class LoadResourcePresenter {
         errorView.display(.noError)
     }
     
-    public func finishLoadingSuccessfully(with resource: String) {
+    public func finishLoadingSuccessfully(with resource: Resource) {
         fetchingView.display(viewModel: mapper(resource))
         loadingView.display(.noLoading)
     }

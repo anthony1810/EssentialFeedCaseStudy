@@ -55,13 +55,14 @@ class LoadResourcePresenterTests: XCTestCase {
 }
 
 extension LoadResourcePresenterTests {
+    private typealias SUT = LoadResourcePresenter<String, ViewSpy>
     private func makeSUT(
-        mapper: @escaping LoadResourcePresenter.Mapper = { _ in "any" },
+        mapper: @escaping SUT.Mapper = { _ in "any" },
         file: StaticString = #file,
         line: UInt = #line
-    ) -> (sut: LoadResourcePresenter, view: ViewSpy) {
+    ) -> (sut: SUT, view: ViewSpy) {
         let viewSpy = ViewSpy()
-        let sut = LoadResourcePresenter(loadingView: viewSpy, errorView: viewSpy, fetchingView: viewSpy, mapper: mapper)
+        let sut = SUT(loadingView: viewSpy, errorView: viewSpy, fetchingView: viewSpy, mapper: mapper)
         
         trackForMemoryLeaks(viewSpy)
         trackForMemoryLeaks(sut)
@@ -89,7 +90,7 @@ extension LoadResourcePresenterTests {
 
 extension LoadResourcePresenterTests {
     private class ViewSpy: FeedErrorViewProtocol, FeedLoadingViewProtocol, ResourceFetchingViewProtocol {
-        
+        typealias ViewModel = String
         enum Message: Hashable {
             case display(message: String?)
             case display(loading: Bool)
