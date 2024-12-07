@@ -44,4 +44,8 @@ public class FeedPresenter {
         loadingView.display(.noLoading)
         errorView.display(.error(message: feedLoadError))
     }
+    
+    public static func map(_ feeds: [FeedImage]) -> FeedFetchingViewModel  {
+        FeedFetchingViewModel(feeds: feeds)
+    }
 }
