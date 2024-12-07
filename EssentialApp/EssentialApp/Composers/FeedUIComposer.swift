@@ -41,7 +41,7 @@ public enum FeedUIComposer {
         combineLoader: @escaping () -> FeedLoaderProtocol.Publisher,
         combineImageLoader: @escaping (URL) -> FeedImageDataLoaderProtocol.Publisher
     ) -> FeedViewController {
-        let feedLoaderPresentationAdapter = CombineFeedLoaderPresentationAdapter(loader: combineLoader().dispatchToMainThread)
+        let feedLoaderPresentationAdapter = CombineResourceLoaderPresentationAdapter<[FeedImage], CombineFeedFetchView>(loader: combineLoader().dispatchToMainThread)
     
         let storyboard = UIStoryboard(name: "Feed", bundle: Bundle(for: FeedViewController.self))
         let feedViewController = storyboard.instantiateInitialViewController() as! FeedViewController
