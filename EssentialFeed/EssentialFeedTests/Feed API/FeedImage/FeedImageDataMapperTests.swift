@@ -15,19 +15,19 @@ class FeedImageDataMapperTests: XCTestCase {
         let samples = [199, 201, 300, 400, 500]
         try samples.forEach { statusCode in
             XCTAssertThrowsError(
-                try FeedImageDataMapper.map(from: makeAnyData(), response: makeAnyHTTPURLResponse(statusCode: statusCode))
+                try FeedImageDataMapper.map(from: makeAnyHTTPURLResponse(statusCode: statusCode), data: makeAnyData())
             )
         }
     }
     
     func test_loadImageDataFromURL_deliversInvalidImageDataOn200ResponseWithEmptyData() {
         XCTAssertThrowsError(
-            try FeedImageDataMapper.map(from: Data(), response: makeAnyHTTPURLResponse())
+            try FeedImageDataMapper.map(from: makeAnyHTTPURLResponse(), data: Data())
         )
     }
     
     func test_loadImageDataFromURL_deliversImageDataOn200ResponseWithValidData() throws {
         let expectedImageData = makeAnyData()
-        _ = try FeedImageDataMapper.map(from: expectedImageData, response: makeAnyHTTPURLResponse())
+        _ = try FeedImageDataMapper.map(from: makeAnyHTTPURLResponse(), data: expectedImageData)
     }
 }

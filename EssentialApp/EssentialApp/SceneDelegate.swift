@@ -89,15 +89,17 @@ extension SceneDelegate {
     private func makeCombineRemoteFeedImageDataLoaderWithLocalFallback(
         url: URL
     ) -> FeedImageDataLoaderProtocol.Publisher {
-        let remoteFeedImageDataLoader = RemoteFeedImageDataLoader(client: httpClient)
+      
         let localFeedImageDataLoader = LocalFeedImageDataLoader(store: feedStore)
         
         return localFeedImageDataLoader
             .loadImageDataPublisher(from: url)
-            .fallback(to: {
-                remoteFeedImageDataLoader.loadImageDataPublisher(from: url)
-                    .cache(to: localFeedImageDataLoader, with: url) }
-            )
+            .fallback(to: { [httpClient] in
+                httpClient
+                    .getPublisher(url: url)
+                    .tryMap(FeedImageDataMapper.map)
+                    .cache(to: localFeedImageDataLoader, with: url)
+            })
     }
 }
 
