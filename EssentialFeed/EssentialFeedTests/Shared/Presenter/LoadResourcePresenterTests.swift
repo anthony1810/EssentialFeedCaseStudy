@@ -9,7 +9,7 @@ import Foundation
 import XCTest
 import EssentialFeed
 
-class LoadSroucePresenterTests: XCTestCase {
+class LoadResourcePresenterTests: XCTestCase {
     
     func test_init_doesNotSendMessageToView() {
         let (_, viewSpy) = makeSUT()
@@ -53,7 +53,7 @@ class LoadSroucePresenterTests: XCTestCase {
     }
 }
 
-extension LoadSroucePresenterTests {
+extension LoadResourcePresenterTests {
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedPresenter, view: ViewSpy) {
         let viewSpy = ViewSpy()
         let sut = FeedPresenter(loadingView: viewSpy, errorView: viewSpy, fetchingView: viewSpy)
@@ -82,7 +82,7 @@ extension LoadSroucePresenterTests {
     }
 }
 
-extension LoadSroucePresenterTests {
+extension LoadResourcePresenterTests {
     private class ViewSpy: FeedErrorViewProtocol, FeedLoadingViewProtocol, FeedFetchingViewProtocol {
        
         enum Message: Hashable {
