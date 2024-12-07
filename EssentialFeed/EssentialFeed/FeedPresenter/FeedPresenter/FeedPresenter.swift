@@ -9,7 +9,7 @@ import Foundation
 
 public class FeedPresenter {
     
-    public var title: String {
+    public static var title: String {
         return NSLocalizedString("FEED_VIEW_TITLE", tableName: "Feed", bundle: Bundle(for: FeedPresenter.self),  comment: "Error Message displayed when there is an error loading the feed")
     }
     
