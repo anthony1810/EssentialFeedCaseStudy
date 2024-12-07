@@ -15,7 +15,7 @@ public protocol ResourceFetchingViewProtocol {
 public class LoadResourcePresenter<Resource, View: ResourceFetchingViewProtocol> {
     public typealias Mapper = (Resource) -> View.ViewModel
     
-    private var loadingView: FeedLoadingViewProtocol
+    private var loadingView: ResourceLoadingViewProtocol
     private var errorView: LoadResourceErrorViewProtocol
     private var fetchingView: View
     
@@ -26,7 +26,7 @@ public class LoadResourcePresenter<Resource, View: ResourceFetchingViewProtocol>
     }
     
     public init(
-        loadingView: FeedLoadingViewProtocol,
+        loadingView: ResourceLoadingViewProtocol,
         errorView: LoadResourceErrorViewProtocol,
         fetchingView: View,
         mapper: @escaping Mapper

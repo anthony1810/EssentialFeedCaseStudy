@@ -8,7 +8,7 @@
 import Foundation
 
 public class FeedPresenter {
-    private var loadingView: FeedLoadingViewProtocol
+    private var loadingView: ResourceLoadingViewProtocol
     private var errorView: LoadResourceErrorViewProtocol
     private var fetchingView: FeedFetchingViewProtocol
     
@@ -21,7 +21,7 @@ public class FeedPresenter {
     }
     
     public init(
-        loadingView: FeedLoadingViewProtocol,
+        loadingView: ResourceLoadingViewProtocol,
         errorView: LoadResourceErrorViewProtocol,
         fetchingView: FeedFetchingViewProtocol
     ) {

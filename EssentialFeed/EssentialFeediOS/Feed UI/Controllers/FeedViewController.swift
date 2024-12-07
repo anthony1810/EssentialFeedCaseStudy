@@ -46,8 +46,8 @@ public final class FeedViewController: UITableViewController {
 }
 
 // MARK: - FeedLoadingViewProtocol
-extension FeedViewController: FeedLoadingViewProtocol {
-    public func display(_ viewModel: FeedLoadingViewModel) {
+extension FeedViewController: ResourceLoadingViewProtocol {
+    public func display(_ viewModel: ResourceLoadingViewModel) {
         loadingCells.removeAll()
         if viewModel.isLoading {
             self.refreshControl?.beginRefreshing()
