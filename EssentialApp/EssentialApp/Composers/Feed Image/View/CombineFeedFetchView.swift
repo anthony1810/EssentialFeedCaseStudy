@@ -9,7 +9,7 @@ import UIKit
 import EssentialFeed
 import EssentialFeediOS
 
-final class CombineFeedFetchView: FeedFetchingViewProtocol {
+final class CombineFeedFetchView: ResourceFetchingViewProtocol {
     private weak var feedViewController: FeedViewController?
     private var combineImageLoader: (URL) -> FeedImageDataLoaderProtocol.Publisher
     
@@ -17,6 +17,7 @@ final class CombineFeedFetchView: FeedFetchingViewProtocol {
         self.feedViewController = feedViewController
         self.combineImageLoader = combineImageLoader
     }
+    
     
     func display(viewModel: FeedFetchingViewModel) {
         feedViewController?.tableModels = viewModel.feeds.map {

@@ -49,13 +49,13 @@ public enum FeedUIComposer {
         feedViewController.delegate = feedLoaderPresentationAdapter
         feedViewController.title = localizedString(for: "FEED_VIEW_TITLE")
         
-        let feedPresenter = FeedPresenter(
+        let feedPresenter = LoadResourcePresenter(
             loadingView: WeakRefVirtualProxy(target: feedViewController),
             errorView: WeakRefVirtualProxy(target: feedViewController),
             fetchingView: CombineFeedFetchView(
                 feedViewController: feedViewController,
-                combineImageLoader: { url in combineImageLoader(url).dispatchToMainThread() } )
-           
+                combineImageLoader: { url in combineImageLoader(url).dispatchToMainThread() } ),
+            mapper: FeedPresenter.map
         )
         feedLoaderPresentationAdapter.presenter = feedPresenter
         

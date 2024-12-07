@@ -13,7 +13,7 @@ import Combine
 final class CombineFeedLoaderPresentationAdapter: FeedRefreshDelegate {
     private let loader: () -> AnyPublisher<[FeedImage], Error>
     private var cancellable: Cancellable?
-    var presenter: FeedPresenter?
+    var presenter: LoadResourcePresenter<[FeedImage], CombineFeedFetchView>?
     
     init(loader: @escaping () -> AnyPublisher<[FeedImage], Error>) {
         self.loader = loader
@@ -27,7 +27,7 @@ final class CombineFeedLoaderPresentationAdapter: FeedRefreshDelegate {
                     self?.presenter?.finishLoadingFailure(error: error)
                 }
             }, receiveValue: { [weak self] feeds in
-                self?.presenter?.finishLoadingSuccessfully(feeds: feeds)
+                self?.presenter?.finishLoadingSuccessfully(with: feeds)
             })
     }
 }
