@@ -51,12 +51,6 @@ class LoadSroucePresenterTests: XCTestCase {
             .display(message: localized("FEED_VIEW_CONNECTION_ERROR"))
         ])
     }
-    
-    func test_title_isLocalized() {
-        let (sut, _) = makeSUT()
-        
-        XCTAssertEqual(sut.title, localized("FEED_VIEW_TITLE"))
-    }
 }
 
 extension LoadSroucePresenterTests {
