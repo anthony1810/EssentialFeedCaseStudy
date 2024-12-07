@@ -11,7 +11,7 @@ import EssentialFeediOS
 
 final class FeedLoaderPresentationAdapter: FeedRefreshDelegate {
     private let loader: FeedLoaderProtocol
-    var presenter: FeedPresenter?
+    var presenter: LoadResourcePresenter<[FeedImage], FeedFetchView>?
     
     init(loader: FeedLoaderProtocol) {
         self.loader = loader
@@ -22,7 +22,7 @@ final class FeedLoaderPresentationAdapter: FeedRefreshDelegate {
         loader.load { [weak self] result in
             switch result {
             case .success(let feeds):
-                self?.presenter?.finishLoadingSuccessfully(feeds: feeds)
+                self?.presenter?.finishLoadingSuccessfully(with: feeds)
             case .failure(let error):
                 self?.presenter?.finishLoadingFailure(error: error)
             }

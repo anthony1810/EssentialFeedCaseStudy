@@ -24,13 +24,13 @@ public enum FeedUIComposer {
         feedViewController.delegate = feedLoaderPresentationAdapter
         feedViewController.title = localizedString(for: "FEED_VIEW_TITLE")
         
-        let feedPresenter = FeedPresenter(
+        let feedPresenter = LoadResourcePresenter(
             loadingView: WeakRefVirtualProxy(target: feedViewController),
             errorView: WeakRefVirtualProxy(target: feedViewController),
             fetchingView: FeedFetchView(
                 feedViewController: feedViewController,
-                imageLoader: MainThreadDecorator(imageLoader))
-           
+                imageLoader: MainThreadDecorator(imageLoader)),
+            mapper: FeedPresenter.map
         )
         feedLoaderPresentationAdapter.presenter = feedPresenter
         

@@ -9,7 +9,7 @@ import UIKit
 import EssentialFeed
 import EssentialFeediOS
 
-final class FeedFetchView: FeedFetchingViewProtocol {
+final class FeedFetchView: ResourceFetchingViewProtocol {
     private weak var feedViewController: FeedViewController?
     private var imageLoader: FeedImageDataLoaderProtocol
     
