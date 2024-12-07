@@ -88,7 +88,7 @@ extension FeedPrensenterTests {
 }
 
 extension FeedPrensenterTests {
-    private class ViewSpy: FeedErrorViewProtocol, FeedLoadingViewProtocol, FeedFetchingViewProtocol {
+    private class ViewSpy: LoadResourceErrorViewProtocol, FeedLoadingViewProtocol, FeedFetchingViewProtocol {
        
         enum Message: Hashable {
             case display(message: String?)
@@ -98,7 +98,7 @@ extension FeedPrensenterTests {
         
         private(set) var messages: Set<Message> = []
         
-        func display(_ viewModel: FeedErrorViewModel) {
+        func display(_ viewModel: LoadResourceErrorViewModel) {
             messages.insert(.display(message: viewModel.message))
         }
         

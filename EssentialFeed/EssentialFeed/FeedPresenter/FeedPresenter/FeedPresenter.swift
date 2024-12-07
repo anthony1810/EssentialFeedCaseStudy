@@ -9,7 +9,7 @@ import Foundation
 
 public class FeedPresenter {
     private var loadingView: FeedLoadingViewProtocol
-    private var errorView: FeedErrorViewProtocol
+    private var errorView: LoadResourceErrorViewProtocol
     private var fetchingView: FeedFetchingViewProtocol
     
     private var feedLoadError: String {
@@ -22,7 +22,7 @@ public class FeedPresenter {
     
     public init(
         loadingView: FeedLoadingViewProtocol,
-        errorView: FeedErrorViewProtocol,
+        errorView: LoadResourceErrorViewProtocol,
         fetchingView: FeedFetchingViewProtocol
     ) {
         self.loadingView = loadingView

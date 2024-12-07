@@ -28,8 +28,8 @@ extension WeakRefVirtualProxy: FeedImageView where T: FeedImageView, T.Image == 
     }
 }
 
-extension WeakRefVirtualProxy: FeedErrorViewProtocol where T: FeedErrorViewProtocol {
-    func display(_ viewModel: FeedErrorViewModel) {
+extension WeakRefVirtualProxy: LoadResourceErrorViewProtocol where T: LoadResourceErrorViewProtocol {
+    func display(_ viewModel: LoadResourceErrorViewModel) {
         target?.display(viewModel)
     }
 }
