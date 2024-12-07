@@ -396,7 +396,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         XCTAssertEqual(sut.displayedErrorViewMessage, nil)
 
         loader.completeFeedLoadingWithFailure(at: 0, error: makeAnyError())
-        XCTAssertEqual(sut.displayedErrorViewMessage, localized("FEED_VIEW_CONNECTION_ERROR"))
+        XCTAssertEqual(sut.displayedErrorViewMessage, loadError)
 
         sut.userInitiatedRefresh()
         XCTAssertEqual(sut.displayedErrorViewMessage, nil)
@@ -476,6 +476,14 @@ extension FeedUIIntegrationTests {
             XCTFail("Missing localized string for key: \(key) in table: \(table)", file: file, line: line)
         }
         return value
+    }
+    
+    private class DummyView: ResourceFetchingViewProtocol{
+        typealias ViewModel = Any
+        func display(viewModel: ViewModel) {}
+    }
+    var loadError: String {
+        LoadResourcePresenter<Any, DummyView>.loadError
     }
     
     func executeRunloopToCleanUpReferrences() {

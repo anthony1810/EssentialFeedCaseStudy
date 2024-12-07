@@ -13,7 +13,7 @@ public class FeedPresenter {
     private var fetchingView: FeedFetchingViewProtocol
     
     private var feedLoadError: String {
-        return NSLocalizedString("FEED_VIEW_CONNECTION_ERROR", tableName: "Feed", bundle: Bundle(for: FeedPresenter.self),  comment: "Error Message displayed when there is an error loading the feed")
+        return NSLocalizedString("GENERIC_CONNECTION_ERROR", tableName: "Shared", bundle: Bundle(for: FeedPresenter.self),  comment: "Error Message displayed when there is an error loading the feed")
     }
     
     public var title: String {
@@ -42,6 +42,6 @@ public class FeedPresenter {
     
     public func finishLoadingFailure(error: Error) {
         loadingView.display(.noLoading)
-        errorView.display(.error(message: localizedString(for: "FEED_VIEW_CONNECTION_ERROR")))
+        errorView.display(.error(message: feedLoadError))
     }
 }
