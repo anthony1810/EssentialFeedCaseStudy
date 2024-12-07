@@ -29,14 +29,15 @@ class LoadResourcePresenterTests: XCTestCase {
     }
     
     func test_didFinishLoading_displaysFeedAndStopLoading() {
-        let (sut, viewSpy) = makeSUT()
-        let feeds: [FeedImage] = [uniqueItem().domainModel, uniqueItem().domainModel]
+        let (sut, viewSpy) = makeSUT(mapper: { resource in
+            resource + " view model"
+        })
         
-        sut.finishLoadingSuccessfully(feeds: feeds)
+        sut.finishLoadingSuccessfully(with: "resource")
         
         XCTAssertEqual(viewSpy.messages, [
             .display(loading: false),
-            .display(feed: feeds)
+            .display(viewModel: "resource view model")
         ])
     }
     
@@ -54,9 +55,13 @@ class LoadResourcePresenterTests: XCTestCase {
 }
 
 extension LoadResourcePresenterTests {
-    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedPresenter, view: ViewSpy) {
+    private func makeSUT(
+        mapper: @escaping LoadResourcePresenter.Mapper = { _ in "any" },
+        file: StaticString = #file,
+        line: UInt = #line
+    ) -> (sut: LoadResourcePresenter, view: ViewSpy) {
         let viewSpy = ViewSpy()
-        let sut = FeedPresenter(loadingView: viewSpy, errorView: viewSpy, fetchingView: viewSpy)
+        let sut = LoadResourcePresenter(loadingView: viewSpy, errorView: viewSpy, fetchingView: viewSpy, mapper: mapper)
         
         trackForMemoryLeaks(viewSpy)
         trackForMemoryLeaks(sut)
@@ -83,12 +88,12 @@ extension LoadResourcePresenterTests {
 }
 
 extension LoadResourcePresenterTests {
-    private class ViewSpy: FeedErrorViewProtocol, FeedLoadingViewProtocol, FeedFetchingViewProtocol {
-       
+    private class ViewSpy: FeedErrorViewProtocol, FeedLoadingViewProtocol, ResourceFetchingViewProtocol {
+        
         enum Message: Hashable {
             case display(message: String?)
             case display(loading: Bool)
-            case display(feed: [FeedImage])
+            case display(viewModel: String)
         }
         
         private(set) var messages: Set<Message> = []
@@ -101,8 +106,8 @@ extension LoadResourcePresenterTests {
             messages.insert(.display(loading: viewModel.isLoading))
         }
         
-        func display(viewModel: FeedFetchingViewModel) {
-            messages.insert(.display(feed: viewModel.feeds))
+        func display(viewModel: String) {
+            messages.insert(.display(viewModel: viewModel))
         }
     }
 }
