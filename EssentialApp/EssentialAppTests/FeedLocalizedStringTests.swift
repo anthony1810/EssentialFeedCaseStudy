@@ -10,10 +10,10 @@ import XCTest
 import EssentialFeediOS
 import EssentialFeed
 
-extension FeedUIIntegrationTests {
+class FeedPresenterLocalizationTests: XCTestCase {
     
     func test_feedView_hasTitlte() {
-        let (sut, _) = makeSUT()
+       let sut = FeedViewController()
         
         sut.triggerViewDidLoad()
         
