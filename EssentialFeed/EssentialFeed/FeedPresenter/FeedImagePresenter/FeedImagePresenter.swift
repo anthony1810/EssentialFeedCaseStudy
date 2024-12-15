@@ -50,4 +50,15 @@ public final class FeedImagePresenter<Image, View: FeedImageView> where View.Ima
             shouldRetry: image == nil)
         )
     }
+    
+    public static func map(_ model: FeedImage) -> FeedImageViewModel<Image> {
+        FeedImageViewModel(
+            location: model.location,
+            description: model.description,
+            url: URL(string: "http://google.com")!,
+            image: nil,
+            isLoading: false,
+            shouldRetry: false
+        )
+    }
 }

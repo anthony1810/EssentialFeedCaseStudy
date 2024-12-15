@@ -12,6 +12,14 @@ import XCTest
 
 final class FeedImagePresenterTests: XCTestCase {
     
+    func test_map_createsViewModel() {
+        let item = uniqueItem().domainModel
+        let viewModel = FeedImagePresenter<AnyImage, ViewSpy>.map(item)
+        
+        XCTAssertEqual(viewModel.location, item.location)
+        XCTAssertEqual(viewModel.description, item.description)
+    }
+    
     func test_init_doesNotSendAnyMessage() {
         let (_, view) = makeSUT()
         XCTAssertEqual(view.messages.count, 0)
