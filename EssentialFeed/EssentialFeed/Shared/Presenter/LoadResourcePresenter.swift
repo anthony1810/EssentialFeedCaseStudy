@@ -13,7 +13,7 @@ public protocol ResourceFetchingViewProtocol {
 }
 
 public class LoadResourcePresenter<Resource, View: ResourceFetchingViewProtocol> {
-    public typealias Mapper = (Resource) -> View.ViewModel
+    public typealias Mapper = (Resource) throws -> View.ViewModel
     
     private var loadingView: ResourceLoadingViewProtocol
     private var errorView: LoadResourceErrorViewProtocol
@@ -43,8 +43,13 @@ public class LoadResourcePresenter<Resource, View: ResourceFetchingViewProtocol>
     }
     
     public func finishLoadingSuccessfully(with resource: Resource) {
-        fetchingView.display(viewModel: mapper(resource))
-        loadingView.display(.noLoading)
+        do {
+            fetchingView.display(viewModel: try mapper(resource))
+            loadingView.display(.noLoading)
+        } catch {
+            finishLoadingFailure(error: error)
+        }
+       
     }
     
     public func finishLoadingFailure(error: Error) {
