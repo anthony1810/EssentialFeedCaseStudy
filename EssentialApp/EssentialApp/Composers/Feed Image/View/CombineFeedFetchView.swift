@@ -34,12 +34,7 @@ final class CombineFeedFetchView: ResourceFetchingViewProtocol {
                 loadingView: WeakRefVirtualProxy(target: view),
                 errorView: WeakRefVirtualProxy(target: view),
                 fetchingView: WeakRefVirtualProxy(target: view),
-                mapper: { data in
-                    guard let image = UIImage(data: data) else {
-                        throw FailedImageMapperError()
-                    }
-                    return image
-                })
+                mapper: UIImage.tryMake)
             presenterAdapter.presenter = presenter
             
             return view
@@ -47,4 +42,15 @@ final class CombineFeedFetchView: ResourceFetchingViewProtocol {
     }
 }
 
-struct FailedImageMapperError: Error {}
+extension UIImage {
+    
+    struct FailedImageMapperError: Error {}
+    
+    static func tryMake(data: Data) throws -> UIImage {
+        guard let image = UIImage(data: data) else {
+            throw FailedImageMapperError()
+        }
+        return image
+    }
+}
+
