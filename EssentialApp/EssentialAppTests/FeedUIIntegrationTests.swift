@@ -445,10 +445,6 @@ extension FeedUIIntegrationTests {
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
         
-//        // This works
-//        let sut = FeedUIComposer.composeFeedViewController(loader: loader, imageLoader: loader)
-//
-        // this doesn't
         let sut = FeedUIComposer.composeFeedViewController(
             combineLoader: loader.loadPublisher,
             combineImageLoader: loader.loadImageDataPublisher

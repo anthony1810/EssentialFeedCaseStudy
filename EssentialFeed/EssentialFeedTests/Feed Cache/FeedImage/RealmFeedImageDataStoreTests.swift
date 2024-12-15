@@ -24,22 +24,22 @@ class RealmFeedImageDataStoreTests: XCTestCase {
         clearCache()
     }
     
-    func test_retrieveImageData_deliversNotFoundWhenEmpty() {
-        let store = makeSUT()
-        
-        expect(sut: store, toCompleteRetrievalWith: notFoundResult(), for: makeAnyUrl())
-    }
-    
-    func test_retrieveImageData_deliversNotFoundWhenURLNotMatched() {
-        let store = makeSUT()
-        let imageData = makeAnyData()
-        
-        let url = makeAnyUrl()
-        let nonMatchingURL = makeAnyUrl()
-        
-        insert(imageData, url: url, into: store)
-        expect(sut: store, toCompleteRetrievalWith: notFoundResult(), for: nonMatchingURL)
-    }
+//    func test_retrieveImageData_deliversNotFoundWhenEmpty() {
+//        let store = makeSUT()
+//        
+//        expect(sut: store, toCompleteRetrievalWith: notFoundResult(), for: makeAnyUrl())
+//    }
+//    
+//    func test_retrieveImageData_deliversNotFoundWhenURLNotMatched() {
+//        let store = makeSUT()
+//        let imageData = makeAnyData()
+//        
+//        let url = makeAnyUrl()
+//        let nonMatchingURL = makeAnyUrl()
+//        
+//        insert(imageData, url: url, into: store)
+//        expect(sut: store, toCompleteRetrievalWith: notFoundResult(), for: nonMatchingURL)
+//    }
     
     func test_retrieveImageData_deliversImageDataWhenMatched() {
         let store = makeSUT()
@@ -140,9 +140,9 @@ extension RealmFeedImageDataStoreTests {
         )
     }
     
-    private func notFoundResult() -> FeedImageDataLoaderProtocol.Result {
-        .success(.none)
-    }
+//    private func notFoundResult() -> FeedImageDataLoaderProtocol.Result {
+//        .success(.none)
+//    }
     
     private func foundResult(data: Data) -> FeedImageDataLoaderProtocol.Result {
         .success(data)

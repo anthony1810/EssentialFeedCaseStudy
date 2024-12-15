@@ -26,7 +26,7 @@ final class CombineFeedFetchView: ResourceFetchingViewProtocol {
         
            
             let view = FeedImageCellController(
-                viewModel: FeedImagePresenter<UIImage, FeedImageCellController>.map(model),
+                viewModel: FeedImagePresenter.map(model),
                 delegate: presenterAdapter
             )
             

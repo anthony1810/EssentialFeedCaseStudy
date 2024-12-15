@@ -14,7 +14,7 @@ public protocol FeedImageDataControllerDelegate {
     func didCancelImageRequest()
 }
 
-public final class FeedImageCellController: FeedImageView, ResourceFetchingViewProtocol, ResourceLoadingViewProtocol, LoadResourceErrorViewProtocol {
+public final class FeedImageCellController: ResourceFetchingViewProtocol, ResourceLoadingViewProtocol, LoadResourceErrorViewProtocol {
    
     public typealias ViewModel = UIImage
     public typealias Image = UIImage
@@ -22,9 +22,9 @@ public final class FeedImageCellController: FeedImageView, ResourceFetchingViewP
     private var cell: FeedImageCell?
     
     private var delegate: FeedImageDataControllerDelegate
-    private var viewModel: FeedImageViewModel<ViewModel>
+    private var viewModel: FeedImageViewModel
     
-    public init(viewModel: FeedImageViewModel<ViewModel>, delegate: FeedImageDataControllerDelegate) {
+    public init(viewModel: FeedImageViewModel, delegate: FeedImageDataControllerDelegate) {
         self.delegate = delegate
         self.viewModel = viewModel
     }
@@ -46,9 +46,6 @@ public final class FeedImageCellController: FeedImageView, ResourceFetchingViewP
         }
         delegate.didRequestImage()
         return cell!
-    }
-    
-    public func display(_ model: FeedImageViewModel<UIImage>) {
     }
     
     public func display(viewModel: UIImage) {
