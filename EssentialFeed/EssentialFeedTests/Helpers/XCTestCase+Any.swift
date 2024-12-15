@@ -31,3 +31,17 @@ func makeItemsJSON(_ items: [[String: Any]]) -> Data {
     let json = ["items": items]
     return try! JSONSerialization.data(withJSONObject: json)
 }
+
+extension Date {
+    func addingSeconds(_ seconds: Int) -> Date {
+        return Calendar.current.date(byAdding: .second, value: seconds, to: self)!
+    }
+
+    func addingDay(_ day: Int) -> Date {
+        return Calendar.current.date(byAdding: .day, value: day, to: self)!
+    }
+
+    func addingMinutes(_ minutes: Int) -> Date {
+        return Calendar.current.date(byAdding: .minute, value: minutes, to: self)!
+    }
+}

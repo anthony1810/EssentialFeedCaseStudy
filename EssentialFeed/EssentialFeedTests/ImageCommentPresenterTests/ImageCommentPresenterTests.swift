@@ -15,6 +15,39 @@ class ImageCommentPresenterTests: XCTestCase {
         XCTAssertEqual(ImageCommentPresenter.title, localized("IMAGE_COMMENTS_VIEW_TITLE"))
     }
     
+    func test_map_createsViewModel() {
+        
+        let now = Date()
+        
+        let comments = [
+            ImageComment(
+                id: UUID(),
+                message: "a message",
+                createdAt: now.addingMinutes(-5),
+                author: "a username"),
+            ImageComment(
+                id: UUID(),
+                message: "another message",
+                createdAt: now.addingDay(-1),
+                author: "another username")
+        ]
+        
+        let viewModel = ImageCommentPresenter.map(comments)
+        
+        XCTAssertEqual(viewModel.comments, [
+            ImageCommentViewModel(
+                message: "a message",
+                date: "5 minutes ago",
+                username: "a username"
+            ),
+            ImageCommentViewModel(
+                message: "another message",
+                date: "1 day ago",
+                username: "another username"
+            )
+        ])
+    }
+    
 }
 
 extension ImageCommentPresenterTests {

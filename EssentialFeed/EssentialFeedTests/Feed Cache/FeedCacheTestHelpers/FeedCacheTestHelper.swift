@@ -38,12 +38,4 @@ extension Date {
     var daysToExpire: Int {
         7
     }
-    
-    func addingSeconds(_ seconds: Int) -> Date {
-        return Calendar.current.date(byAdding: .second, value: seconds, to: self)!
-    }
-    
-    func addingDay(_ day: Int) -> Date {
-        return Calendar.current.date(byAdding: .day, value: day, to: Date())!
-    }
 }
