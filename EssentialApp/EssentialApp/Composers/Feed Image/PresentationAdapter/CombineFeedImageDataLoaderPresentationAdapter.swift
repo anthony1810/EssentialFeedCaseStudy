@@ -33,7 +33,7 @@ extension CombineFeedImageDataLoaderPresentationAdapter: FeedImageDataController
                     self.presenter?.didFinishLoadingImageData(for: self.feed, with: error)
                 }
             }, receiveValue: { [weak self] image in
-                guard let self, let image else { return }
+                guard let self else { return }
                 self.presenter?.didFinishLoadingImageData(for: self.feed, with: image)
             })
     }

@@ -37,3 +37,13 @@ extension CombineResourceLoaderPresentationAdapter: FeedRefreshDelegate {
         self.loadResource()
     }
 }
+
+extension CombineResourceLoaderPresentationAdapter: FeedImageDataControllerDelegate {
+    func didRequestImage() {
+        self.loadResource()
+    }
+    
+    func didCancelImageRequest() {
+        cancellable?.cancel()
+    }
+}

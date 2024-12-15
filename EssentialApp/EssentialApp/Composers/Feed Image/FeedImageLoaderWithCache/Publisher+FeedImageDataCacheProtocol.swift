@@ -9,12 +9,10 @@ import Foundation
 import EssentialFeed
 import Combine
 
-extension Publisher where Output == Data? {
+extension Publisher where Output == Data {
     func cache(to cacher: FeedImageDataCacheProtocol, with url: URL) -> AnyPublisher<Output, Failure> {
         self.handleEvents(receiveOutput: { data in
-            if let data {
-                cacher.saveCacheIgnoreCompletion(data: data, url: url)
-            }
+            cacher.saveCacheIgnoreCompletion(data: data, url: url)
         }).eraseToAnyPublisher()
     }
 }

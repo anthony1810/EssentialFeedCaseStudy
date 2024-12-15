@@ -8,7 +8,7 @@ import Foundation
 import EssentialFeed
 import Combine
 
-extension Publisher where Output == Data? {
+extension Publisher where Output == Data {
     func fallback(to fallback: @escaping () -> AnyPublisher<Output, Failure>) -> AnyPublisher<Output, Failure> {
         self.catch { _ in fallback() }.eraseToAnyPublisher()
     }

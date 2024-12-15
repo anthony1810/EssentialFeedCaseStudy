@@ -27,11 +27,10 @@ extension FeedImageDataLoaderPresentationAdapter: FeedImageDataControllerDelegat
         self.loadingImageTask = self.imageLoader.loadImageData(from: feed.imageURL, completion: { [weak self] result in
             guard let self else { return }
             switch result {
-            case .success(let image?):
+            case .success(let image):
                 self.presenter?.didFinishLoadingImageData(for: self.feed, with: image)
             case .failure(let error):
                 self.presenter?.didFinishLoadingImageData(for: self.feed, with: error)
-            default: break
             }
         })
     }

@@ -11,7 +11,7 @@ import RealmSwift
 import Combine
 
 public extension FeedImageDataLoaderProtocol {
-    typealias Publisher = AnyPublisher<Data?, Error>
+    typealias Publisher = AnyPublisher<Data, Error>
     
     func loadImageDataPublisher(from url: URL) -> Publisher {
         var task: ImageLoadingDataTaskProtocol?

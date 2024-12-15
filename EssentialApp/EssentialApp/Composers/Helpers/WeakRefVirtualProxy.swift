@@ -33,3 +33,11 @@ extension WeakRefVirtualProxy: LoadResourceErrorViewProtocol where T: LoadResour
         target?.display(viewModel)
     }
 }
+
+extension WeakRefVirtualProxy: ResourceFetchingViewProtocol where T: ResourceFetchingViewProtocol, T.ViewModel == UIImage {
+    typealias ViewModel = UIImage
+    
+    func display(viewModel: UIImage) {
+        target?.display(viewModel: viewModel)
+    }
+}

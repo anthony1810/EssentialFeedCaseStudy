@@ -21,9 +21,7 @@ public final class FeedImageDataLoaderDecorator: FeedImageDataLoaderProtocol {
         
         decoratee.loadImageData(from: url, completion: { [weak self] result in
             completion(result.map { data in
-                if let data {
-                    self?.saveCacheIgnoreCompletion(data: data, url: url)
-                }
+                self?.saveCacheIgnoreCompletion(data: data, url: url)
                 return data
             })
         })

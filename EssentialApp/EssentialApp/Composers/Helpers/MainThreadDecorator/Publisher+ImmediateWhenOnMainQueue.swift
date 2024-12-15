@@ -15,7 +15,7 @@ extension Publisher where Output == [FeedImage] {
     }
 }
 
-extension Publisher where Output == Data? {
+extension Publisher where Output == Data {
     func dispatchToMainThread() -> AnyPublisher<Output, Failure> {
         receive(on: DispatchQueue.ImmediateWhenOnMainQueue).eraseToAnyPublisher()
     }

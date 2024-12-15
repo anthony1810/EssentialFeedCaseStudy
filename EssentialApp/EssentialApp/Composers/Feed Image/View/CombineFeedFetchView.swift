@@ -20,12 +20,26 @@ final class CombineFeedFetchView: ResourceFetchingViewProtocol {
     
     
     func display(viewModel: FeedFetchingViewModel) {
-        feedViewController?.tableModels = viewModel.feeds.map {
-            let presenterAdapter = CombineFeedImageDataLoaderPresentationAdapter<WeakRefVirtualProxy<FeedImageCellController>, UIImage>(feed: $0, combineImageLoader: combineImageLoader)
-           
-            let view = FeedImageCellController(delegate: presenterAdapter)
+        feedViewController?.tableModels = viewModel.feeds.map { model in
             
-            let presenter = FeedImagePresenter(view: WeakRefVirtualProxy(target: view), imageTransformer: UIImage.init)
+            let presenterAdapter = CombineResourceLoaderPresentationAdapter<Data, WeakRefVirtualProxy<FeedImageCellController>>(loader: { [combineImageLoader] in combineImageLoader(model.imageURL)})
+        
+           
+            let view = FeedImageCellController(
+                viewModel: FeedImagePresenter<UIImage, FeedImageCellController>.map(model),
+                delegate: presenterAdapter
+            )
+            
+            let presenter = LoadResourcePresenter<Data, WeakRefVirtualProxy<FeedImageCellController>>(
+                loadingView: WeakRefVirtualProxy(target: view),
+                errorView: WeakRefVirtualProxy(target: view),
+                fetchingView: WeakRefVirtualProxy(target: view),
+                mapper: { data in
+                    guard let image = UIImage(data: data) else {
+                        throw FailedImageMapperError()
+                    }
+                    return image
+                })
             presenterAdapter.presenter = presenter
             
             return view
@@ -33,3 +47,4 @@ final class CombineFeedFetchView: ResourceFetchingViewProtocol {
     }
 }
 
+struct FailedImageMapperError: Error {}

@@ -22,7 +22,7 @@ final class FeedFetchView: ResourceFetchingViewProtocol {
         feedViewController?.tableModels = viewModel.feeds.map {
             let presenterAdapter = FeedImageDataLoaderPresentationAdapter<WeakRefVirtualProxy<FeedImageCellController>, UIImage>(feed: $0, imageLoader: imageLoader)
            
-            let view = FeedImageCellController(delegate: presenterAdapter)
+            let view = FeedImageCellController(viewModel: FeedImagePresenter<UIImage, FeedImageCellController>.map($0), delegate: presenterAdapter)
             
             let presenter = FeedImagePresenter(view: WeakRefVirtualProxy(target: view), imageTransformer: UIImage.init)
             presenterAdapter.presenter = presenter
