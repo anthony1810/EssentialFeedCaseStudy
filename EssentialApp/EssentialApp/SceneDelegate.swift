@@ -13,9 +13,6 @@ import RealmSwift
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
-    enum FeedViewControllerType {
-        case combine, closuredBase
-    }
     
     lazy var feedStore: FeedStoreProtocol & LocalFeedImageStoreProtocol = {
         let store = RealmFeedStore(realmConfig: Realm.Configuration.defaultConfiguration)
@@ -47,7 +44,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func configureWindow() {
-        let feedVC = makeFeedViewController(type: .combine)
+        let feedVC = makeFeedViewController()
         
         window?.rootViewController = UINavigationController(rootViewController: feedVC)
         window?.makeKeyAndVisible()
@@ -57,19 +54,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         localFeedLoader.validateCache(completion: { _ in })
     }
     
-    private func makeFeedViewController(type: FeedViewControllerType) -> FeedViewController {
-        switch type {
-        case .combine:
-            return FeedUIComposer.composeFeedViewController(
-                combineLoader: makeCombineRemoteFeedLoaderWithLocalFallback,
-                combineImageLoader: makeCombineRemoteFeedImageDataLoaderWithLocalFallback
-            )
-        case .closuredBase:
-            return FeedUIComposer.composeFeedViewController(
-                loader: makeClosuredBaseRemoteFeedLoaderWithLocalFallback(),
-                imageLoader: makeClosuredBaseRemoteFeedImageDataLoaderWithLocalFallback()
-            )
-        }
+    private func makeFeedViewController() -> FeedViewController {
+        return FeedUIComposer.composeFeedViewController(
+            combineLoader: makeCombineRemoteFeedLoaderWithLocalFallback,
+            combineImageLoader: makeCombineRemoteFeedImageDataLoaderWithLocalFallback
+        )
     }
 }
 
