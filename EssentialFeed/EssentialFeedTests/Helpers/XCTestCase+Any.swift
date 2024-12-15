@@ -33,15 +33,15 @@ func makeItemsJSON(_ items: [[String: Any]]) -> Data {
 }
 
 extension Date {
-    func addingSeconds(_ seconds: Int) -> Date {
-        return Calendar.current.date(byAdding: .second, value: seconds, to: self)!
+    func addingSeconds(_ seconds: Int, calendar: Calendar = .current) -> Date {
+        return calendar.date(byAdding: .second, value: seconds, to: self)!
     }
 
-    func addingDay(_ day: Int) -> Date {
-        return Calendar.current.date(byAdding: .day, value: day, to: self)!
+    func addingDay(_ day: Int, calendar: Calendar = .current) -> Date {
+        return calendar.date(byAdding: .day, value: day, to: self)!
     }
 
-    func addingMinutes(_ minutes: Int) -> Date {
-        return Calendar.current.date(byAdding: .minute, value: minutes, to: self)!
+    func addingMinutes(_ minutes: Int, calendar: Calendar = .current) -> Date {
+        return calendar.date(byAdding: .minute, value: minutes, to: self)!
     }
 }
