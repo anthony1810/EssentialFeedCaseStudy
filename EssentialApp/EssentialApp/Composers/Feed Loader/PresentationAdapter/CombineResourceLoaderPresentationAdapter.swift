@@ -32,12 +32,6 @@ final class CombineResourceLoaderPresentationAdapter<Resource, View: ResourceFet
     }
 }
 
-extension CombineResourceLoaderPresentationAdapter: FeedRefreshDelegate {
-    func didRequestFeedRefresh() {
-        self.loadResource()
-    }
-}
-
 extension CombineResourceLoaderPresentationAdapter: FeedImageDataControllerDelegate {
     func didRequestImage() {
         self.loadResource()

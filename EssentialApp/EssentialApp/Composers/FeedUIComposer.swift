@@ -21,7 +21,7 @@ public enum FeedUIComposer {
         let storyboard = UIStoryboard(name: "Feed", bundle: Bundle(for: ListViewController.self))
         let feedViewController = storyboard.instantiateInitialViewController() as! ListViewController
         
-        feedViewController.delegate = feedLoaderPresentationAdapter
+        feedViewController.onRefresh = feedLoaderPresentationAdapter.loadResource
         feedViewController.title = localizedString(for: "FEED_VIEW_TITLE")
         
         let feedPresenter = LoadResourcePresenter(

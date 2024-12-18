@@ -8,10 +8,6 @@ import Foundation
 import UIKit
 import EssentialFeed
 
-public protocol FeedRefreshDelegate {
-    func didRequestFeedRefresh()
-}
-
 public protocol CellController {
     func view(in tableView: UITableView) -> UITableViewCell
     func prefetch()
@@ -20,7 +16,7 @@ public protocol CellController {
 
 public final class ListViewController: UITableViewController {
     
-    public var delegate: FeedRefreshDelegate?
+    public var onRefresh: (() -> Void)?
     @IBOutlet private(set) public var errorView: ErrorView!
     
     public var tableModels: [CellController] = [] {
@@ -47,7 +43,7 @@ public final class ListViewController: UITableViewController {
     
     @objc
     @IBAction private func refresh() {
-        delegate?.didRequestFeedRefresh()
+        onRefresh?()
     }
 }
 
