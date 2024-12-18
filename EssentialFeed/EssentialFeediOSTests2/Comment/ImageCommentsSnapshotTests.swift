@@ -1,12 +1,5 @@
 //
 //  ImageCommentsSnapshotTests.swift
-//  EssentialFeed
-//
-//  Created by Anthony on 18/12/24.
-//
-
-//
-//  ImageCommentsSnapshotTests.swift
 //  EssentialFeediOSTests2
 //
 //  Created by Anthony on 28/11/24.
