@@ -60,7 +60,7 @@ class FeedStub: FeedImageDataControllerDelegate {
 
 extension ListViewController {
     func display(_ cells: [FeedImageCellController]) {
-        self.tableModels = cells
+        self.tableModels = cells.map { CellController($0, $0, $0) }
     }
     
     func display(_ stubs: [FeedStub]) {
