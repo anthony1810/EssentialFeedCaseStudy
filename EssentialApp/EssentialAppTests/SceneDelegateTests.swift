@@ -22,7 +22,7 @@ final class SceneDelegateTests: XCTestCase {
         let topVC = rootNavigation?.topViewController
         
         XCTAssertNotNil(rootNavigation, "Expect UINavigationController, got \(String(describing: root))")
-        XCTAssertTrue(topVC is FeedViewController, "expect FeedViewController, got \(String(describing: topVC))")
+        XCTAssertTrue(topVC is ListViewController, "expect FeedViewController, got \(String(describing: topVC))")
     }
     
     func test_configuresRootViewController_rendersCustomWindowAsKeyAnDVisible() {

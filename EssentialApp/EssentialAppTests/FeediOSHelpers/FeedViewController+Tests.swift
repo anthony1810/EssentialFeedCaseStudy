@@ -9,7 +9,7 @@ import EssentialFeed
 import EssentialFeediOS
 import UIKit
 
-extension FeedViewController {
+extension ListViewController {
     func triggerViewDidLoad() {
         self.loadViewIfNeeded()
         replaceRefreshControlWithFakeForiOS17PlusSupport()
@@ -99,7 +99,7 @@ extension FeedViewController {
     }
 }
 
-public extension FeedViewController {
+public extension ListViewController {
     func userInitiatedRefresh() {
         self.refreshControl?.simulatePullToRefresh()
     }

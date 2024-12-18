@@ -76,7 +76,7 @@ class FeedStub: FeedImageDataControllerDelegate {
     }
 }
 
-extension FeedViewController {
+extension ListViewController {
     func display(_ cells: [FeedImageCellController]) {
         self.tableModels = cells
     }

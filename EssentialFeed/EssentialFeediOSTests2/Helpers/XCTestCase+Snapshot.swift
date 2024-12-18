@@ -10,10 +10,10 @@ import EssentialFeediOS
 
 extension XCTestCase {
     
-    func makeSUT() -> FeedViewController {
-        let bundle = Bundle(for: FeedViewController.self)
+    func makeSUT() -> ListViewController {
+        let bundle = Bundle(for: ListViewController.self)
         let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
-        let controller = storyboard.instantiateInitialViewController() as! FeedViewController
+        let controller = storyboard.instantiateInitialViewController() as! ListViewController
         controller.loadViewIfNeeded()
         controller.beginAppearanceTransition(true, animated: false) //view appear again
         controller.endAppearanceTransition()

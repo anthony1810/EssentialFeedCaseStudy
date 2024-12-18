@@ -18,7 +18,7 @@ public protocol CellController {
     func cancelLoading()
 }
 
-public final class FeedViewController: UITableViewController {
+public final class ListViewController: UITableViewController {
     
     public var delegate: FeedRefreshDelegate?
     @IBOutlet private(set) public var errorView: ErrorView!
@@ -52,7 +52,7 @@ public final class FeedViewController: UITableViewController {
 }
 
 // MARK: - FeedLoadingViewProtocol
-extension FeedViewController: ResourceLoadingViewProtocol {
+extension ListViewController: ResourceLoadingViewProtocol {
     public func display(_ viewModel: ResourceLoadingViewModel) {
         loadingCells.removeAll()
         if viewModel.isLoading {
@@ -64,7 +64,7 @@ extension FeedViewController: ResourceLoadingViewProtocol {
 }
 
 // MARK: - FeedErrorViewProtocol
-extension FeedViewController: LoadResourceErrorViewProtocol {
+extension ListViewController: LoadResourceErrorViewProtocol {
     public func display(_ viewModel: LoadResourceErrorViewModel) {
         if let message = viewModel.message {
             errorView.show(message: message)
@@ -76,7 +76,7 @@ extension FeedViewController: LoadResourceErrorViewProtocol {
 
 
 // MARK: - UITableViewDatasource
-extension FeedViewController {
+extension ListViewController {
     public override func numberOfSections(in tableView: UITableView) -> Int {
         1
     }
@@ -100,7 +100,7 @@ extension FeedViewController {
 }
 
 // MARK: - UITableViewDataSourcePrefetching
-extension FeedViewController: UITableViewDataSourcePrefetching {
+extension ListViewController: UITableViewDataSourcePrefetching {
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
             cellController(at: indexPath).prefetch()
@@ -113,7 +113,7 @@ extension FeedViewController: UITableViewDataSourcePrefetching {
 }
 
 // MARK: - Helpers
-extension FeedViewController {
+extension ListViewController {
     func cancelLoading(at indexPath: IndexPath) {
         loadingCells[indexPath]?.cancelLoading()
         loadingCells[indexPath] = nil

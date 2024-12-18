@@ -15,11 +15,11 @@ public enum FeedUIComposer {
     public static func composeFeedViewController(
         combineLoader: @escaping () -> FeedLoaderProtocol.Publisher,
         combineImageLoader: @escaping (URL) -> FeedImageDataLoaderProtocol.Publisher
-    ) -> FeedViewController {
+    ) -> ListViewController {
         let feedLoaderPresentationAdapter = CombineResourceLoaderPresentationAdapter<[FeedImage], CombineFeedFetchView>(loader: combineLoader().dispatchToMainThread)
     
-        let storyboard = UIStoryboard(name: "Feed", bundle: Bundle(for: FeedViewController.self))
-        let feedViewController = storyboard.instantiateInitialViewController() as! FeedViewController
+        let storyboard = UIStoryboard(name: "Feed", bundle: Bundle(for: ListViewController.self))
+        let feedViewController = storyboard.instantiateInitialViewController() as! ListViewController
         
         feedViewController.delegate = feedLoaderPresentationAdapter
         feedViewController.title = localizedString(for: "FEED_VIEW_TITLE")

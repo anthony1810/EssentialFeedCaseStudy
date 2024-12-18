@@ -67,14 +67,14 @@ final class FeedAcceptanceTests: XCTestCase {
 
 extension FeedAcceptanceTests {
     
-    private func launch(httpClient: HTTPClient, store: FeedStoreProtocol & LocalFeedImageStoreProtocol) -> FeedViewController {
+    private func launch(httpClient: HTTPClient, store: FeedStoreProtocol & LocalFeedImageStoreProtocol) -> ListViewController {
         
         let sut = SceneDelegate(httpClient: httpClient, store: store)
         sut.window = UIWindow()
         sut.configureWindow()
         
         let nav = sut.window?.rootViewController as? UINavigationController
-        let feedVC = nav?.topViewController as! FeedViewController
+        let feedVC = nav?.topViewController as! ListViewController
         
         return feedVC
     }

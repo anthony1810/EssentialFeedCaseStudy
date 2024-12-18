@@ -421,7 +421,7 @@ final class FeedUIIntegrationTests: XCTestCase {
 // MARK: - Helpers
 
 extension FeedUIIntegrationTests {
-    func assert(sut: FeedViewController, rendering images: [FeedImage], file: StaticString = #file, line: UInt = #line) {
+    func assert(sut: ListViewController, rendering images: [FeedImage], file: StaticString = #file, line: UInt = #line) {
         
         sut.tableView.enforceLayoutCycle()
         
@@ -434,7 +434,7 @@ extension FeedUIIntegrationTests {
         executeRunloopToCleanUpReferrences()
     }
     
-    func assert(sut: FeedViewController, hasConfigureFeedImageViewAt index: Int, with image: FeedImage, file: StaticString = #file, line: UInt = #line) {
+    func assert(sut: ListViewController, hasConfigureFeedImageViewAt index: Int, with image: FeedImage, file: StaticString = #file, line: UInt = #line) {
         let view = sut.feedImageView(at: index) as? FeedImageCell
         XCTAssertNotNil(view, file: file, line: line)
         XCTAssertEqual(view?.locationText, image.location, file: file, line: line)
@@ -442,7 +442,7 @@ extension FeedUIIntegrationTests {
         XCTAssertEqual(view?.url, image.imageURL, file: file, line: line)
     }
     
-    func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
+    func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: ListViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
         
         let sut = FeedUIComposer.composeFeedViewController(

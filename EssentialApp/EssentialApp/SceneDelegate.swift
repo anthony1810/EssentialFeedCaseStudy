@@ -54,7 +54,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         localFeedLoader.validateCache(completion: { _ in })
     }
     
-    private func makeFeedViewController() -> FeedViewController {
+    private func makeFeedViewController() -> ListViewController {
         return FeedUIComposer.composeFeedViewController(
             combineLoader: makeCombineRemoteFeedLoaderWithLocalFallback,
             combineImageLoader: makeCombineRemoteFeedImageDataLoaderWithLocalFallback

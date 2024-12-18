@@ -10,10 +10,10 @@ import EssentialFeed
 import EssentialFeediOS
 
 final class CombineFeedFetchView: ResourceFetchingViewProtocol {
-    private weak var feedViewController: FeedViewController?
+    private weak var feedViewController: ListViewController?
     private var combineImageLoader: (URL) -> FeedImageDataLoaderProtocol.Publisher
     
-    init(feedViewController: FeedViewController, combineImageLoader: @escaping (URL) -> FeedImageDataLoaderProtocol.Publisher) {
+    init(feedViewController: ListViewController, combineImageLoader: @escaping (URL) -> FeedImageDataLoaderProtocol.Publisher) {
         self.feedViewController = feedViewController
         self.combineImageLoader = combineImageLoader
     }
