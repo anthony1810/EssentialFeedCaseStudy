@@ -14,7 +14,7 @@ public protocol FeedImageDataControllerDelegate {
     func didCancelImageRequest()
 }
 
-public final class FeedImageCellController: ResourceFetchingViewProtocol, ResourceLoadingViewProtocol, LoadResourceErrorViewProtocol {
+public final class FeedImageCellController: CellController, ResourceFetchingViewProtocol, ResourceLoadingViewProtocol, LoadResourceErrorViewProtocol {
    
     public typealias ViewModel = UIImage
     public typealias Image = UIImage
@@ -33,7 +33,7 @@ public final class FeedImageCellController: ResourceFetchingViewProtocol, Resour
         cancelLoading()
     }
     
-    func view(in tableView: UITableView) -> UITableViewCell {
+    public func view(in tableView: UITableView) -> UITableViewCell {
         cell = tableView.dequeueReusableCell()
         cell?.locationLabel.text = viewModel.location
         cell?.descriptionLabel.text = viewModel.description
@@ -61,11 +61,11 @@ public final class FeedImageCellController: ResourceFetchingViewProtocol, Resour
     }
 
     
-    func prefetch() {
+    public func prefetch() {
         delegate.didRequestImage()
     }
     
-    func cancelLoading() {
+    public func cancelLoading() {
         cell = nil
         delegate.didCancelImageRequest()
     }

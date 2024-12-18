@@ -12,17 +12,23 @@ public protocol FeedRefreshDelegate {
     func didRequestFeedRefresh()
 }
 
+public protocol CellController {
+    func view(in tableView: UITableView) -> UITableViewCell
+    func prefetch()
+    func cancelLoading()
+}
+
 public final class FeedViewController: UITableViewController {
     
     public var delegate: FeedRefreshDelegate?
     @IBOutlet private(set) public var errorView: ErrorView!
     
-    public var tableModels: [FeedImageCellController] = [] {
+    public var tableModels: [CellController] = [] {
         didSet { tableView.reloadData() }
     }
     
     private var onViewFirstAppear: (() -> Void)?
-    private var loadingCells = [IndexPath: FeedImageCellController]()
+    private var loadingCells = [IndexPath: CellController]()
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -114,7 +120,7 @@ extension FeedViewController {
     }
     
     @discardableResult
-    func cellController(at indexPath: IndexPath) -> FeedImageCellController {
+    func cellController(at indexPath: IndexPath) -> CellController {
         let cellController = tableModels[indexPath.row]
         loadingCells[indexPath] = cellController
         return cellController
