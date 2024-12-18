@@ -22,12 +22,4 @@ public final class ImageCommentCellController: CellController {
         
         return cell
     }
-    
-    public func prefetch() {
-        
-    }
-    
-    public func cancelLoading() {
-        
-    }
 }

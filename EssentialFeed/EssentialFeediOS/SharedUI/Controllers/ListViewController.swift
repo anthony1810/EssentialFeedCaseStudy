@@ -14,6 +14,12 @@ public protocol CellController {
     func cancelLoading()
 }
 
+extension CellController {
+    public func prefetch() {}
+    
+    public func cancelLoading() {}
+}
+
 public final class ListViewController: UITableViewController {
     
     public var onRefresh: (() -> Void)?
