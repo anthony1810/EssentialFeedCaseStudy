@@ -14,7 +14,7 @@ public protocol FeedImageDataControllerDelegate {
     func didCancelImageRequest()
 }
 
-public final class FeedImageCellController: CellController, ResourceFetchingViewProtocol, ResourceLoadingViewProtocol, LoadResourceErrorViewProtocol {
+public final class FeedImageCellController: NSObject, ResourceFetchingViewProtocol, ResourceLoadingViewProtocol, LoadResourceErrorViewProtocol {
    
     public typealias ViewModel = UIImage
     public typealias Image = UIImage
@@ -33,21 +33,6 @@ public final class FeedImageCellController: CellController, ResourceFetchingView
         cancelLoading()
     }
     
-    public func view(in tableView: UITableView) -> UITableViewCell {
-        cell = tableView.dequeueReusableCell()
-        cell?.locationLabel.text = viewModel.location
-        cell?.descriptionLabel.text = viewModel.description
-        cell?.feedImageView.setImage(nil)
-        cell?.onRetryButtonTapped = { [weak self] in
-            self?.prefetch()
-        }
-        cell?.onPrepareForReused = {[weak self] in
-            self?.cancelLoading()
-        }
-        delegate.didRequestImage()
-        return cell!
-    }
-    
     public func display(viewModel: UIImage) {
         cell?.feedImageView.setImage(viewModel)
     }
@@ -59,13 +44,8 @@ public final class FeedImageCellController: CellController, ResourceFetchingView
     public func display(_ viewModel: EssentialFeed.LoadResourceErrorViewModel) {
         cell?.retryButton.isHidden = viewModel.message == nil
     }
-
     
-    public func prefetch() {
-        delegate.didRequestImage()
-    }
-    
-    public func cancelLoading() {
+    private func cancelLoading() {
         cell = nil
         delegate.didCancelImageRequest()
     }
@@ -73,5 +53,38 @@ public final class FeedImageCellController: CellController, ResourceFetchingView
     func releaseCellForReuse() {
         cell?.onPrepareForReused = nil
         cell = nil
+    }
+}
+
+extension FeedImageCellController: CellController {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        1
+    }
+    
+    public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cancelLoading()
+    }
+    
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        cell = tableView.dequeueReusableCell()
+        cell?.locationLabel.text = viewModel.location
+        cell?.descriptionLabel.text = viewModel.description
+        cell?.feedImageView.setImage(nil)
+        cell?.onRetryButtonTapped = { [weak self] in
+            self?.delegate.didRequestImage()
+        }
+        cell?.onPrepareForReused = {[weak self] in
+            self?.cancelLoading()
+        }
+        delegate.didRequestImage()
+        return cell!
+    }
+    
+    public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        delegate.didRequestImage()
+    }
+    
+    public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
+        cancelLoading()
     }
 }
