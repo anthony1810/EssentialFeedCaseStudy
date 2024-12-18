@@ -26,8 +26,4 @@ public final class ImageCommentCellController: NSObject, UITableViewDataSource {
         
         return cell
     }
-    
-    public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        
-    }
 }
