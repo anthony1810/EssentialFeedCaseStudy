@@ -23,10 +23,6 @@ extension XCTestCase {
         return controller
     }
     
-    func emptyFeed() -> [FeedImageCellController] {
-        []
-    }
-    
     func feedWithContents() -> [FeedStub] {
         [
             FeedStub(
