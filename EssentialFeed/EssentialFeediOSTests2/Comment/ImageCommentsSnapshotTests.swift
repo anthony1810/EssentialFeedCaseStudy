@@ -35,7 +35,7 @@ final class ImageCommentsSnapshotTests: XCTestCase {
                     username: "a."
                 )
             ),
-        ].map { CellController($0, nil, nil)})
+        ].map { CellController(datasource: $0) })
         
         assert(snapshot: sut.snapshot(for: .iPhone8(style: .light)), named: "LIST_WITH_CONTENT")
         assert(snapshot: sut.snapshot(for: .iPhone8(style: .dark)), named: "LIST_WITH_CONTENT_DARK")

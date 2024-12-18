@@ -8,7 +8,23 @@ import Foundation
 import UIKit
 import EssentialFeed
 
-public typealias CellController = (datasource: UITableViewDataSource, delegate: UITableViewDelegate?, prefetching: UITableViewDataSourcePrefetching?)
+public struct CellController {
+    let datasource: UITableViewDataSource
+    let delegate: UITableViewDelegate?
+    let prefetching: UITableViewDataSourcePrefetching?
+    
+    public init(datasource: UITableViewDataSource, delegate: UITableViewDelegate?, prefetching: UITableViewDataSourcePrefetching?) {
+        self.datasource = datasource
+        self.delegate = delegate
+        self.prefetching = prefetching
+    }
+    
+    public init(datasource: UITableViewDataSource) {
+        self.datasource = datasource
+        self.delegate = nil
+        self.prefetching = nil
+    }
+}
 
 public final class ListViewController: UITableViewController {
     
