@@ -22,30 +22,8 @@
                         <view key="tableHeaderView" contentMode="scaleToFill" id="DeW-Fl-JH8" customClass="ErrorView" customModule="EssentialFeediOS">
                             <rect key="frame" x="0.0" y="0.0" width="430" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I3q-al-W3d">
-                                    <rect key="frame" x="0.0" y="0.0" width="430" height="34"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                    <inset key="contentEdgeInsets" minX="0.0" minY="8" maxX="0.0" maxY="8"/>
-                                    <state key="normal" title="Error label">
-                                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </state>
-                                    <connections>
-                                        <action selector="hideMessage" destination="DeW-Fl-JH8" eventType="touchUpInside" id="0mM-FS-O61"/>
-                                    </connections>
-                                </button>
-                            </subviews>
                             <color key="backgroundColor" red="1" green="0.41568627450000001" blue="0.41568627450000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <gestureRecognizers/>
-                            <constraints>
-                                <constraint firstItem="I3q-al-W3d" firstAttribute="leading" secondItem="DeW-Fl-JH8" secondAttribute="leading" id="DiR-V2-AcO"/>
-                                <constraint firstAttribute="bottom" secondItem="I3q-al-W3d" secondAttribute="bottom" id="PqZ-hY-3td"/>
-                                <constraint firstItem="I3q-al-W3d" firstAttribute="top" secondItem="DeW-Fl-JH8" secondAttribute="top" id="dmN-RL-yl1"/>
-                                <constraint firstAttribute="trailing" secondItem="I3q-al-W3d" secondAttribute="trailing" id="pwR-sT-YXE"/>
-                            </constraints>
-                            <connections>
-                                <outlet property="button" destination="I3q-al-W3d" id="HsM-Xh-BWF"/>
-                            </connections>
                         </view>
                         <view key="tableFooterView" contentMode="scaleToFill" id="4PB-ja-mxf">
                             <rect key="frame" x="0.0" y="692" width="430" height="16"/>
@@ -185,9 +163,6 @@ Location</string>
                             <action selector="refresh" destination="hfq-XP-Lyi" eventType="valueChanged" id="zYW-hF-dxh"/>
                         </connections>
                     </refreshControl>
-                    <connections>
-                        <outlet property="errorView" destination="DeW-Fl-JH8" id="t1O-WG-Ejz"/>
-                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sMz-CN-2Yr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
