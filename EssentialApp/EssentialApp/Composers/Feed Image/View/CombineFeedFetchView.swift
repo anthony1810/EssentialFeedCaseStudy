@@ -37,7 +37,7 @@ final class CombineFeedFetchView: ResourceFetchingViewProtocol {
                 mapper: UIImage.tryMake)
             presenterAdapter.presenter = presenter
             
-            return view
+            return CellController(datasource: view, delegate: view, prefetching: view)
         }
     }
 }

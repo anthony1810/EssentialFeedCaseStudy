@@ -32,11 +32,9 @@ final class ListSnapshotTests: XCTestCase {
     
     // MARK: - Helpers
     override func makeSUT() -> ListViewController {
-        let bundle = Bundle(for: ListViewController.self)
-        let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
-        let controller = storyboard.instantiateInitialViewController() as! ListViewController
+        let controller = ListViewController()
         controller.loadViewIfNeeded()
-        controller.beginAppearanceTransition(true, animated: false) //view appear again
+        controller.beginAppearanceTransition(true, animated: false)
         controller.endAppearanceTransition()
         controller.tableView.showsVerticalScrollIndicator = false
         controller.tableView.showsHorizontalScrollIndicator = false

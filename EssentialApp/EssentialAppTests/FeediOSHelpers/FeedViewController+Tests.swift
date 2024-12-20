@@ -26,15 +26,15 @@ extension ListViewController {
     }
     
     func simulateErrorViewTap() {
-        errorView?.button.simulateTap()
+        errorView.simulateTap()
     }
 
     var isShowingErrorView: Bool {
-        return errorView?.alpha == 1
+        return errorView.alpha == 1
     }
 
     var displayedErrorViewMessage: String? {
-        return errorView?.message
+        return errorView.message
     }
     
     @discardableResult
