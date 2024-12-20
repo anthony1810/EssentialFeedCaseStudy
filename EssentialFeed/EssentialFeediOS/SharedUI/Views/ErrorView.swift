@@ -9,7 +9,7 @@ import UIKit
 
 public final class ErrorView: UIButton {
     public var message: String? {
-        get { return isVisible ? self.title(for: .normal) : nil }
+        get { return isVisible ? configuration?.title : nil }
     }
     
     public var onHide: (() -> Void)?
@@ -37,16 +37,33 @@ public final class ErrorView: UIButton {
     }
     
     private func configure() {
-        backgroundColor = .red
+        var configuration = Configuration.plain()
+        configuration.titlePadding = 0
+        configuration.baseForegroundColor = .white
+        configuration.background.backgroundColor = .backgroundErrorColor
+        configuration.background.cornerRadius = 0
+        self.configuration = configuration
+        
         addTarget(self, action: #selector(hideMessageAnimation), for: .touchUpInside)
-        configureLabel()
+        
         hideMessage()
     }
     
     private func hideMessage() {
         onHide?()
-        setTitle(nil, for: .normal)
+        configuration?.attributedTitle = nil
+        configuration?.contentInsets = .zero
         alpha = 0
+    }
+    
+    private var titleAttributes: AttributeContainer {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = NSTextAlignment.center
+        
+        var attributes = AttributeContainer()
+        attributes.paragraphStyle = paragraphStyle
+        attributes.font = UIFont.preferredFont(forTextStyle: .body)
+        return attributes
     }
     
     
@@ -58,7 +75,9 @@ public final class ErrorView: UIButton {
     }
 
     func show(message: String) {
-        self.setTitle(message, for: .normal)
+        configuration?.attributedTitle = AttributedString(message, attributes: titleAttributes)
+        
+        configuration?.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
 
         UIView.animate(withDuration: 0.25) {
             self.alpha = 1
@@ -72,7 +91,7 @@ public final class ErrorView: UIButton {
             animations: { self.alpha = 0 },
             completion: { completed in
                 if completed {
-                    self.self.setTitle(nil, for: .normal)
+                    self.hideMessage()
                 }
             })
     }
