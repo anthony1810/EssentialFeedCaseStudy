@@ -20,7 +20,7 @@ final class CombineFeedFetchView: ResourceFetchingViewProtocol {
     
     
     func display(viewModel: FeedFetchingViewModel) {
-        feedViewController?.tableModels = viewModel.feeds.map { model in
+        let cellControllers = viewModel.feeds.map { model in
             
             let presenterAdapter = CombineResourceLoaderPresentationAdapter<Data, WeakRefVirtualProxy<FeedImageCellController>>(loader: { [combineImageLoader] in combineImageLoader(model.imageURL)})
         
@@ -37,8 +37,10 @@ final class CombineFeedFetchView: ResourceFetchingViewProtocol {
                 mapper: UIImage.tryMake)
             presenterAdapter.presenter = presenter
             
-            return CellController(datasource: view, delegate: view, prefetching: view)
+            return CellController(id: model, datasource: view, delegate: view, prefetching: view)
         }
+        
+        feedViewController?.display(cellControllers)
     }
 }
 

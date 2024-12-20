@@ -61,7 +61,9 @@ class FeedStub: FeedImageDataControllerDelegate {
 
 extension ListViewController {
     func display(_ cells: [FeedImageCellController]) {
-        self.tableModels = cells.map { CellController(datasource: $0, delegate: $0, prefetching: $0) }
+        self.display(
+            cells.map { CellController(id: UUID(), datasource: $0, delegate: $0, prefetching: $0) }
+        )
     }
     
     func display(_ stubs: [FeedStub]) {

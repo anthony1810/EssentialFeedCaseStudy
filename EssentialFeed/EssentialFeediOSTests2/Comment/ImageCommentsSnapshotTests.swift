@@ -35,7 +35,7 @@ final class ImageCommentsSnapshotTests: XCTestCase {
                     username: "a."
                 )
             ),
-        ].map { CellController(datasource: $0) })
+        ].map { CellController(id: UUID(), datasource: $0) })
         
         assert(snapshot: sut.snapshot(for: .iPhone8(style: .light)), named: "LIST_WITH_CONTENT")
         assert(snapshot: sut.snapshot(for: .iPhone8(style: .dark)), named: "LIST_WITH_CONTENT_DARK")
@@ -54,11 +54,5 @@ final class ImageCommentsSnapshotTests: XCTestCase {
         controller.tableView.showsHorizontalScrollIndicator = false
         
         return controller
-    }
-}
-
-extension ListViewController {
-    func display(_ cells: [CellController]) {
-        self.tableModels = cells
     }
 }
