@@ -58,6 +58,17 @@ class RemoteFeedLoaderTests: XCTestCase {
         }
     }
     
+    func test_load_deliversErrorOn200HTTPResponseWithInvalidJson() {
+        let url = anyURL()
+        let (sut, client) = makeSUT(url: url)
+        
+        var receivedErrors: [RemoteFeedLoader.Error?] = []
+        sut.load { receivedErrors.append($0) }
+        client.complete(withStatusCode: 200, data: anyInvalidJson())
+        
+        XCTAssertEqual(receivedErrors, [RemoteFeedLoader.Error.invalidData])
+    }
+    
     // MARK: - Helpers
     private func makeSUT(url: URL) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
         let client = HTTPClientSpy()
@@ -67,14 +78,14 @@ class RemoteFeedLoaderTests: XCTestCase {
     }
     
     private class HTTPClientSpy: HTTPClient {
-        typealias Message = (url: URL, completion:(Result<HTTPURLResponse, Error>) -> Void)
+        typealias Message = (url: URL, completion:(Result<(Data, HTTPURLResponse), Error>) -> Void)
         
         var messages = [Message]()
         var requestedURLs: [URL] {
             messages.map { $0.url }
         }
         
-        func get(from url: URL, completion: @escaping (Result<HTTPURLResponse, Error>) -> Void) {
+        func get(from url: URL, completion: @escaping (Result<(Data, HTTPURLResponse), Error>) -> Void) {
             messages.append((url, completion))
         }
         
@@ -82,12 +93,14 @@ class RemoteFeedLoaderTests: XCTestCase {
             messages[index].completion(.failure(error))
         }
         
-        func complete(withStatusCode statusCode: Int, at index: Int = 0) {
+        func complete(withStatusCode statusCode: Int, data: Data = Data(), at index: Int = 0) {
             messages[index].completion(
-                .success(HTTPURLResponse(
-                    url: requestedURLs[index],
-                    statusCode: statusCode,
-                    httpVersion: nil, headerFields: nil)!
+                .success(
+                    (data,
+                    HTTPURLResponse(
+                        url: requestedURLs[index],
+                        statusCode: statusCode,
+                        httpVersion: nil, headerFields: nil)!)
                 )
             )
         }
@@ -103,3 +116,6 @@ func anyError() -> Swift.Error {
     NSError(domain: "Test", code: 0, userInfo: nil)
 }
 
+func anyInvalidJson() -> Data {
+    Data("any json".utf8)
+}

@@ -33,6 +33,6 @@ public final class RemoteFeedLoader {
 }
 
 public protocol HTTPClient {
-    typealias LoadResult = Result<HTTPURLResponse, Error>
+    typealias LoadResult = Result<(Data, HTTPURLResponse), Error>
     func get(from url: URL, completion: @escaping (LoadResult) -> Void)
 }
