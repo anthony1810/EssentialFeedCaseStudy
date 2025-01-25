@@ -55,7 +55,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         }
     }
     
-    func test_load_deliversNoItemsOn200HTTPResponseWithEmptyJson() {
+    func test_load_deliversErrorOn200HTTPResponseWithInvalidJson() {
         let url = anyURL()
         let (sut, client) = makeSUT(url: url)
         
@@ -64,6 +64,16 @@ class RemoteFeedLoaderTests: XCTestCase {
         }
     }
     
+    func test_load_deliversNoItemsOn200HTTPResponseWithEmptyJson() {
+        let url = anyURL()
+        let (sut, client) = makeSUT(url: url)
+        
+        let emptyJsonData = Data("{ \"items\": [] }".utf8)
+        
+        expect(sut, toFinishedWith: .success([])) {
+            client.complete(withStatusCode: 200, data: emptyJsonData)
+        }
+    }
 
     // MARK: - Helpers
     private func makeSUT(url: URL) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
