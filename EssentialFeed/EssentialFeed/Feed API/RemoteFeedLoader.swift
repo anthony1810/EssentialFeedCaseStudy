@@ -6,9 +6,9 @@
 //
 import Foundation
 
-public final class RemoteFeedLoader {
+public final class RemoteFeedLoader: FeedLoader {
     
-    public typealias Result = Swift.Result<[FeedItem], Error>
+    public typealias Result = LoadFeedResult
     
     let url: URL
     let client: HTTPClient
@@ -23,7 +23,7 @@ public final class RemoteFeedLoader {
         self.client = client
     }
     
-    public func load(completion: @escaping (RemoteFeedLoader.Result) -> Void) {
+    public func load(completion: @escaping (Result) -> Void) {
         client.get(from: url, completion: { [weak self] result in
             guard self != nil else { return }
             
@@ -31,7 +31,7 @@ public final class RemoteFeedLoader {
             case let .success((data, res)):
                 completion(FeedMapper.map(data, res: res))
             case .failure:
-                completion(.failure(.connectivity))
+                completion(.failure(Error.connectivity))
             }
         })
     }
