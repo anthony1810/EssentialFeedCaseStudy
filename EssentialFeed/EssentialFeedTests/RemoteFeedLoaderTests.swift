@@ -74,6 +74,43 @@ class RemoteFeedLoaderTests: XCTestCase {
             client.complete(withStatusCode: 200, data: emptyJsonData)
         }
     }
+    
+    func test_load_deliversItemsOn200HTTPResponseWithValidJson() {
+        let url = anyURL()
+        let (sut, client) = makeSUT(url: url)
+        
+        let feedImage0 = FeedItem(
+            id: UUID(),
+            description: "a description",
+            location: "a location",
+            imageURL: anyURL()
+        )
+        let itemJson0 = [
+            "id": feedImage0.id.uuidString,
+            "description": feedImage0.description,
+            "location": feedImage0.location,
+            "image": feedImage0.imageURL.absoluteString
+        ]
+        
+        let feedImage1 = FeedItem(
+            id: UUID(),
+            description: nil,
+            location:  nil,
+            imageURL: anyURL()
+        )
+        let itemJson1 = [
+            "id": feedImage1.id.uuidString,
+            "image": feedImage1.imageURL.absoluteString
+        ]
+        
+        let jsons = [
+            "items": [itemJson0, itemJson1]
+        ].compactMapValues { $0 }
+        
+        expect(sut, toFinishedWith: .success([feedImage0, feedImage1])) {
+            client.complete(withStatusCode: 200, data: try! JSONSerialization.data(withJSONObject: jsons))
+        }
+    }
 
     // MARK: - Helpers
     private func makeSUT(url: URL) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {

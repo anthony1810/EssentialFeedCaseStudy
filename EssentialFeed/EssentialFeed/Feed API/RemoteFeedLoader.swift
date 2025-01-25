@@ -50,8 +50,8 @@ private struct Root: Decodable {
 
 private struct Item: Decodable {
     let id: UUID
-    let description: String
-    let location: String
+    let description: String?
+    let location: String?
     let image: URL
     
     var feed: FeedItem {
