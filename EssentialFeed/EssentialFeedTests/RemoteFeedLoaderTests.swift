@@ -68,10 +68,8 @@ class RemoteFeedLoaderTests: XCTestCase {
         let url = anyURL()
         let (sut, client) = makeSUT(url: url)
         
-        let emptyJsonData = Data("{ \"items\": [] }".utf8)
-        
         expect(sut, toFinishedWith: .success([])) {
-            client.complete(withStatusCode: 200, data: emptyJsonData)
+            client.complete(withStatusCode: 200, data: makeItemsJson([]))
         }
     }
     
@@ -93,13 +91,24 @@ class RemoteFeedLoaderTests: XCTestCase {
             imageURL: anyURL()
         )
         
-        let jsons = [
-            "items": [itemJson0, itemJson1]
-        ].compactMapValues { $0 }
-        
         expect(sut, toFinishedWith: .success([feedImage0, feedImage1])) {
-            client.complete(withStatusCode: 200, data: makeItemsJson(jsons))
+            client.complete(withStatusCode: 200, data: makeItemsJson([itemJson0, itemJson1]))
         }
+    }
+    
+    func test_load_doesNotDeliverResultAfterSUTInstanceIsDeallocated() {
+        let client = HTTPClientSpy()
+        var sut: RemoteFeedLoader? = RemoteFeedLoader(url: anyURL(), client: client)
+        
+        var receivedResult: RemoteFeedLoader.Result?
+        sut?.load { result in
+            receivedResult = result
+        }
+        
+        sut = nil
+        client.complete(withStatusCode: 200, data: makeItemsJson([]))
+        
+        XCTAssertNil(receivedResult, "Does not deliver result after instance is deallocated")
     }
 
     // MARK: - Helpers
@@ -176,8 +185,12 @@ func anyInvalidJson() -> Data {
     Data("any json".utf8)
 }
 
-func makeItemsJson(_ items: [String: Any]) -> Data {
-    try! JSONSerialization.data(withJSONObject: items)
+func makeItemsJson(_ items: [[String: Any]]) -> Data {
+    let json = [
+        "items": items
+    ].compactMapValues { $0 }
+    
+    return try! JSONSerialization.data(withJSONObject: json)
 }
 
 func makeItem(
