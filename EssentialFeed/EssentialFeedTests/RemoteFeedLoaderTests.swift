@@ -38,7 +38,7 @@ class RemoteFeedLoaderTests: XCTestCase {
     func test_load_deliversErrorOnConnectionError() {
         let (sut, client) = makeSUT(url: anyURL())
         
-        expect(sut, toFinishedWith: .connectivity) {
+        expect(sut, toFinishedWith: .failure(.connectivity)) {
             client.complete(withError: anyError())
         }
     }
@@ -49,21 +49,22 @@ class RemoteFeedLoaderTests: XCTestCase {
         
         let samples = [199, 201, 300, 400, 500]
         samples.enumerated().forEach { index, statusCode in
-            expect(sut, toFinishedWith: .invalidData) {
+            expect(sut, toFinishedWith: .failure(.invalidData)) {
                 client.complete(withStatusCode: statusCode, at: index)
             }
         }
     }
     
-    func test_load_deliversErrorOn200HTTPResponseWithInvalidJson() {
+    func test_load_deliversNoItemsOn200HTTPResponseWithEmptyJson() {
         let url = anyURL()
         let (sut, client) = makeSUT(url: url)
         
-        expect(sut, toFinishedWith: .invalidData) {
+        expect(sut, toFinishedWith: .failure(.invalidData)) {
             client.complete(withStatusCode: 200, data: anyInvalidJson())
         }
     }
     
+
     // MARK: - Helpers
     private func makeSUT(url: URL) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
         let client = HTTPClientSpy()
@@ -74,14 +75,16 @@ class RemoteFeedLoaderTests: XCTestCase {
     
     private func expect(
         _ sut: RemoteFeedLoader,
-        toFinishedWith error: RemoteFeedLoader.Error,
-        when action: @escaping () -> Void
+        toFinishedWith expectedResult: RemoteFeedLoader.Result,
+        when action: @escaping () -> Void,
+        file: StaticString = #filePath,
+        line: UInt = #line
     ) {
-        var receivedErrors: [RemoteFeedLoader.Error?] = []
-        sut.load { receivedErrors.append($0) }
+        var capturedResults: [RemoteFeedLoader.Result] = []
+        sut.load { capturedResults.append($0) }
         action()
         
-        XCTAssertEqual(receivedErrors, [error])
+        XCTAssertEqual(capturedResults, [expectedResult], file: file, line: line)
     }
     
     private class HTTPClientSpy: HTTPClient {
