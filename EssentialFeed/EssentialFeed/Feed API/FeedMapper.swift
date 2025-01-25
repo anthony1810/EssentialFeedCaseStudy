@@ -33,8 +33,3 @@ enum FeedMapper {
         return root.items.map(\.self.feed)
     }
 }
-
-public protocol HTTPClient {
-    typealias LoadResult = Result<(Data, HTTPURLResponse), Error>
-    func get(from url: URL, completion: @escaping (LoadResult) -> Void)
-}
