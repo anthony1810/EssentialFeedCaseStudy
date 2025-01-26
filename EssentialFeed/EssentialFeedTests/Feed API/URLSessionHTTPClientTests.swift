@@ -27,10 +27,21 @@ class URLSessionHTTPClient: HTTPClient {
 
 class URLSessionHTTPClientTests: XCTestCase {
     
-    func test_getFromURL_requestsDataFromURL() {
+    override class func setUp() {
+        super.setUp()
+        
         URLProtocolStub.startIntercepting()
+    }
+    
+    override class func tearDown() {
+        super.tearDown()
+        
+        URLProtocolStub.stopIntercepting()
+    }
+    
+    func test_getFromURL_requestsDataFromURL() {
         let expectedUrl = anyURL()
-        let sut = URLSessionHTTPClient()
+        let sut = makeSUT()
         
         let exp = expectation(description: "Wait for completion")
         URLProtocolStub.observeRequest { request in
@@ -43,17 +54,14 @@ class URLSessionHTTPClientTests: XCTestCase {
         sut.get(from: expectedUrl) { _ in }
         
         wait(for: [exp], timeout: 1.0)
-        
-        URLProtocolStub.stopIntercepting()
     }
     
     func test_getFromURL_deliversErrorWhenDataTaskFailsWithError() {
-        URLProtocolStub.startIntercepting()
         let url = anyURL()
         let expectedError = anyError()
         URLProtocolStub.stub(error: expectedError)
         
-        let sut = URLSessionHTTPClient()
+        let sut = makeSUT()
         
         let exp = expectation(description: "wait for get completion")
         var receiveError: Error?
@@ -67,11 +75,15 @@ class URLSessionHTTPClientTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
         
         XCTAssertNotNil(receiveError)
-        
-        URLProtocolStub.stopIntercepting()
     }
     
     // MARK: - Helpers
+    
+    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> URLSessionHTTPClient {
+        let sut = URLSessionHTTPClient()
+        trackMemoryLeaks(sut, file: file, line: line)
+        return sut
+    }
     private class URLProtocolStub: URLProtocol {
         private static var stub: Stub?
         private static var requestObserver: ((URLRequest) -> Void)?
