@@ -11,7 +11,7 @@ import EssentialFeed
 
 class URLSessionHTTPClient: HTTPClient {
     func get(from url: URL, completion: @escaping (LoadResult) -> Void) {
-        session.dataTask(with: url) { _, _, error in
+        session.dataTask(with: url) { a, b, error in
             if let error {
                 completion(.failure(error))
             }
@@ -57,6 +57,8 @@ class URLSessionHTTPClientTests: XCTestCase {
         private static var stubs: [URL: Stub] = [:]
         
         private struct Stub {
+            var data: Data?
+            var response: URLResponse?
             var error: Error?
         }
         
@@ -81,6 +83,14 @@ class URLSessionHTTPClientTests: XCTestCase {
         override func startLoading() {
             guard let url = request.url, let stub = URLProtocolStub.stubs[url] else {
                 return
+            }
+            
+            if let data = stub.data {
+                client?.urlProtocol(self, didLoad: data)
+            }
+            
+            if let response = stub.response {
+                client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .allowed)
             }
             
             if let error = stub.error {
