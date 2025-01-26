@@ -122,8 +122,6 @@ class RemoteFeedLoaderTests: XCTestCase {
         return (loader, client)
     }
     
-    
-    
     private func expect(
         _ sut: RemoteFeedLoader,
         toFinishedWith expectedResult: RemoteFeedLoader.Result,
