@@ -197,12 +197,24 @@ func anyInvalidJson() -> Data {
     Data("any json".utf8)
 }
 
+func anydata() -> Data {
+    Data("any data".utf8)
+}
+
 func makeItemsJson(_ items: [[String: Any]]) -> Data {
     let json = [
         "items": items
     ].compactMapValues { $0 }
     
     return try! JSONSerialization.data(withJSONObject: json)
+}
+
+func anyNonHTTPURLResponse() -> URLResponse {
+    URLResponse(url: anyURL(), mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
+}
+
+func anyHTTPURLResponse() -> HTTPURLResponse {
+    HTTPURLResponse(url: anyURL(), statusCode: 200, httpVersion: nil, headerFields: nil)!
 }
 
 func makeItem(
