@@ -62,41 +62,17 @@ class URLSessionHTTPClientTests: XCTestCase {
     }
     
     func test_getFromURL_deliversErrorWhenDataTaskFailsWithError() {
-        let url = anyURL()
         let expectedError = anyError()
-        URLProtocolStub.stub(error: expectedError)
         
-        let sut = makeSUT()
-        
-        let exp = expectation(description: "wait for get completion")
-        var receiveError: Error?
-        sut.get(from: url) { result in
-            if case let .failure(error) = result {
-                receiveError = error
-            }
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
+        let receiveError = resultError(for: nil, reponse: nil, error: expectedError)
         
         XCTAssertNotNil(receiveError)
     }
     
     func test_getFromURL_deliversErrorOnAllNilValues() {
-        let url = anyURL()
-        URLProtocolStub.stub(data: nil, response: nil, error: nil)
+        let receiveError = resultError(for: nil, reponse: nil, error: nil)
         
-        let sut = makeSUT()
-        
-        let exp = expectation(description: "wait for get completion")
-        sut.get(from: url) { result in
-            if case .success = result {
-                XCTFail("Expected failure but got success instead")
-            }
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
+        XCTAssertNotNil(receiveError, "Expected failure but got success instead")
     }
     
     // MARK: - Helpers
@@ -106,6 +82,33 @@ class URLSessionHTTPClientTests: XCTestCase {
         trackMemoryLeaks(sut, file: file, line: line)
         return sut
     }
+    
+    private func resultError(
+        for data: Data?,
+        reponse: HTTPURLResponse?,
+        error: Error?,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) -> Error? {
+        let url = anyURL()
+        URLProtocolStub.stub(data: data, response: reponse, error: error)
+        
+        var receiveError: Error?
+        let exp = expectation(description: "wait for get completion")
+        makeSUT(file: file, line: line).get(from: url) { result in
+            switch result {
+            case .success: break
+            case .failure(let error):
+                receiveError = error
+            }
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        return receiveError
+    }
+    
     private class URLProtocolStub: URLProtocol {
         private static var stub: Stub?
         private static var requestObserver: ((URLRequest) -> Void)?
