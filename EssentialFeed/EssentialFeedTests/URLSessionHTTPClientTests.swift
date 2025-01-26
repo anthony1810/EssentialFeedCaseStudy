@@ -27,6 +27,26 @@ class URLSessionHTTPClient: HTTPClient {
 
 class URLSessionHTTPClientTests: XCTestCase {
     
+    func test_getFromURL_requestsDataFromURL() {
+        URLProtocolStub.startIntercepting()
+        let expectedUrl = anyURL()
+        let sut = URLSessionHTTPClient()
+        
+        let exp = expectation(description: "Wait for completion")
+        URLProtocolStub.observeRequest { request in
+            XCTAssertEqual(expectedUrl, request.url)
+            XCTAssertEqual(request.httpMethod, "GET")
+            
+            exp.fulfill()
+        }
+        
+        sut.get(from: expectedUrl) { _ in }
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        URLProtocolStub.stopIntercepting()
+    }
+    
     func test_getFromURL_deliversErrorWhenDataTaskFailsWithError() {
         URLProtocolStub.startIntercepting()
         let url = anyURL()
@@ -53,8 +73,8 @@ class URLSessionHTTPClientTests: XCTestCase {
     
     // MARK: - Helpers
     private class URLProtocolStub: URLProtocol {
-        var requestedURLs: [URL] = []
         private static var stub: Stub?
+        private static var requestObserver: ((URLRequest) -> Void)?
         
         private struct Stub {
             var data: Data?
@@ -72,6 +92,12 @@ class URLSessionHTTPClientTests: XCTestCase {
         
         static func stopIntercepting() {
             URLProtocol.unregisterClass(URLProtocolStub.self)
+            Self.stub = nil
+            Self.requestObserver = nil
+        }
+        
+        static func observeRequest(_ block: @escaping (URLRequest) -> Void) {
+            requestObserver = block
         }
         
         override class func canInit(with request: URLRequest) -> Bool {
@@ -96,11 +122,12 @@ class URLSessionHTTPClientTests: XCTestCase {
         }
         
         override func stopLoading() {
-            Self.stub = nil
+           
         }
         
         override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-            request
+            requestObserver?(request)
+            return request
         }
         
     }
