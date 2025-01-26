@@ -10,10 +10,15 @@ import XCTest
 import EssentialFeed
 
 class URLSessionHTTPClient: HTTPClient {
+    
+    struct UnexpecteRepresentationValue: Error {}
+    
     func get(from url: URL, completion: @escaping (LoadResult) -> Void) {
         session.dataTask(with: url) { a, b, error in
             if let error {
                 completion(.failure(error))
+            } else {
+                completion(.failure(UnexpecteRepresentationValue()))
             }
         }.resume()
     }
@@ -27,13 +32,13 @@ class URLSessionHTTPClient: HTTPClient {
 
 class URLSessionHTTPClientTests: XCTestCase {
     
-    override class func setUp() {
+    override func setUp() {
         super.setUp()
         
         URLProtocolStub.startIntercepting()
     }
     
-    override class func tearDown() {
+    override func tearDown() {
         super.tearDown()
         
         URLProtocolStub.stopIntercepting()
@@ -77,6 +82,23 @@ class URLSessionHTTPClientTests: XCTestCase {
         XCTAssertNotNil(receiveError)
     }
     
+    func test_getFromURL_deliversErrorOnAllNilValues() {
+        let url = anyURL()
+        URLProtocolStub.stub(data: nil, response: nil, error: nil)
+        
+        let sut = makeSUT()
+        
+        let exp = expectation(description: "wait for get completion")
+        sut.get(from: url) { result in
+            if case .success = result {
+                XCTFail("Expected failure but got success instead")
+            }
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> URLSessionHTTPClient {
@@ -94,8 +116,8 @@ class URLSessionHTTPClientTests: XCTestCase {
             var error: Error?
         }
         
-        static func stub(error: Error? = nil) {
-            stub = Stub(error: error)
+        static func stub(data: Data? = nil, response: URLResponse? = nil, error: Error? = nil) {
+            stub = Stub(data: data, response: response, error: error)
         }
         
         static func startIntercepting() {
@@ -113,7 +135,8 @@ class URLSessionHTTPClientTests: XCTestCase {
         }
         
         override class func canInit(with request: URLRequest) -> Bool {
-            true
+            requestObserver?(request)
+            return true
         }
         
         override func startLoading() {
@@ -138,7 +161,6 @@ class URLSessionHTTPClientTests: XCTestCase {
         }
         
         override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-            requestObserver?(request)
             return request
         }
         
