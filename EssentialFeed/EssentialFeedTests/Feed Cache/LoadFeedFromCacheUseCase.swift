@@ -20,12 +20,13 @@ final class FeedStore {
     }
     
     typealias DeletionCompletion = (Result<Void, Error>) -> Void
-    typealias InsertionCompletion = (Result<[InsertionMessage], Error>) -> Void
+    typealias InsertionCompletion = (Result<InsertionMessage, Error>) -> Void
     
     var deletionCacheCount: Int {
         deletionCompletions.count
     }
     var deletionCompletions = [DeletionCompletion]()
+    var insertionCompletions = [InsertionCompletion]()
     
     var receivedMessages: [ReceivedMessage] = []
     
@@ -35,12 +36,17 @@ final class FeedStore {
         receivedMessages.append(.deletion)
     }
     
-    func insertCachedFeed(_ items: [FeedItem], timestamp: Date) {
+    func insertCachedFeed(_ items: [FeedItem], timestamp: Date, completion: @escaping InsertionCompletion) {
+        insertionCompletions.append(completion)
         receivedMessages.append(.insertion(items, timestamp))
     }
     
     func completeDeletion(with result: Result<Void, Error>, at index: Int = 0) {
         deletionCompletions[index](result)
+    }
+    
+    func completionInsertion(with result: Result<InsertionMessage, Error>, at index: Int = 0) {
+        insertionCompletions[index](result)
     }
 }
 
@@ -59,7 +65,11 @@ final class LocalFeedLoader {
             
             switch result {
             case .success:
-                self.store.insertCachedFeed(items, timestamp: self.currentDate())
+                self.store.insertCachedFeed(items, timestamp: self.currentDate()) { result in
+                    if case let .failure(error) = result {
+                        completion(error)
+                    }
+                }
             case .failure(let error):
                 completion(error)
             }
@@ -113,6 +123,19 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
         store.completeDeletion(with: .failure(deletionError))
         
         XCTAssertEqual(receivedError as NSError?, deletionError)
+    }
+    
+    func test_save_failsOnInsertionError() {
+        let (sut, store) = makeSUT()
+        let insertionError = anyNSError()
+        
+        var receivedError: Error?
+        sut.save([uniqueFeed()]) { receivedError = $0 }
+        store.completeDeletion(with: .success(()))
+        store.completionInsertion(with: .failure(insertionError))
+        
+        
+        XCTAssertEqual(receivedError as NSError?, insertionError)
     }
     
     // MARK: - Helper
