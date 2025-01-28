@@ -10,9 +10,18 @@ import EssentialFeed
 
 final class FeedStore {
     var deletionCacheCount: Int = 0
+    var insertionCacheCount: Int = 0
     
     func deleteCachedFeed() {
         deletionCacheCount += 1
+    }
+    
+    func insertCachedFeed(_ items: [FeedItem]) {
+        insertionCacheCount += 1
+    }
+    
+    func completeInsertion(with result: Result<Void, Error>, at index: Int = 0) {
+        
     }
 }
 
@@ -43,6 +52,15 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
         sut.save(uniqueFeeds)
         
         XCTAssertEqual(store.deletionCacheCount, 1)
+    }
+    
+    func test_save_doesNotInsertionCacheWhenDeletionFails() {
+        let (sut, store) = makeSUT()
+        
+        sut.save([uniqueFeed(), uniqueFeed()])
+        store.completeInsertion(with: .failure(anyError()))
+        
+        XCTAssertEqual(store.insertionCacheCount, 0)
     }
     
     // MARK: - Helper
