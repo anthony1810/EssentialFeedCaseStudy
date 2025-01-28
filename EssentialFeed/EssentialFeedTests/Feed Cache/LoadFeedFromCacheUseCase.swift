@@ -10,6 +10,10 @@ import EssentialFeed
 
 final class FeedStore {
     var deletionCacheCount: Int = 0
+    
+    func deleteCachedFeed() {
+        deletionCacheCount += 1
+    }
 }
 
 final class LocalFeedLoader {
@@ -19,7 +23,9 @@ final class LocalFeedLoader {
         self.store = store
     }
     
-    func load() {}
+    func save(_ items: [FeedItem]) {
+        store.deleteCachedFeed()
+    }
 }
 
 final class LoadFeedFromCacheUseCaseTests: XCTestCase {
@@ -28,5 +34,16 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
         _ = LocalFeedLoader(store: store)
         
         XCTAssertEqual(store.deletionCacheCount, 0)
+    }
+    
+    func test_save_requestCacheDeletion() {
+        let store = FeedStore()
+        let loader = LocalFeedLoader(store: store)
+        
+        let uniqueFeeds = [uniqueFeed(), uniqueFeed()]
+        
+        loader.save(uniqueFeeds)
+        
+        XCTAssertEqual(store.deletionCacheCount, 1)
     }
 }
