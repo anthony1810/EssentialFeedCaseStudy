@@ -72,6 +72,33 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
         }
     }
     
+    func test_save_doesNotDeliversDeletionErrorAfterSUTDeallocated() {
+        let store = FeedStoreSpy()
+        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: Date.init)
+        
+        var receiveResults = [Error?]()
+        sut?.save([], completion: { receiveResults.append($0) })
+        
+        sut = nil
+        store.completeDeletion(with: .failure(anyNSError()))
+        
+        XCTAssertTrue(receiveResults.isEmpty)
+    }
+    
+    func test_save_doesNotDeliverInsertionErrorAfterSUTDeallocated() {
+        let store = FeedStoreSpy()
+        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: Date.init)
+        
+        var receiveResults: [Error?] = []
+        sut?.save([], completion: { receiveResults.append($0) })
+        store.completeDeletion(with: .success(()))
+        
+        sut = nil
+        store.completionInsertion(with: .failure(anyNSError()))
+        
+        XCTAssertTrue(receiveResults.isEmpty)
+    }
+    
     // MARK: - Helper
     private func makeSUT(
         currentDate: @escaping () -> Date = Date.init,

@@ -22,7 +22,10 @@ public final class LocalFeedLoader {
             if let error {
                 completion(error)
             } else {
-                self.store.insertCachedFeed(items, timestamp: self.currentDate(), completion: completion)
+                self.store.insertCachedFeed(items, timestamp: self.currentDate(), completion: { [weak self] error in
+                    guard self != nil else { return }
+                    completion(error)
+                })
             }
         })
     }
