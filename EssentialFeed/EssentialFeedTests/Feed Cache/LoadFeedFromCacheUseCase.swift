@@ -133,11 +133,19 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
         }
         
         func completeDeletion(with result: Result<Void, Error>, at index: Int = 0) {
-            deletionCompletions[index](result)
+            if case let .failure(error) = result {
+                deletionCompletions[index](error)
+            } else {
+                deletionCompletions[index](nil)
+            }
         }
         
         func completionInsertion(with result: Result<Void, Error>, at index: Int = 0) {
-            insertionCompletions[index](result)
+            if case let .failure(error) = result {
+                insertionCompletions[index](error)
+            } else {
+                insertionCompletions[index](nil)
+            }
         }
     }
 }
