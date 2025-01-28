@@ -12,17 +12,16 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
     func test_init_doesNotDeleteCacheUponCreation() {
         let (_, store) = makeSUT()
         
-        XCTAssertEqual(store.deletionCacheCount, 0)
+        XCTAssertEqual(store.receivedMessages, [])
     }
     
     func test_save_requestCacheDeletion() {
         let (sut, store) = makeSUT()
-        
         let uniqueFeeds = [uniqueFeed(), uniqueFeed()]
         
         sut.save(uniqueFeeds) {_ in }
         
-        XCTAssertEqual(store.deletionCacheCount, 1)
+        XCTAssertEqual(store.receivedMessages, [.deletion])
     }
     
     func test_save_doesNotInsertionCacheWhenDeletionFails() {
@@ -118,14 +117,10 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
             case insertion([FeedItem], Date)
         }
         
-        var deletionCacheCount: Int {
-            deletionCompletions.count
-        }
         var deletionCompletions = [DeletionCompletion]()
         var insertionCompletions = [InsertionCompletion]()
         
         var receivedMessages: [ReceivedMessage] = []
-        
         
         func deleteCachedFeed(completion: @escaping DeletionCompletion) {
             deletionCompletions.append(completion)
