@@ -11,7 +11,7 @@ func anyURL() -> URL {
     URL(string: "https://example.com")!
 }
 
-func anyError() -> Swift.Error {
+func anyNSError() -> NSError {
     NSError(domain: "Test", code: 0, userInfo: nil)
 }
 

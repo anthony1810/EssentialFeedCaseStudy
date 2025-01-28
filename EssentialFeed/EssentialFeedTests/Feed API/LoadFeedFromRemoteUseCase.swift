@@ -39,7 +39,7 @@ class LoadFeedFromRemoteUseCase: XCTestCase {
         let (sut, client) = makeSUT(url: anyURL())
         
         expect(sut, toFinishedWith: failure(.connectivity)) {
-            client.complete(withError: anyError())
+            client.complete(withError: anyNSError())
         }
     }
     
