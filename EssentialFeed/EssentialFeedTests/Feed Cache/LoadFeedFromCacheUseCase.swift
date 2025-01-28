@@ -137,13 +137,13 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
     
     private final class FeedStoreSpy: FeedStore {
         struct InsertionMessage {
-            let items: [LocalFeedItem]
+            let items: [LocalFeedImage]
             let timestamp: Date
         }
         
         enum ReceivedMessage: Equatable {
             case deletion
-            case insertion([LocalFeedItem], Date)
+            case insertion([LocalFeedImage], Date)
         }
         
         var deletionCompletions = [DeletionCompletion]()
@@ -156,7 +156,7 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
             receivedMessages.append(.deletion)
         }
         
-        func insertCachedFeed(_ items: [LocalFeedItem], timestamp: Date, completion: @escaping InsertionCompletion) {
+        func insertCachedFeed(_ items: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
             insertionCompletions.append(completion)
             receivedMessages.append(.insertion(items, timestamp))
         }

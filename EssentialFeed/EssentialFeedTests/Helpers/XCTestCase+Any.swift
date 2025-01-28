@@ -44,8 +44,8 @@ func makeItem(
     description: String?,
     location: String?,
     imageURL: URL)
--> (model: FeedItem, json: [String: Any]) {
-    let feedItem = FeedItem(
+-> (model: FeedImage, json: [String: Any]) {
+    let feedImage = FeedImage(
         id: id,
         description: description,
         location: location,
@@ -59,14 +59,14 @@ func makeItem(
         "image": imageURL.absoluteString
     ].compactMapValues { $0 }
     
-    return (feedItem, itemJson0)
+    return (feedImage, itemJson0)
 }
 
-func uniqueFeed() -> (model: FeedItem, local: LocalFeedItem) {
+func uniqueFeed() -> (model: FeedImage, local: LocalFeedImage) {
     
-    let model = FeedItem(id: UUID(), description: "any description", location: "any location", imageURL: anyURL())
+    let model = FeedImage(id: UUID(), description: "any description", location: "any location", imageURL: anyURL())
     
-    let local = LocalFeedItem(id: model.id, description: model.description, location: model.location, imageURL: model.imageURL)
+    let local = LocalFeedImage(id: model.id, description: model.description, location: model.location, imageURL: model.imageURL)
     
     return (model, local)
 }

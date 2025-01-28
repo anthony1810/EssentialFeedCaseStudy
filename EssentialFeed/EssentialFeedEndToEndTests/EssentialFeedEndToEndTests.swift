@@ -46,8 +46,8 @@ final class EssentialFeedEndToEndTests: XCTestCase {
     }
 }
 
-func expectedItemAt(_ index: Int) -> FeedItem {
-    FeedItem(
+func expectedItemAt(_ index: Int) -> FeedImage {
+    FeedImage(
         id: id(at: index),
         description: description(at: index),
         location: location(at: index),
