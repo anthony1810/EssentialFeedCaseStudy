@@ -119,7 +119,7 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let deletionError = anyNSError()
         
-        expect(sut, toFinishWith: deletionError) {
+        expect(sut, toCompleteWithError: deletionError) {
             store.completeDeletion(with: .failure(deletionError))
         }
     }
@@ -128,7 +128,7 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let insertionError = anyNSError()
         
-        expect(sut, toFinishWith: insertionError) {
+        expect(sut, toCompleteWithError: insertionError) {
             store.completeDeletion(with: .success(()))
             store.completionInsertion(with: .failure(insertionError))
         }
@@ -137,7 +137,7 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
     func test_save_successOnInsertionSuccess() {
         let (sut, store) = makeSUT()
         
-        expect(sut, toFinishWith: nil) {
+        expect(sut, toCompleteWithError: nil) {
             store.completeDeletion(with: .success(()))
             store.completionInsertion(with: .success(()))
         }
@@ -160,7 +160,7 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
     
     func expect(
         _ sut: LocalFeedLoader,
-        toFinishWith expectedError: Error?,
+        toCompleteWithError expectedError: Error?,
         when action: @escaping () -> Void,
         file: StaticString = #filePath,
         line: UInt = #line
