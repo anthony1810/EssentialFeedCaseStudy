@@ -67,8 +67,9 @@ final class LocalFeedLoader {
             case .success:
                 self.store.insertCachedFeed(items, timestamp: self.currentDate()) { result in
                     if case let .failure(error) = result {
-                        completion(error)
+                        return completion(error)
                     }
+                    return completion(nil)
                 }
             case .failure(let error):
                 completion(error)
@@ -129,10 +130,13 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let insertionError = anyNSError()
         
+        let exp = expectation(description: "waiting for save command to finish")
         var receivedError: Error?
-        sut.save([uniqueFeed()]) { receivedError = $0 }
+        sut.save([uniqueFeed()]) { receivedError = $0; exp.fulfill() }
+        
         store.completeDeletion(with: .success(()))
         store.completionInsertion(with: .failure(insertionError))
+        wait(for: [exp], timeout: 1.0)
     
         XCTAssertEqual(receivedError as NSError?, insertionError)
     }
@@ -142,10 +146,13 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let feeds = [uniqueFeed(), uniqueFeed()]
         let (sut, store) = makeSUT(currentDate: { currentDate })
         
+        let exp = expectation(description: "waiting for save command to finish")
         var receivedError: Error?
-        sut.save(feeds) { receivedError = $0 }
+        sut.save(feeds) { receivedError = $0; exp.fulfill() }
+        
         store.completeDeletion(with: .success(()))
         store.completionInsertion(with: .success(()))
+        wait(for: [exp], timeout: 1.0)
     
         XCTAssertNil(receivedError)
     }
