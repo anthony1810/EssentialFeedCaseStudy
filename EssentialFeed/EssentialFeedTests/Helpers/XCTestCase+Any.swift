@@ -62,6 +62,11 @@ func makeItem(
     return (feedItem, itemJson0)
 }
 
-func uniqueFeed() -> FeedItem {
-    FeedItem(id: UUID(), description: "any description", location: "any location", imageURL: anyURL())
+func uniqueFeed() -> (model: FeedItem, local: LocalFeedItem) {
+    
+    let model = FeedItem(id: UUID(), description: "any description", location: "any location", imageURL: anyURL())
+    
+    let local = LocalFeedItem(id: model.id, description: model.description, location: model.location, imageURL: model.imageURL)
+    
+    return (model, local)
 }
