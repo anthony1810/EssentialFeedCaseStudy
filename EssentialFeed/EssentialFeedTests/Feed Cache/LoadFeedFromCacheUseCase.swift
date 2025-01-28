@@ -20,7 +20,7 @@ final class FeedStore {
     }
     
     typealias DeletionCompletion = (Result<Void, Error>) -> Void
-    typealias InsertionCompletion = (Result<InsertionMessage, Error>) -> Void
+    typealias InsertionCompletion = (Result<Void, Error>) -> Void
     
     var deletionCacheCount: Int {
         deletionCompletions.count
@@ -45,7 +45,7 @@ final class FeedStore {
         deletionCompletions[index](result)
     }
     
-    func completionInsertion(with result: Result<InsertionMessage, Error>, at index: Int = 0) {
+    func completionInsertion(with result: Result<Void, Error>, at index: Int = 0) {
         insertionCompletions[index](result)
     }
 }
@@ -133,9 +133,21 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
         sut.save([uniqueFeed()]) { receivedError = $0 }
         store.completeDeletion(with: .success(()))
         store.completionInsertion(with: .failure(insertionError))
-        
-        
+    
         XCTAssertEqual(receivedError as NSError?, insertionError)
+    }
+    
+    func test_save_successOnInsertionSuccess() {
+        let currentDate = Date()
+        let feeds = [uniqueFeed(), uniqueFeed()]
+        let (sut, store) = makeSUT(currentDate: { currentDate })
+        
+        var receivedError: Error?
+        sut.save(feeds) { receivedError = $0 }
+        store.completeDeletion(with: .success(()))
+        store.completionInsertion(with: .success(()))
+    
+        XCTAssertNil(receivedError)
     }
     
     // MARK: - Helper
