@@ -66,7 +66,7 @@ func uniqueFeed() -> (model: FeedImage, local: LocalFeedImage) {
     
     let model = FeedImage(id: UUID(), description: "any description", location: "any location", imageURL: anyURL())
     
-    let local = LocalFeedImage(id: model.id, description: model.description, location: model.location, imageURL: model.imageURL)
+    let local = LocalFeedImage(id: model.id, description: model.description, location: model.location, imageURL: model.url)
     
     return (model, local)
 }
