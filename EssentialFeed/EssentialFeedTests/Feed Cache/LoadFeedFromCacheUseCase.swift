@@ -20,8 +20,10 @@ final class FeedStore {
         insertionCacheCount += 1
     }
     
-    func completeInsertion(with result: Result<Void, Error>, at index: Int = 0) {
-        
+    func completeDeletion(with result: Result<Void, Error>, at index: Int = 0) {
+        if case .success = result {
+            insertionCacheCount += 1
+        }
     }
 }
 
@@ -58,9 +60,19 @@ final class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         
         sut.save([uniqueFeed(), uniqueFeed()])
-        store.completeInsertion(with: .failure(anyError()))
+        store.completeDeletion(with: .failure(anyError()))
         
         XCTAssertEqual(store.insertionCacheCount, 0)
+    }
+    
+    func test_save_requestsCacheInsertionWhenDeletionSucceeds() {
+        let (sut, store) = makeSUT()
+        
+        let feeds = [uniqueFeed(), uniqueFeed()]
+        sut.save(feeds)
+        store.completeDeletion(with: .success(()))
+        
+        XCTAssertEqual(store.insertionCacheCount, 1)
     }
     
     // MARK: - Helper
