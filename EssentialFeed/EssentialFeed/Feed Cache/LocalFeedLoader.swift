@@ -64,8 +64,11 @@ extension Array where Element == LocalFeedImage {
 }
 
 struct FeedCachePolicy {
+    static var currentCalendar: Calendar = Calendar(identifier: .gregorian)
+    static var maxCacheDays: Int { 7 }
+    
     static func isCacheValidated(with timestamp: Date, against currentTimestamp: Date) -> Bool {
-        guard let maxCacheAge = NSCalendar(identifier: .gregorian)?.date(byAdding: .day, value: 7, to: timestamp)
+        guard let maxCacheAge = currentCalendar.date(byAdding: .day, value: maxCacheDays, to: timestamp)
         else { return false }
         
         return currentTimestamp < maxCacheAge
