@@ -1,5 +1,5 @@
 //
-//  LoadFeedFromCacheUseCase.swift
+//  CacheFeedUseCaseTests.swift
 //  EssentialFeed
 //
 //  Created by Anthony on 28/1/25.
@@ -8,7 +8,7 @@
 import XCTest
 import EssentialFeed
 
-final class LoadFeedFromCacheUseCaseTests: XCTestCase {
+final class CacheFeedUseCaseTests: XCTestCase {
     func test_init_doesNotDeleteCacheUponCreation() {
         let (_, store) = makeSUT()
         
