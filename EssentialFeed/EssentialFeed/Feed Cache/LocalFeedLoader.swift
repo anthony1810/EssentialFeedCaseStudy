@@ -46,6 +46,19 @@ public final class LocalFeedLoader {
         }
     }
     
+    public func validate() {
+        store.retrievalCachedFeed { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .failure:
+                store.deleteCachedFeed(completion: { _ in })
+            case let .found(_, timestamp) where FeedCachePolicy.isCacheValidated(with: timestamp, against: currentDate()) == false:
+                store.deleteCachedFeed(completion: { _ in })
+            default: break
+            }
+        }
+    }
+    
     private func cacheFeeds(_ items: [FeedImage], completion: @escaping (SaveResult) -> Void) {
         self.store.insertCachedFeed(items.toLocal(), timestamp: self.currentDate()) { [weak self] insertionError in
             guard self != nil else { return }
