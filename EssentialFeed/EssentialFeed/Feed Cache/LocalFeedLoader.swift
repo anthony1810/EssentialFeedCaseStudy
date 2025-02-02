@@ -31,13 +31,18 @@ public final class LocalFeedLoader {
     }
     
     public func load(completion: @escaping (LoadResult) -> Void) {
-        store.retrievalCachedFeed { [currentDate] result in
+        store.retrievalCachedFeed { [weak self] result in
+            guard let self else { return }
             switch result {
             case .failure(let error):
+                store.deleteCachedFeed(completion: {_ in })
                 completion(.failure(error))
             case let .found(feeds, timestamp) where FeedCachePolicy.isCacheValidated(with: timestamp, against: currentDate()):
                 completion(.success(feeds.toModel()))
-            case .empty, .found:
+            case .found:
+                store.deleteCachedFeed(completion: { _ in })
+                completion(.success([]))
+            case .empty:
                 completion(.success([]))
             }
         }

@@ -51,7 +51,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         }
     }
     
-    func test_load_deliversNoImageOnThanSevenDaysOld() {
+    func test_load_deliversNoImageOnSevenDaysOld() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
         let sevenDayTimestamp = fixedCurrentDate.adding(days: -7)
@@ -72,6 +72,98 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
             store.completionRetrieval(with: .found(feed: [feed.local], timestamp: moreThanSevenDayTimestamp))
         }
     }
+    
+    func test_load_deleteCacheOnRetrievalError() {
+        let (sut, store) = makeSUT()
+        let expectedError = anyNSError()
+        
+        let expectation = expectation(description: "waiting for completion")
+        sut.load(completion: { _ in expectation.fulfill() })
+        
+        store.completionRetrieval(with: .failure(expectedError))
+        
+        wait(for: [expectation], timeout: 1.0)
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
+    }
+    
+    func test_load_doesNotDeleteCacheLessThanSevenDaysOld() {
+        let feed = uniqueFeed()
+        let fixedCurrentDate = Date()
+        let lessThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: 1)
+        let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
+        
+        let expectation = expectation(description: "waiting for completion")
+        sut.load(completion: { _ in expectation.fulfill() })
+        
+        store.completionRetrieval(with: .found(feed: [feed.local], timestamp: lessThanSevenDayTimestamp))
+        
+        wait(for: [expectation], timeout: 1.0)
+        
+        XCTAssertFalse(store.receivedMessages.contains(.deletion))
+    }
+    
+    func test_load_doesNotDeleteCacheWhenCacheIsAlreadyEmpty() {
+        let (sut, store) = makeSUT()
+        
+        let expectation = expectation(description: "waiting for completion")
+        sut.load(completion: { _ in expectation.fulfill() })
+        
+        store.completionRetrieval(with: .empty)
+        
+        wait(for: [expectation], timeout: 1.0)
+        
+        XCTAssertFalse(store.receivedMessages.contains(.deletion))
+    }
+    
+    func test_load_deleteCacheOnSevenDaysOld() {
+        let feed = uniqueFeed()
+        let fixedCurrentDate = Date()
+        let lessThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7)
+        let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
+        
+        let expectation = expectation(description: "waiting for completion")
+        sut.load(completion: { _ in expectation.fulfill() })
+        
+        store.completionRetrieval(with: .found(feed: [feed.local], timestamp: lessThanSevenDayTimestamp))
+        
+        wait(for: [expectation], timeout: 1.0)
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
+    }
+    
+    func test_load_deleteCacheOnMoreThanSevenDaysOld() {
+        let feed = uniqueFeed()
+        let fixedCurrentDate = Date()
+        let moreThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7).addingTimeInterval(-1)
+        let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
+        
+        let expectation = expectation(description: "waiting for completion")
+        sut.load(completion: { _ in expectation.fulfill() })
+        
+        store.completionRetrieval(with: .found(feed: [feed.local], timestamp: moreThanSevenDayTimestamp))
+        
+        wait(for: [expectation], timeout: 1.0)
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
+    }
+
+    func test_load_doesNotMessageStoreWhenSUTHasAlreadyDeallocated() {
+        let fixedCurrentDate = Date()
+        let store = FeedStoreSpy()
+        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: { fixedCurrentDate })
+
+        var result: LocalFeedLoader.LoadResult?
+        sut?.load(completion: {
+            result = $0
+        })
+        sut = nil
+        
+        store.completionRetrieval(with: .empty)
+        
+        XCTAssertNil(result)
+    }
+    
     
     // MARK: - Helpers
     private func makeSUT(
