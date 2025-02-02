@@ -73,7 +73,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         }
     }
     
-    func test_load_deleteCacheOnRetrievalError() {
+    func test_load_hasNoSideEffectOnRetrievalError() {
         let (sut, store) = makeSUT()
         let expectedError = anyNSError()
         
@@ -84,10 +84,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         
         wait(for: [expectation], timeout: 1.0)
         
-        XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
+        XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
     
-    func test_load_doesNotDeleteCacheLessThanSevenDaysOld() {
+    func test_load_hasNoSideEffectOnLessThanSevenDaysOld() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
         let lessThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: 1)
@@ -100,10 +100,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         
         wait(for: [expectation], timeout: 1.0)
         
-        XCTAssertFalse(store.receivedMessages.contains(.deletion))
+        XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
     
-    func test_load_doesNotDeleteCacheWhenCacheIsAlreadyEmpty() {
+    func test_load_hasNoSideEffectWhenCacheIsAlreadyEmpty() {
         let (sut, store) = makeSUT()
         
         let expectation = expectation(description: "waiting for completion")
@@ -113,10 +113,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         
         wait(for: [expectation], timeout: 1.0)
         
-        XCTAssertFalse(store.receivedMessages.contains(.deletion))
+        XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
     
-    func test_load_deleteCacheOnSevenDaysOld() {
+    func test_load_hasNoSideEffectOnCacheSevenDaysOld() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
         let lessThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7)
@@ -129,10 +129,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         
         wait(for: [expectation], timeout: 1.0)
         
-        XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
+        XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
     
-    func test_load_deleteCacheOnMoreThanSevenDaysOld() {
+    func test_load_hasNoSideEffectOnCacheMoreThanSevenDaysOld() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
         let moreThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7).addingTimeInterval(-1)
@@ -145,7 +145,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         
         wait(for: [expectation], timeout: 1.0)
         
-        XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
+        XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
 
     func test_load_doesNotMessageStoreWhenSUTHasAlreadyDeallocated() {
