@@ -57,11 +57,7 @@ final class FeedStoreSpy: FeedStore {
         }
     }
     
-    func completionRetrieval(with result: Result<Void, Error>, at index: Int = 0) {
-        if case let .failure(error) = result {
-            retrievalCompletions[index](error)
-        } else {
-            retrievalCompletions[index](nil)
-        }
+    func completionRetrieval(with result: RetrieveCacheFeedResult, at index: Int = 0) {
+        retrievalCompletions[index](result)
     }
 }

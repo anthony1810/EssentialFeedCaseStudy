@@ -31,11 +31,17 @@ public final class LocalFeedLoader {
     }
     
     public func load(completion: @escaping (LoadResult) -> Void) {
-        store.retrievalCachedFeed { error in
-            if let error {
+        store.retrievalCachedFeed { [currentDate] result in
+            switch result {
+            case .failure(let error):
                 completion(.failure(error))
-            } else {
+            case .empty:
                 completion(.success([]))
+            case let .found(feeds, timestamp):
+                guard FeedCachePolicy.isCacheValidated(with: timestamp.timeIntervalSinceNow, against: currentDate().timeIntervalSinceNow) else {
+                    return completion(.success([]))
+                }
+                completion(.success(feeds.toModel()))
             }
         }
     }
@@ -51,5 +57,17 @@ public final class LocalFeedLoader {
 extension Array where Element == FeedImage {
     func toLocal() -> [LocalFeedImage] {
         map { LocalFeedImage(id: $0.id, description: $0.description, location: $0.location, imageURL: $0.url) }
+    }
+}
+
+extension Array where Element == LocalFeedImage {
+    func toModel() -> [FeedImage] {
+        map { FeedImage(id: $0.id, description: $0.description, location: $0.location, imageURL: $0.url) }
+    }
+}
+
+struct FeedCachePolicy {
+    static func isCacheValidated(with timestamp: TimeInterval, against currentTimestamp: TimeInterval) -> Bool {
+        true
     }
 }

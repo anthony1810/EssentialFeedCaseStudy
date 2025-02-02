@@ -70,3 +70,13 @@ func uniqueFeed() -> (model: FeedImage, local: LocalFeedImage) {
     
     return (model, local)
 }
+
+extension Date {
+    func adding(days: Int) -> Date {
+        NSCalendar(identifier: .gregorian)!.date(byAdding: .day, value: days, to: self)!
+    }
+
+    func adding(seconds: TimeInterval) -> Date {
+        self + seconds
+    }
+}
