@@ -35,13 +35,10 @@ public final class LocalFeedLoader {
             switch result {
             case .failure(let error):
                 completion(.failure(error))
-            case .empty:
-                completion(.success([]))
-            case let .found(feeds, timestamp):
-                guard FeedCachePolicy.isCacheValidated(with: timestamp.timeIntervalSinceNow, against: currentDate().timeIntervalSinceNow) else {
-                    return completion(.success([]))
-                }
+            case let .found(feeds, timestamp) where FeedCachePolicy.isCacheValidated(with: timestamp, against: currentDate()):
                 completion(.success(feeds.toModel()))
+            case .empty, .found:
+                completion(.success([]))
             }
         }
     }
@@ -67,7 +64,10 @@ extension Array where Element == LocalFeedImage {
 }
 
 struct FeedCachePolicy {
-    static func isCacheValidated(with timestamp: TimeInterval, against currentTimestamp: TimeInterval) -> Bool {
-        true
+    static func isCacheValidated(with timestamp: Date, against currentTimestamp: Date) -> Bool {
+        guard let maxCacheAge = NSCalendar(identifier: .gregorian)?.date(byAdding: .day, value: 7, to: timestamp)
+        else { return false }
+        
+        return currentTimestamp < maxCacheAge
     }
 }
