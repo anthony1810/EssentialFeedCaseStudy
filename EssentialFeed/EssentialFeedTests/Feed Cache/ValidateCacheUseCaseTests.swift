@@ -26,10 +26,10 @@ class ValidateCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
     }
     
-    func test_validate_doesNotDeleteCacheLessThanSevenDaysOld() {
+    func test_validate_doesNotDeleteCacheLessThanExpireDay() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
-        let lessThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: 1)
+        let lessThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge().adding(seconds: 1)
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         let expectation = expectation(description: "waiting for completion")
@@ -55,10 +55,10 @@ class ValidateCacheUseCaseTests: XCTestCase {
         XCTAssertFalse(store.receivedMessages.contains(.deletion))
     }
     
-    func test_validate_deleteCacheOnSevenDaysOld() {
+    func test_validate_deleteCacheOnExpireDay() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
-        let lessThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7)
+        let lessThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge()
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         sut.validate()
@@ -68,10 +68,10 @@ class ValidateCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
     }
     
-    func test_validate_deleteCacheOnMoreThanSevenDaysOld() {
+    func test_validate_deleteCacheOnMoreThanExpireDay() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
-        let moreThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7).addingTimeInterval(-1)
+        let moreThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge().addingTimeInterval(-1)
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         sut.validate()
@@ -84,7 +84,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
     func test_validate_doesNotMessageStoreWhenSUTHasAlreadyDeallocated() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
-        let moreThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7).addingTimeInterval(-1)
+        let moreThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge().addingTimeInterval(-1)
         let store = FeedStoreSpy()
         var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: { fixedCurrentDate })
 

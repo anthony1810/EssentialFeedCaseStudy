@@ -40,10 +40,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         }
     }
     
-    func test_load_deliversCachedImageOnLessThanSevenDaysOld() {
+    func test_load_deliversCachedImageOnLessThanExpiredDay() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
-        let lessThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: 1)
+        let lessThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge().adding(seconds: 1)
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         expect(sut, toFinishWithResult: .success([feed.model])) {
@@ -51,10 +51,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         }
     }
     
-    func test_load_deliversNoImageOnSevenDaysOld() {
+    func test_load_deliversNoImageOnExpireDays() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
-        let sevenDayTimestamp = fixedCurrentDate.adding(days: -7)
+        let sevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge()
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         expect(sut, toFinishWithResult: .success([])) {
@@ -62,10 +62,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         }
     }
     
-    func test_load_deliversNoImageOnMoreThanSevenDaysOld() {
+    func test_load_deliversNoImageOnMoreThanExpireDays() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
-        let moreThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: -1)
+        let moreThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge().adding(seconds: -1)
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         expect(sut, toFinishWithResult: .success([])) {
@@ -87,10 +87,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
     
-    func test_load_hasNoSideEffectOnLessThanSevenDaysOld() {
+    func test_load_hasNoSideEffectOnLessThanExpireDay() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
-        let lessThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: 1)
+        let lessThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge().adding(seconds: 1)
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         let expectation = expectation(description: "waiting for completion")
@@ -116,10 +116,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
     
-    func test_load_hasNoSideEffectOnCacheSevenDaysOld() {
+    func test_load_hasNoSideEffectOnCacheExpireDay() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
-        let lessThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7)
+        let lessThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge()
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         let expectation = expectation(description: "waiting for completion")
@@ -132,10 +132,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
     
-    func test_load_hasNoSideEffectOnCacheMoreThanSevenDaysOld() {
+    func test_load_hasNoSideEffectOnCacheMoreThanExpiredDay() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
-        let moreThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7).addingTimeInterval(-1)
+        let moreThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge().addingTimeInterval(-1)
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         let expectation = expectation(description: "waiting for completion")

@@ -78,15 +78,3 @@ extension Array where Element == LocalFeedImage {
         map { FeedImage(id: $0.id, description: $0.description, location: $0.location, imageURL: $0.url) }
     }
 }
-
-struct FeedCachePolicy {
-    static var currentCalendar: Calendar = Calendar(identifier: .gregorian)
-    static var maxCacheDays: Int { 7 }
-    
-    static func isCacheValidated(with timestamp: Date, against currentTimestamp: Date) -> Bool {
-        guard let maxCacheAge = currentCalendar.date(byAdding: .day, value: maxCacheDays, to: timestamp)
-        else { return false }
-        
-        return currentTimestamp < maxCacheAge
-    }
-}

@@ -72,6 +72,11 @@ func uniqueFeed() -> (model: FeedImage, local: LocalFeedImage) {
 }
 
 extension Date {
+    
+    func minusMaxCacheAge() -> Date {
+        adding(days: -FeedCachePolicy.maxCacheDays)
+    }
+    
     func adding(days: Int) -> Date {
         NSCalendar(identifier: .gregorian)!.date(byAdding: .day, value: days, to: self)!
     }
