@@ -9,13 +9,13 @@ import XCTest
 import EssentialFeed
 
 class ValidateCacheUseCaseTests: XCTestCase {
-    func test_load_doesNotMessageStoreUponCreation() {
+    func test_validate_doesNotMessageStoreUponCreation() {
         let (_, store) = makeSUT()
         
         XCTAssertEqual(store.receivedMessages, [])
     }
     
-    func test_load_deleteCacheOnRetrievalError() {
+    func test_validate_deleteCacheOnRetrievalError() {
         let (sut, store) = makeSUT()
         let expectedError = anyNSError()
         
@@ -26,7 +26,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
     }
     
-    func test_load_doesNotDeleteCacheLessThanSevenDaysOld() {
+    func test_validate_doesNotDeleteCacheLessThanSevenDaysOld() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
         let lessThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: 1)
@@ -42,7 +42,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         XCTAssertFalse(store.receivedMessages.contains(.deletion))
     }
     
-    func test_load_doesNotDeleteCacheWhenCacheIsAlreadyEmpty() {
+    func test_validate_doesNotDeleteCacheWhenCacheIsAlreadyEmpty() {
         let (sut, store) = makeSUT()
         
         let expectation = expectation(description: "waiting for completion")
@@ -55,7 +55,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         XCTAssertFalse(store.receivedMessages.contains(.deletion))
     }
     
-    func test_load_deleteCacheOnSevenDaysOld() {
+    func test_validate_deleteCacheOnSevenDaysOld() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
         let lessThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7)
@@ -68,7 +68,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
     }
     
-    func test_load_deleteCacheOnMoreThanSevenDaysOld() {
+    func test_validate_deleteCacheOnMoreThanSevenDaysOld() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
         let moreThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7).addingTimeInterval(-1)
@@ -81,7 +81,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
     }
 
-    func test_load_doesNotMessageStoreWhenSUTHasAlreadyDeallocated() {
+    func test_validate_doesNotMessageStoreWhenSUTHasAlreadyDeallocated() {
         let feed = uniqueFeed()
         let fixedCurrentDate = Date()
         let moreThanSevenDayTimestamp = fixedCurrentDate.adding(days: -7).addingTimeInterval(-1)

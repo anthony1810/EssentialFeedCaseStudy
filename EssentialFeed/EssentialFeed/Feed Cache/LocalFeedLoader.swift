@@ -54,7 +54,7 @@ public final class LocalFeedLoader {
                 store.deleteCachedFeed(completion: { _ in })
             case let .found(_, timestamp) where FeedCachePolicy.isCacheValidated(with: timestamp, against: currentDate()) == false:
                 store.deleteCachedFeed(completion: { _ in })
-            default: break
+            case .found, .empty: break
             }
         }
     }
