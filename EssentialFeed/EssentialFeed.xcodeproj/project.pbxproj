@@ -210,11 +210,11 @@
 		926EBFA92D487BDB004B4082 /* Feed Cache */ = {
 			isa = PBXGroup;
 			children = (
-				92DFD1C02D51006100CF68D0 /* CodableFeedStoreTests.swift */,
 				9216E1E32D4F5496009E58D9 /* Helpers */,
 				926EBFAA2D487C2E004B4082 /* CacheFeedUseCaseTests.swift */,
 				9216E1E12D4F0ECB009E58D9 /* LoadFeedFromCacheUseCaseTests.swift */,
 				9216E1E72D4FB8DB009E58D9 /* ValidateCacheUseCaseTests.swift */,
+				92DFD1C02D51006100CF68D0 /* CodableFeedStoreTests.swift */,
 			);
 			path = "Feed Cache";
 			sourceTree = "<group>";
