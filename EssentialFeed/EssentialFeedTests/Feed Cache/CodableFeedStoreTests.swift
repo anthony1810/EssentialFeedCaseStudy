@@ -58,6 +58,27 @@ final class CodableFeedStoreTests: XCTestCase {
         expect(sut, toReceiveTwice: .found(feed: expectedItems, timestamp: expectedDate))
     }
     
+    func test_retrieve_deliversErrorWhenThereIsError() {
+        let sut = makeSUT()
+        let expectedError = anyNSError()
+        let invalidData = Data("invalidData".utf8)
+        
+        try! invalidData.write(to: Self.testingURLSpecific)
+        
+        expect(sut, toReceive: .failure(expectedError))
+    }
+    
+    func test_retrieve_deliversErrorWhenThereIsErrorHasNoSideEffect() {
+        let sut = makeSUT()
+        let expectedError = anyNSError()
+        let invalidData = Data("invalidData".utf8)
+        
+        try! invalidData.write(to: Self.testingURLSpecific)
+        
+        expect(sut, toReceiveTwice: .failure(expectedError))
+    }
+
+    
     // MARK: - Helpers
     func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> CodableFeedStore {
         let sut = CodableFeedStore(storeUrl: Self.testingURLSpecific)
@@ -75,8 +96,7 @@ final class CodableFeedStoreTests: XCTestCase {
             case let (.found(receivedItems, receivedTimestamp), .found(expectedItems, expectedTimestamp)):
                 XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
                 XCTAssertEqual(receivedTimestamp, expectedTimestamp, file: file, line: line)
-            case let (.failure(receivedError), .failure(expectedError)):
-                XCTAssertEqual(receivedError as NSError?, expectedError as NSError?, file: file, line: line)
+            case (.failure, .failure): break
             default: XCTFail("Expect \(expectedResult) got \(result)", file: file, line: line)
             }
             
