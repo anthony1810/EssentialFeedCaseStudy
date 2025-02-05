@@ -55,8 +55,7 @@ final class CodableFeedStoreTests: XCTestCase {
         let error = insert(items: expectedItems, timestamp: expectedDate, to: sut)
         XCTAssertNil(error, "expected no error when insert cache")
         
-        expect(sut, toReceive: .found(feed: expectedItems, timestamp: expectedDate))
-        expect(sut, toReceive: .found(feed: expectedItems, timestamp: expectedDate))
+        expect(sut, toReceiveTwice: .found(feed: expectedItems, timestamp: expectedDate))
     }
     
     // MARK: - Helpers
@@ -101,6 +100,11 @@ final class CodableFeedStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
         
         return receivedError
+    }
+    
+    func expect(_ sut: CodableFeedStore, toReceiveTwice expectedResult: RetrieveCacheFeedResult, file: StaticString = #filePath, line: UInt = #line) {
+        expect(sut, toReceive: expectedResult)
+        expect(sut, toReceive: expectedResult)
     }
     
     private func deleteStoreArtifacts() {
