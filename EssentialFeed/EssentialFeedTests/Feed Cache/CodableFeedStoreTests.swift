@@ -77,6 +77,20 @@ final class CodableFeedStoreTests: XCTestCase {
         
         expect(sut, toReceiveTwice: .failure(expectedError))
     }
+    
+    func test_insert_overridesExistingCacheOnNonEmptyCache() {
+        let sut = makeSUT()
+      
+        let firstExpectedItems = [uniqueFeed().local]
+        let firstExpectedDate = Date()
+        insert(items: firstExpectedItems, timestamp: firstExpectedDate, to: sut)
+        
+        let lastExpectedItems = [uniqueFeed().local]
+        let lastExpectedDate = Date()
+        insert(items: lastExpectedItems, timestamp: lastExpectedDate, to: sut)
+        
+        expect(sut, toReceive: .found(feed: lastExpectedItems, timestamp: lastExpectedDate))
+    }
 
     
     // MARK: - Helpers
@@ -106,6 +120,7 @@ final class CodableFeedStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
+    @discardableResult
     func insert(
         items: [LocalFeedImage],
         timestamp: Date,
