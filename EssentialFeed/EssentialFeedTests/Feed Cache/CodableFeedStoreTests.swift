@@ -139,8 +139,8 @@ final class CodableFeedStoreTests: XCTestCase {
     }
     
     func test_delete_deliversErrorWhenThereIsError() {
-        let invalidStoreURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
-        let sut = makeSUT(storeUrl: invalidStoreURL)
+        let uneditableURLPath = Self.cacheDirectory
+        let sut = makeSUT(storeUrl: uneditableURLPath)
         
         let receivedError = deleteCache(from: sut)
         XCTAssertNotNil(receivedError, "Expect no error when delete an empty cache")
@@ -221,7 +221,11 @@ final class CodableFeedStoreTests: XCTestCase {
     }
     
     private static var testingURLSpecific: URL {
-        return FileManager.default.temporaryDirectory
+        FileManager.default.temporaryDirectory
             .appendingPathComponent("\(type(of: self)).store")
+    }
+    
+    private static var cacheDirectory: URL {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
 }
