@@ -91,11 +91,37 @@ final class CodableFeedStoreTests: XCTestCase {
         
         expect(sut, toReceive: .found(feed: lastExpectedItems, timestamp: lastExpectedDate))
     }
+    
+    func test_insert_overridesExistingCacheOnNonEmptyCacheHasNoSideEffect() {
+        let sut = makeSUT()
+      
+        let firstExpectedItems = [uniqueFeed().local]
+        let firstExpectedDate = Date()
+        insert(items: firstExpectedItems, timestamp: firstExpectedDate, to: sut)
+        
+        let lastExpectedItems = [uniqueFeed().local]
+        let lastExpectedDate = Date()
+        insertTwice(items: lastExpectedItems, timestamp: lastExpectedDate, to: sut)
+        
+        expect(sut, toReceive: .found(feed: lastExpectedItems, timestamp: lastExpectedDate))
+    }
+    
+    func test_insert_deliversErrorWhenThereIsError() {
+        let invalidStoreURL = URL(string: "/invalid/path")!
+        let sut = makeSUT(storeUrl: invalidStoreURL)
+        
+        let expectedItems = [uniqueFeed().local]
+        let expectedDate = Date()
+        
+        let receiveError = insert(items: expectedItems, timestamp: expectedDate, to: sut)
+        
+        XCTAssertNotNil(receiveError, "Expected error when insertion encounter error")
+    }
 
     
     // MARK: - Helpers
-    func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> CodableFeedStore {
-        let sut = CodableFeedStore(storeUrl: Self.testingURLSpecific)
+    func makeSUT(storeUrl: URL? = nil, file: StaticString = #filePath, line: UInt = #line) -> CodableFeedStore {
+        let sut = CodableFeedStore(storeUrl: storeUrl ?? Self.testingURLSpecific)
         trackMemoryLeaks(sut, file: file, line: line)
         
         return sut
@@ -120,6 +146,11 @@ final class CodableFeedStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
+    func expect(_ sut: CodableFeedStore, toReceiveTwice expectedResult: RetrieveCacheFeedResult, file: StaticString = #filePath, line: UInt = #line) {
+        expect(sut, toReceive: expectedResult)
+        expect(sut, toReceive: expectedResult)
+    }
+    
     @discardableResult
     func insert(
         items: [LocalFeedImage],
@@ -137,9 +168,15 @@ final class CodableFeedStoreTests: XCTestCase {
         return receivedError
     }
     
-    func expect(_ sut: CodableFeedStore, toReceiveTwice expectedResult: RetrieveCacheFeedResult, file: StaticString = #filePath, line: UInt = #line) {
-        expect(sut, toReceive: expectedResult)
-        expect(sut, toReceive: expectedResult)
+    func insertTwice(
+        items: [LocalFeedImage],
+        timestamp: Date,
+        to sut: CodableFeedStore,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
+        insert(items: items, timestamp: timestamp, to: sut, file: file, line: line)
+        insert(items: items, timestamp: timestamp, to: sut, file: file, line: line)
     }
     
     private func deleteStoreArtifacts() {
