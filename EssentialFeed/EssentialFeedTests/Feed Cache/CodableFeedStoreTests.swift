@@ -117,7 +117,44 @@ final class CodableFeedStoreTests: XCTestCase {
         
         XCTAssertNotNil(receiveError, "Expected error when insertion encounter error")
     }
-
+    
+    func test_delete_deliversSuccessOnEmptyCache() {
+        let sut = makeSUT()
+        let exp = expectation(description: "Wait for completion")
+        var receivedError: Error?
+        sut.deleteCachedFeed { receivedError = $0; exp.fulfill() }
+        
+        wait(for: [exp], timeout: 1.0)
+        XCTAssertNil(receivedError, "Expect no error when delete an empty cache")
+    }
+    
+    func test_delete_deliversSuccessOnNonEmptyCache() {
+        let sut = makeSUT()
+        let exp = expectation(description: "Wait for completion")
+        var receivedError: Error?
+        
+        let expectedItems = [uniqueFeed().local]
+        let expectedDate = Date()
+        
+        insert(items: expectedItems, timestamp: expectedDate, to: sut)
+        sut.deleteCachedFeed { receivedError = $0; exp.fulfill() }
+        expect(sut, toReceive: .empty)
+        
+        wait(for: [exp], timeout: 1.0)
+        XCTAssertNil(receivedError, "Expect no error when delete an empty cache")
+    }
+    
+    func test_delete_deliversErrorWhenThereIsError() {
+        let invalidStoreURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let sut = makeSUT(storeUrl: invalidStoreURL)
+        
+        let exp = expectation(description: "Wait for completion")
+        var receivedError: Error?
+        sut.deleteCachedFeed { receivedError = $0; exp.fulfill() }
+        
+        wait(for: [exp], timeout: 1.0)
+        XCTAssertNotNil(receivedError, "Expect no error when delete an empty cache")
+    }
     
     // MARK: - Helpers
     func makeSUT(storeUrl: URL? = nil, file: StaticString = #filePath, line: UInt = #line) -> CodableFeedStore {
