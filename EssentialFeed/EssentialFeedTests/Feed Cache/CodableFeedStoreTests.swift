@@ -54,6 +54,7 @@ final class CodableFeedStoreTests: XCTestCase {
         
         wait(for: [exp], timeout: 1.0)
     }
+
     
     func test_retrieve_deliversNonEmptyCacheOnNonEmptyCache() {
         let expectedItems = [uniqueFeed().local]
@@ -72,6 +73,33 @@ final class CodableFeedStoreTests: XCTestCase {
                 }
                 
                 exp.fulfill()
+            }
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_retrieve_deliversFoundCacheHasNoSideEffects() {
+        let expectedItems = [uniqueFeed().local]
+        let expectedDate = Date()
+        let sut = makeSUT()
+        let exp = expectation(description: "Waiting for completion")
+        
+        sut.insertCachedFeed(expectedItems, timestamp: expectedDate) { error in
+            XCTAssertNil(error, "expected no error when insert cache")
+            sut.retrievalCachedFeed { firstResult in
+                sut.retrievalCachedFeed { lastResult in
+                    switch (firstResult, lastResult) {
+                    case let (.found(receivedFirstItems, receivedFirstTimestamp), .found(receivedLastItems, receivedLastTimestamp)):
+                        XCTAssertEqual(receivedFirstItems, expectedItems)
+                        XCTAssertEqual(receivedFirstTimestamp, expectedDate)
+                        XCTAssertEqual(receivedLastItems, expectedItems)
+                        XCTAssertEqual(receivedLastTimestamp, expectedDate)
+                    default: XCTFail("Expect non empty cache got \(firstResult) and \(lastResult)")
+                    }
+                    
+                    exp.fulfill()
+                }
             }
         }
         
