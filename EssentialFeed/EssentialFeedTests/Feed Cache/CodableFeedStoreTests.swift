@@ -146,6 +146,33 @@ final class CodableFeedStoreTests: XCTestCase {
         XCTAssertNotNil(receivedError, "Expect no error when delete an empty cache")
     }
     
+    func test_storeSideEffects_runSerially() {
+        let sut = makeSUT()
+        var operations = [XCTestExpectation]()
+        
+        let op1 = expectation(description: "First operation")
+        sut.insertCachedFeed([uniqueFeed().local], timestamp: Date(), completion: { _ in
+            operations.append(op1)
+            op1.fulfill()
+        })
+        
+        let op2 = expectation(description: "Second operation")
+        sut.deleteCachedFeed(completion: { _ in
+            operations.append(op2)
+            op2.fulfill()
+        })
+        
+        let op3 = expectation(description: "third operation")
+        sut.insertCachedFeed([uniqueFeed().local], timestamp: Date(), completion: { _ in
+            operations.append(op3)
+            op3.fulfill()
+        })
+        
+        waitForExpectations(timeout: 5.0)
+        
+        XCTAssertEqual(operations, [op1, op2, op3])
+    }
+    
     // MARK: - Helpers
     func makeSUT(storeUrl: URL? = nil, file: StaticString = #filePath, line: UInt = #line) -> FeedStore {
         let sut = CodableFeedStore(storeUrl: storeUrl ?? Self.testingURLSpecific)
