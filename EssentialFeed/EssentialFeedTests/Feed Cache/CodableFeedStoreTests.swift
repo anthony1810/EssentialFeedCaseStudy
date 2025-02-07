@@ -23,32 +23,32 @@ final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
         deleteStoreArtifacts()
     }
     
-    func test_retrieve_deliversEmptyCacheOnEmptyCache() {
+    func test_retrieve_deliversEmptyCacheOnEmptyCache() throws {
         let sut = makeSUT()
         
         assertThatRetrieveDeliversEmptyCacheOnEmptyCache(on: sut)
     }
     
-    func test_retrieveTwice_deliversSameEmptyCacheOnEmptyCache() {
+    func test_retrieveTwice_deliversSameEmptyCacheOnEmptyCache() throws {
         let sut = makeSUT()
         
         assertThatRetrieveHasNoSideEffectOnDeliversEmptyCache(on: sut)
     }
 
     
-    func test_retrieve_deliversNonEmptyCacheOnNonEmptyCache() {
+    func test_retrieve_deliversNonEmptyCacheOnNonEmptyCache() throws {
         let sut = makeSUT()
         
         assertThatRetrieveDeliversFoundCacheOnNonEmptyCache(on: sut)
     }
     
-    func test_retrieve_deliversFoundCacheHasNoSideEffects() {
+    func test_retrieve_deliversFoundCacheHasNoSideEffects() throws {
         let sut = makeSUT()
        
         assertThatRetrieveHasNoSideEffectOnDeliversFoundCache(on: sut)
     }
     
-    func test_retrieve_deliversErrorWhenThereIsError() {
+    func test_retrieve_deliversErrorWhenThereIsError() throws {
         let sut = makeSUT()
         let invalidData = Data("invalidData".utf8)
         
@@ -57,7 +57,7 @@ final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
         assertThatRetrieveDeliversFailureOnRetrievalError(on: sut)
     }
     
-    func test_retrieve_deliversErrorWhenThereIsErrorHasNoSideEffect() {
+    func test_retrieve_deliversErrorWhenThereIsErrorHasNoSideEffect() throws {
         let sut = makeSUT()
         let invalidData = Data("invalidData".utf8)
         
@@ -66,7 +66,7 @@ final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
         assertThatRetrieveDeliversFailureHasNoSideEffectsOnRetrievalError(on: sut)
     }
     
-    func test_insert_overridesExistingCacheOnNonEmptyCache() {
+    func test_insert_overridesExistingCacheOnNonEmptyCache() throws {
         let sut = makeSUT()
       
         let firstExpectedItems = [uniqueFeed().local]
@@ -80,39 +80,39 @@ final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
         expect(sut, toReceive: .found(feed: lastExpectedItems, timestamp: lastExpectedDate))
     }
     
-    func test_insert_overridesExistingCacheOnNonEmptyCacheHasNoSideEffect() {
+    func test_insert_overridesExistingCacheOnNonEmptyCacheHasNoSideEffect() throws {
         let sut = makeSUT()
       
         assertThatInsertOverridesExistingCacheOnNonEmptyCache(on: sut)
     }
     
-    func test_insert_deliversErrorWhenThereIsError() {
+    func test_insert_deliversErrorWhenThereIsError() throws {
         let invalidStoreURL = URL(string: "/invalid/path")!
         let sut = makeSUT(storeUrl: invalidStoreURL)
         
         assertThatInsertDeliversErrorOnInsertionError(on: sut)
     }
     
-    func test_delete_deliversSuccessOnEmptyCache() {
+    func test_delete_deliversSuccessOnEmptyCache() throws {
         let sut = makeSUT()
         
         assertThatDeleteDeliversSuccessOnNonEmptyCache(on: sut)
     }
     
-    func test_delete_deliversSuccessOnNonEmptyCache() {
+    func test_delete_deliversSuccessOnNonEmptyCache() throws {
         let sut = makeSUT()
         
         assertThatDeleteDeliversSuccessOnNonEmptyCache(on: sut)
     }
     
-    func test_delete_deliversErrorWhenThereIsError() {
+    func test_delete_deliversErrorWhenThereIsError() throws {
         let uneditableURLPath = Self.cacheDirectory
         let sut = makeSUT(storeUrl: uneditableURLPath)
         
         assertThatDeleteDeliversErrorWhenDeletionError(on: sut)
     }
     
-    func test_storeSideEffects_runSerially() {
+    func test_storeSideEffects_runSerially() throws {
         let sut = makeSUT()
        
         assertThatSideEffectsRunSerially(on: sut)
