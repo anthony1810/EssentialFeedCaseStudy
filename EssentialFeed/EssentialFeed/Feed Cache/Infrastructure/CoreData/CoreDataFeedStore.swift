@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreData
 
 public final class CoreDataFeedStore: FeedStore {
     public init() {}
@@ -23,3 +22,6 @@ public final class CoreDataFeedStore: FeedStore {
         completion(.empty)
     }
 }
+
+
+
