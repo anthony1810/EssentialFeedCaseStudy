@@ -18,7 +18,7 @@ public final class CoreDataFeedStore: FeedStore {
     }
     
     public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
-       
+        
     }
     
     public func insertCachedFeed(_ items: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
@@ -27,18 +27,7 @@ public final class CoreDataFeedStore: FeedStore {
             do {
                 let managedCache = ManagedCache(context: context)
                 managedCache.timestamp = timestamp
-                
-                let managedFeeds = items.map {
-                    let managedImage = ManagedFeedImage(context: context)
-                    managedImage.id = $0.id
-                    managedImage.imageDescription = $0.description
-                    managedImage.location = $0.location
-                    managedImage.data = Data()
-                    managedImage.url = $0.url
-                    managedImage.cache = managedCache
-                    return managedImage
-                }
-                managedCache.feed = NSOrderedSet(array: managedFeeds)
+                managedCache.feed = ManagedFeedImage.images(from: items, in: context)
                 
                 try context.save()
                 
@@ -56,13 +45,7 @@ public final class CoreDataFeedStore: FeedStore {
                 let request = NSFetchRequest<ManagedCache>(entityName: ManagedCache.entity().name!)
                 request.returnsObjectsAsFaults = false
                 if let cache = try context.fetch(request).first {
-                    let feeds: [LocalFeedImage] = cache.feed
-                        .compactMap { $0 as? ManagedFeedImage }
-                        .map {
-                            LocalFeedImage(id: $0.id, description: $0.imageDescription, location: $0.location, imageURL: $0.url)
-                        }
-                    
-                    completion(.found(feed: feeds, timestamp: cache.timestamp))
+                    completion(.found(feed: cache.localFeeds, timestamp: cache.timestamp))
                 } else {
                     completion(.empty)
                 }
