@@ -43,6 +43,18 @@ extension FeedStoreSpecs where Self: XCTestCase {
         
         let lastExpectedItems = [uniqueFeed().local]
         let lastExpectedDate = Date()
+        insert(items: lastExpectedItems, timestamp: lastExpectedDate, to: sut, file: file, line: line)
+        
+        expect(sut, toReceive: .found(feed: lastExpectedItems, timestamp: lastExpectedDate), file: file, line: line)
+    }
+    
+    func assertThatInsertHasNoSideEffectOverridesExistingCacheOnNonEmptyCache(on sut: FeedStore, file: StaticString = #file, line: UInt = #line) {
+        let firstExpectedItems = [uniqueFeed().local]
+        let firstExpectedDate = Date()
+        insert(items: firstExpectedItems, timestamp: firstExpectedDate, to: sut, file: file, line: line)
+        
+        let lastExpectedItems = [uniqueFeed().local]
+        let lastExpectedDate = Date()
         insertTwice(items: lastExpectedItems, timestamp: lastExpectedDate, to: sut, file: file, line: line)
         
         expect(sut, toReceive: .found(feed: lastExpectedItems, timestamp: lastExpectedDate), file: file, line: line)
