@@ -17,4 +17,13 @@ class ManagedCache: NSManagedObject {
             LocalFeedImage(id: $0.id, description: $0.imageDescription, location: $0.location, imageURL: $0.url)
         }
     }
+    
+    static func find(in context: NSManagedObjectContext) throws -> ManagedCache? {
+        let request = NSFetchRequest<ManagedCache>(entityName: ManagedCache.entity().name!)
+        request.returnsObjectsAsFaults = false
+        
+        let cache = try context.fetch(request).first
+        
+        return cache
+    }
 }
