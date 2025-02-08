@@ -35,7 +35,9 @@ final class CoreDataFeedStoreTests: XCTestCase, FeedStoreSpecs {
     }
     
     func test_insert_overridesExistingCacheOnNonEmptyCache() throws {
+        let sut = try makeSUT()
         
+        assertThatInsertOverridesExistingCacheOnNonEmptyCache(on: sut)
     }
     
     func test_insert_overridesExistingCacheOnNonEmptyCacheHasNoSideEffect() throws {
