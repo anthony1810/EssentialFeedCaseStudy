@@ -6,12 +6,13 @@
 //
 
 import Foundation
+import CoreData
 
 public final class CoreDataFeedStore: FeedStore {
     public init() {}
     
     public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
-        
+       
     }
     
     public func insertCachedFeed(_ items: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
