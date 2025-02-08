@@ -38,6 +38,19 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         expect(sutToLoad, toFinishWith: .success(expectectedItems))
     }
     
+    func test_save_overridesItemsSavedOnASeparateInstance() throws {
+        let sutToPerformFirstSave = try makeSUT()
+        let sutToPerformSecondSave = try makeSUT()
+        let sutToPerformLoadAfterSecondSave = try makeSUT()
+        
+        let firstExpectectedItems: [FeedImage] = [uniqueFeed().model]
+        let secondExpectectedItems: [FeedImage] = [uniqueFeed().model, uniqueFeed().model]
+        
+        expect(sutToPerformFirstSave, toFinishSaveItems: firstExpectectedItems, withError: nil)
+        expect(sutToPerformSecondSave, toFinishSaveItems: secondExpectectedItems, withError: nil)
+        expect(sutToPerformLoadAfterSecondSave, toFinishWith: .success(secondExpectectedItems))
+    }
+    
     // MARK: - Helpers
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) throws -> LocalFeedLoader {
         let storeURL = testSpecificStoreURL()
