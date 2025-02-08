@@ -25,19 +25,7 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
     func test_load_deliversNoItemsOnEmptyCache() throws {
         let sut = try makeSUT()
         
-        let exp = expectation(description: "Waiting for cache to load")
-        sut.load { result in
-            switch result {
-            case .success(let items):
-                XCTAssertEqual(items, [], "Expect empty items got \(items)")
-            case .failure(let error):
-                XCTFail("Expect success but got \(error)")
-            }
-            
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
+        expect(sut, toFinishWith: .success([]))
     }
     
     func test_load_deliversItemsOnNonEmptyCache() throws {
@@ -46,26 +34,8 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         
         let expectectedItems: [FeedImage] = [uniqueFeed().model]
         
-        let exp = expectation(description: "Waiting for cache to save")
-        sutToSave.save(expectectedItems) { error in
-            if let error {
-                XCTFail("Expect success but got \(error)")
-            }
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 1.0)
-        
-        let exp2 = expectation(description: "Waiting for cache to load")
-        sutToLoad.load { result in
-            switch result {
-            case .success(let items):
-                XCTAssertEqual(items, expectectedItems, "Expect \(expectectedItems) got \(items)")
-            case .failure(let error):
-                XCTFail("Expect success but got \(error)")
-            }
-            exp2.fulfill()
-        }
-        wait(for: [exp2], timeout: 1.0)
+        expect(sutToSave, toFinishSaveItems: expectectedItems, withError: nil)
+        expect(sutToLoad, toFinishWith: .success(expectectedItems))
     }
     
     // MARK: - Helpers
@@ -79,6 +49,31 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         trackMemoryLeaks(store, file: file, line: line)
         
         return sut
+    }
+    
+    private func expect(_ sut: LocalFeedLoader, toFinishSaveItems items: [FeedImage], withError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "Waiting for cache to save")
+        sut.save(items) { receivedError in
+            XCTAssertEqual(receivedError as NSError?, expectedError as NSError?, "Expected error \(String(describing: expectedError)), got \(String(describing: receivedError))", file: file, line: line)
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    private func expect(_ sut: LocalFeedLoader, toFinishWith expectedResult: LocalFeedLoader.LoadResult, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "Waiting for cache to save")
+        sut.load { receivedResult in
+            switch (receivedResult, expectedResult) {
+            case let (.success(receivedItems), .success(expectedItems)):
+                XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
+            case let (.failure(receivedError as NSError?), .failure(expectedError as NSError?)):
+                XCTAssertEqual(receivedError, expectedError, file: file, line: line)
+            default:
+                XCTFail("Expected \(expectedResult), got \(receivedResult)", file: file, line: line)
+            }
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
     }
     
     private func testSpecificStoreURL() -> URL {
