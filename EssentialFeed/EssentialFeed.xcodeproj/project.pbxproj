@@ -28,9 +28,10 @@
 		92670B8C2D56FDEC009A434F /* ManagedCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92670B8B2D56FDE6009A434F /* ManagedCache.swift */; };
 		92670B942D570D69009A434F /* CoreDataHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92670B932D570D63009A434F /* CoreDataHelpers.swift */; };
 		92670B9D2D579A36009A434F /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 080EDEF121B6DA7E00813479 /* EssentialFeed.framework */; };
-		92670BA52D579A3E009A434F /* EssentialFeedCacheInterationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92670BA32D579A3E009A434F /* EssentialFeedCacheInterationTests.swift */; };
 		92670BA72D579B32009A434F /* XCTestCase+MemoryLeak.swift in Sources */ = {isa = PBXBuildFile; fileRef = 921A221E2D45F5C200F16800 /* XCTestCase+MemoryLeak.swift */; };
 		92670BA82D579B3D009A434F /* XCTestCase+Any.swift in Sources */ = {isa = PBXBuildFile; fileRef = 926EBFAC2D487F8C004B4082 /* XCTestCase+Any.swift */; };
+		92670BAA2D579E2C009A434F /* EssentialFeedCacheInterationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92670BA32D579A3E009A434F /* EssentialFeedCacheInterationTests.swift */; };
+		92670BAB2D579E31009A434F /* EssentialFeedCacheInterationTests.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 92670BA62D579A9B009A434F /* EssentialFeedCacheInterationTests.xctestplan */; };
 		926EBFAB2D487C35004B4082 /* CacheFeedUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 926EBFAA2D487C2E004B4082 /* CacheFeedUseCaseTests.swift */; };
 		926EBFAD2D487F95004B4082 /* XCTestCase+Any.swift in Sources */ = {isa = PBXBuildFile; fileRef = 926EBFAC2D487F8C004B4082 /* XCTestCase+Any.swift */; };
 		926EBFAE2D487F95004B4082 /* XCTestCase+Any.swift in Sources */ = {isa = PBXBuildFile; fileRef = 926EBFAC2D487F8C004B4082 /* XCTestCase+Any.swift */; };
@@ -495,6 +496,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				92670BAB2D579E31009A434F /* EssentialFeedCacheInterationTests.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -561,9 +563,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				92670BAA2D579E2C009A434F /* EssentialFeedCacheInterationTests.swift in Sources */,
 				92670BA72D579B32009A434F /* XCTestCase+MemoryLeak.swift in Sources */,
 				92670BA82D579B3D009A434F /* XCTestCase+Any.swift in Sources */,
-				92670BA52D579A3E009A434F /* EssentialFeedCacheInterationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -866,6 +868,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -885,6 +888,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
