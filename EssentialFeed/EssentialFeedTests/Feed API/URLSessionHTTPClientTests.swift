@@ -41,7 +41,7 @@ class URLSessionHTTPClientTests: XCTestCase {
     }
     
     func test_getFromURL_deliversErrorWhenDataTaskFailsWithError() {
-        let expectedError = anyError()
+        let expectedError = anyNSError()
         
         XCTAssertNotNil(resultError(for: nil, reponse: nil, error: expectedError))
     }
@@ -50,10 +50,10 @@ class URLSessionHTTPClientTests: XCTestCase {
         XCTAssertNotNil(resultError(for: nil, reponse: nil, error: nil))
         XCTAssertNotNil(resultError(for: nil, reponse: anyNonHTTPURLResponse(), error: nil))
         XCTAssertNotNil(resultError(for: anydata(), reponse: anyNonHTTPURLResponse(), error: nil))
-        XCTAssertNotNil(resultError(for: anydata(), reponse: nil, error: anyError()))
-        XCTAssertNotNil(resultError(for: nil, reponse: anyNonHTTPURLResponse(), error: anyError()))
-        XCTAssertNotNil(resultError(for: nil, reponse: anyHTTPURLResponse(), error: anyError()))
-        XCTAssertNotNil(resultError(for: anydata(), reponse: anyNonHTTPURLResponse(), error: anyError()))
+        XCTAssertNotNil(resultError(for: anydata(), reponse: nil, error: anyNSError()))
+        XCTAssertNotNil(resultError(for: nil, reponse: anyNonHTTPURLResponse(), error: anyNSError()))
+        XCTAssertNotNil(resultError(for: nil, reponse: anyHTTPURLResponse(), error: anyNSError()))
+        XCTAssertNotNil(resultError(for: anydata(), reponse: anyNonHTTPURLResponse(), error: anyNSError()))
         XCTAssertNotNil(resultError(for: anydata(), reponse: anyNonHTTPURLResponse(), error: nil))
     }
     

@@ -29,7 +29,7 @@ public final class RemoteFeedLoader: FeedLoader {
             
             switch result {
             case let .success((data, res)):
-                completion(FeedMapper.map(data, res: res))
+                completion(Self.Result { try FeedMapper.map(data, res: res).toModels() })
             case .failure:
                 completion(.failure(Error.connectivity))
             }
@@ -37,3 +37,8 @@ public final class RemoteFeedLoader: FeedLoader {
     }
 }
 
+extension Array where Element == RemoteFeedItem {
+    func toModels() -> [FeedImage] {
+        map { FeedImage(id: $0.id, description: $0.description, location: $0.location, imageURL: $0.image) }
+    }
+}

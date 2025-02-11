@@ -10,31 +10,16 @@ import Foundation
 enum FeedMapper {
     private static var OKAY_200: Int { 200 }
     private struct Root: Decodable {
-        let items: [Item]
-        
-        var feeds: [FeedItem] {
-            items.map(\.feed)
-        }
+        let items: [RemoteFeedItem]
     }
 
-    private struct Item: Decodable {
-        let id: UUID
-        let description: String?
-        let location: String?
-        let image: URL
-        
-        var feed: FeedItem {
-            FeedItem(id: id, description: description, location: location, imageURL: image)
-        }
-    }
-
-    static func map(_ data: Data, res: HTTPURLResponse) -> RemoteFeedLoader.Result {
+    static func map(_ data: Data, res: HTTPURLResponse) throws -> [RemoteFeedItem] {
         guard res.statusCode == OKAY_200,
               let root = try? JSONDecoder().decode(Root.self, from: data)
         else {
-            return .failure(RemoteFeedLoader.Error.invalidData)
+            throw RemoteFeedLoader.Error.invalidData
         }
         
-        return .success(root.feeds)
+        return root.items
     }
 }
