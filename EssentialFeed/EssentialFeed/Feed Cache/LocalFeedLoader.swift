@@ -33,14 +33,13 @@ public final class LocalFeedLoader: FeedLoader {
     public func load(completion: @escaping (LoadResult) -> Void) {
         store.retrievalCachedFeed { [weak self] result in
             guard let self else { return }
+            
             switch result {
             case .failure(let error):
                 completion(.failure(error))
-            case let .found(feeds, timestamp) where FeedCachePolicy.isCacheValidated(with: timestamp, against: currentDate()):
+            case .success(.some((let feeds, let timestamp))) where FeedCachePolicy.isCacheValidated(with: timestamp, against: currentDate()):
                 completion(.success(feeds.toModel()))
-            case .found:
-                completion(.success([]))
-            case .empty:
+            case .success(.none), .success:
                 completion(.success([]))
             }
         }
@@ -52,9 +51,9 @@ public final class LocalFeedLoader: FeedLoader {
             switch result {
             case .failure:
                 store.deleteCachedFeed(completion: { _ in })
-            case let .found(_, timestamp) where FeedCachePolicy.isCacheValidated(with: timestamp, against: currentDate()) == false:
+            case .success(.some((_, let timestamp))) where FeedCachePolicy.isCacheValidated(with: timestamp, against: currentDate()) == false:
                 store.deleteCachedFeed(completion: { _ in })
-            case .found, .empty: break
+            case .success(.none), .success: break
             }
         }
     }

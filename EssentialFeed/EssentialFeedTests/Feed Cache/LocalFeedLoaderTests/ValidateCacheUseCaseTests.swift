@@ -35,7 +35,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         let expectation = expectation(description: "waiting for completion")
         sut.load(completion: { _ in expectation.fulfill() })
         
-        store.completionRetrieval(with: .found(feed: [feed.local], timestamp: lessThanSevenDayTimestamp))
+        store.completionRetrieval(with: .success((feed: [feed.local], timestamp: lessThanSevenDayTimestamp)))
         
         wait(for: [expectation], timeout: 1.0)
         
@@ -48,7 +48,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         let expectation = expectation(description: "waiting for completion")
         sut.load(completion: { _ in expectation.fulfill() })
         
-        store.completionRetrieval(with: .empty)
+        store.completionRetrieval(with: .success(.none))
         
         wait(for: [expectation], timeout: 1.0)
         
@@ -63,7 +63,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         
         sut.validate()
         
-        store.completionRetrieval(with: .found(feed: [feed.local], timestamp: lessThanSevenDayTimestamp))
+        store.completionRetrieval(with: .success((feed: [feed.local], timestamp: lessThanSevenDayTimestamp)))
         
         XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
     }
@@ -76,7 +76,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         
         sut.validate()
         
-        store.completionRetrieval(with: .found(feed: [feed.local], timestamp: moreThanSevenDayTimestamp))
+        store.completionRetrieval(with: .success((feed: [feed.local], timestamp: moreThanSevenDayTimestamp)))
         
         XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
     }
@@ -91,7 +91,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         sut?.validate()
         sut = nil
         
-        store.completionRetrieval(with: .found(feed: [feed.local], timestamp: moreThanSevenDayTimestamp))
+        store.completionRetrieval(with: .success((feed: [feed.local], timestamp: moreThanSevenDayTimestamp)))
         
         XCTAssertEqual(store.receivedMessages, [.retrieval])
     }

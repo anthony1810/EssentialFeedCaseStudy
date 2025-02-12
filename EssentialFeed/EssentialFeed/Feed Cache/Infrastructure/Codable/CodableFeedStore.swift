@@ -57,9 +57,9 @@ public final class CodableFeedStore: FeedStore {
             do {
                 if let encoded = try? Data(contentsOf: storeUrl) {
                     let decoded = try decoder.decode(Cache.self, from: encoded)
-                    completion(.found(feed: decoded.localFeedImages, timestamp: decoded.timestamp))
+                    completion(.success(.some((feed: decoded.localFeedImages, timestamp: decoded.timestamp))))
                 } else {
-                    completion(.empty)
+                    completion(.success(.none))
                 }
             } catch {
                 completion(.failure(error))

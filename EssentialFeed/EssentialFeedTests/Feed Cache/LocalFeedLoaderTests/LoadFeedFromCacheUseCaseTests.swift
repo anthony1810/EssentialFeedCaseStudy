@@ -36,7 +36,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         
         expect(sut, toFinishWithResult: .success([])) {
-            store.completionRetrieval(with: .empty)
+            store.completionRetrieval(with: .success(.none))
         }
     }
     
@@ -47,7 +47,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         expect(sut, toFinishWithResult: .success([feed.model])) {
-            store.completionRetrieval(with: .found(feed: [feed.local], timestamp: lessThanSevenDayTimestamp))
+            store.completionRetrieval(with: .success((feed: [feed.local], timestamp: lessThanSevenDayTimestamp)))
         }
     }
     
@@ -58,7 +58,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         expect(sut, toFinishWithResult: .success([])) {
-            store.completionRetrieval(with: .found(feed: [feed.local], timestamp: sevenDayTimestamp))
+            store.completionRetrieval(with: .success((feed: [feed.local], timestamp: sevenDayTimestamp)))
         }
     }
     
@@ -69,7 +69,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         expect(sut, toFinishWithResult: .success([])) {
-            store.completionRetrieval(with: .found(feed: [feed.local], timestamp: moreThanSevenDayTimestamp))
+            store.completionRetrieval(with: .success((feed: [feed.local], timestamp: moreThanSevenDayTimestamp)))
         }
     }
     
@@ -96,7 +96,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let expectation = expectation(description: "waiting for completion")
         sut.load(completion: { _ in expectation.fulfill() })
         
-        store.completionRetrieval(with: .found(feed: [feed.local], timestamp: lessThanSevenDayTimestamp))
+        store.completionRetrieval(with: .success((feed: [feed.local], timestamp: lessThanSevenDayTimestamp)))
         
         wait(for: [expectation], timeout: 1.0)
         
@@ -109,7 +109,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let expectation = expectation(description: "waiting for completion")
         sut.load(completion: { _ in expectation.fulfill() })
         
-        store.completionRetrieval(with: .empty)
+        store.completionRetrieval(with: .success(.none))
         
         wait(for: [expectation], timeout: 1.0)
         
@@ -125,7 +125,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let expectation = expectation(description: "waiting for completion")
         sut.load(completion: { _ in expectation.fulfill() })
         
-        store.completionRetrieval(with: .found(feed: [feed.local], timestamp: lessThanSevenDayTimestamp))
+        store.completionRetrieval(with: .success((feed: [feed.local], timestamp: lessThanSevenDayTimestamp)))
         
         wait(for: [expectation], timeout: 1.0)
         
@@ -141,7 +141,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let expectation = expectation(description: "waiting for completion")
         sut.load(completion: { _ in expectation.fulfill() })
         
-        store.completionRetrieval(with: .found(feed: [feed.local], timestamp: moreThanSevenDayTimestamp))
+        store.completionRetrieval(with: .success((feed: [feed.local], timestamp: moreThanSevenDayTimestamp)))
         
         wait(for: [expectation], timeout: 1.0)
         
@@ -159,7 +159,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         })
         sut = nil
         
-        store.completionRetrieval(with: .empty)
+        store.completionRetrieval(with: .success(.none))
         
         XCTAssertNil(result)
     }

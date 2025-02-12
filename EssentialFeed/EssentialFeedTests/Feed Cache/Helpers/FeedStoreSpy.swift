@@ -57,7 +57,7 @@ final class FeedStoreSpy: FeedStore {
         }
     }
     
-    func completionRetrieval(with result: RetrieveCacheFeedResult, at index: Int = 0) {
+    func completionRetrieval(with result: FeedStore.RetrievalResult, at index: Int = 0) {
         retrievalCompletions[index](result)
     }
 }
