@@ -54,22 +54,21 @@ public final class CodableFeedStore: FeedStore {
         queue.async { [weak self] in
             guard let self else { return }
             
-            do {
-                if let encoded = try? Data(contentsOf: storeUrl) {
-                    let decoded = try decoder.decode(Cache.self, from: encoded)
-                    completion(.success(.some((feed: decoded.localFeedImages, timestamp: decoded.timestamp))))
+            completion(Result {
+                if let encoded = try? Data(contentsOf: self.storeUrl) {
+                    let decoded = try self.decoder.decode(Cache.self, from: encoded)
+                    return (feed: decoded.localFeedImages, timestamp: decoded.timestamp)
                 } else {
-                    completion(.success(.none))
+                    return .none
                 }
-            } catch {
-                completion(.failure(error))
-            }
+            })
         }
     }
     
     public func insertCachedFeed(_ items: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
         queue.async(flags: .barrier) { [weak self] in
             guard let self else { return }
+            
             completion(
                 Result {
                     let cache = Cache(items: items.map(CodableFeedImage.init), timestamp: timestamp)
