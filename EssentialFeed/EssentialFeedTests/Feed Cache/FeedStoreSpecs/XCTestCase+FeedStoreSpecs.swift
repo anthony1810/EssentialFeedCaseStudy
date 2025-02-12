@@ -135,7 +135,12 @@ extension FeedStoreSpecs where Self: XCTestCase {
         let exp = expectation(description: "Waiting for completion")
         
         var receivedError: Error?
-        sut.insertCachedFeed(items, timestamp: timestamp) { receivedError = $0; exp.fulfill() }
+        sut.insertCachedFeed(items, timestamp: timestamp) {
+            if case let .failure(error) = $0 {
+                receivedError = error
+            }
+            exp.fulfill()
+        }
         wait(for: [exp], timeout: 1.0)
         
         return receivedError
@@ -155,7 +160,12 @@ extension FeedStoreSpecs where Self: XCTestCase {
     func deleteCache(from sut: FeedStore, file: StaticString = #file, line: UInt = #line) -> Error? {
         let exp = expectation(description: "Wait for completion")
         var receivedError: Error?
-        sut.deleteCachedFeed { receivedError = $0; exp.fulfill() }
+        sut.deleteCachedFeed {
+            if case let .failure(error) = $0 {
+                receivedError = error
+            }
+            exp.fulfill()
+        }
         
         wait(for: [exp], timeout: 1.0)
         

@@ -70,31 +70,23 @@ public final class CodableFeedStore: FeedStore {
     public func insertCachedFeed(_ items: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
         queue.async(flags: .barrier) { [weak self] in
             guard let self else { return }
-            
-            do {
-                let cache = Cache(items: items.map(CodableFeedImage.init), timestamp: timestamp)
-                let encoded = try encoder.encode(cache)
-                try encoded.write(to: storeUrl)
-                
-                completion(nil)
-            } catch {
-                completion(error)
-            }
+            completion(
+                Result {
+                    let cache = Cache(items: items.map(CodableFeedImage.init), timestamp: timestamp)
+                    let encoded = try self.encoder.encode(cache)
+                    try encoded.write(to: self.storeUrl)
+                }
+            )
         }
     }
     
     public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
         queue.async(flags: .barrier) { [storeUrl] in
             guard FileManager.default.fileExists(atPath: storeUrl.path) else {
-                return completion(nil)
+                return completion(.success(()))
             }
             
-            do {
-                try FileManager.default.removeItem(at: storeUrl)
-                completion(nil)
-            } catch {
-                completion(error)
-            }
+            completion(Result{ try FileManager.default.removeItem(at: storeUrl) })
         }
     }
 }

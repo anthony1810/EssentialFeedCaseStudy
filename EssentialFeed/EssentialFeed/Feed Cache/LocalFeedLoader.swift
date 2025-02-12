@@ -19,13 +19,14 @@ public final class LocalFeedLoader: FeedLoader {
     }
     
     public func save(_ items: [FeedImage], completion: @escaping (SaveResult) -> Void) {
-        store.deleteCachedFeed(completion: { [weak self] deletionError in
+        store.deleteCachedFeed(completion: { [weak self] deletionResult in
             guard let self else { return }
             
-            if let deletionError {
-                completion(deletionError)
-            } else {
+            switch deletionResult {
+            case .success:
                 self.cacheFeeds(items, completion: completion)
+            case .failure(let error):
+                completion(error)
             }
         })
     }
@@ -59,9 +60,14 @@ public final class LocalFeedLoader: FeedLoader {
     }
     
     private func cacheFeeds(_ items: [FeedImage], completion: @escaping (SaveResult) -> Void) {
-        self.store.insertCachedFeed(items.toLocal(), timestamp: self.currentDate()) { [weak self] insertionError in
+        self.store.insertCachedFeed(items.toLocal(), timestamp: self.currentDate()) { [weak self] insertionResult in
             guard self != nil else { return }
-            completion(insertionError)
+            switch insertionResult {
+            case .success:
+                completion(nil)
+            case .failure(let error):
+                completion(error)
+            }
         }
     }
 }
