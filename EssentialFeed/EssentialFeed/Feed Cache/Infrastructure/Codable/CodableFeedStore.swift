@@ -54,16 +54,14 @@ public final class CodableFeedStore: FeedStore {
         queue.async { [weak self] in
             guard let self else { return }
             
-            do {
-                if let encoded = try? Data(contentsOf: storeUrl) {
-                    let decoded = try decoder.decode(Cache.self, from: encoded)
-                    completion(.found(feed: decoded.localFeedImages, timestamp: decoded.timestamp))
+            completion(Result {
+                if let encoded = try? Data(contentsOf: self.storeUrl) {
+                    let decoded = try self.decoder.decode(Cache.self, from: encoded)
+                    return (feed: decoded.localFeedImages, timestamp: decoded.timestamp)
                 } else {
-                    completion(.empty)
+                    return .none
                 }
-            } catch {
-                completion(.failure(error))
-            }
+            })
         }
     }
     
@@ -71,30 +69,23 @@ public final class CodableFeedStore: FeedStore {
         queue.async(flags: .barrier) { [weak self] in
             guard let self else { return }
             
-            do {
-                let cache = Cache(items: items.map(CodableFeedImage.init), timestamp: timestamp)
-                let encoded = try encoder.encode(cache)
-                try encoded.write(to: storeUrl)
-                
-                completion(nil)
-            } catch {
-                completion(error)
-            }
+            completion(
+                Result {
+                    let cache = Cache(items: items.map(CodableFeedImage.init), timestamp: timestamp)
+                    let encoded = try self.encoder.encode(cache)
+                    try encoded.write(to: self.storeUrl)
+                }
+            )
         }
     }
     
     public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
         queue.async(flags: .barrier) { [storeUrl] in
             guard FileManager.default.fileExists(atPath: storeUrl.path) else {
-                return completion(nil)
+                return completion(.success(()))
             }
             
-            do {
-                try FileManager.default.removeItem(at: storeUrl)
-                completion(nil)
-            } catch {
-                completion(error)
-            }
+            completion(Result{ try FileManager.default.removeItem(at: storeUrl) })
         }
     }
 }

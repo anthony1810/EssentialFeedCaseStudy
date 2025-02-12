@@ -63,7 +63,7 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         
         return sut
     }
-    
+     
     private func expect(_ sut: LocalFeedLoader, toFinishSaveItems items: [FeedImage], withError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Waiting for cache to save")
         sut.save(items) { receivedError in

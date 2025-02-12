@@ -42,22 +42,14 @@ final class FeedStoreSpy: FeedStore {
     }
     
     func completeDeletion(with result: Result<Void, Error>, at index: Int = 0) {
-        if case let .failure(error) = result {
-            deletionCompletions[index](error)
-        } else {
-            deletionCompletions[index](nil)
-        }
+        deletionCompletions[index](result)
     }
     
     func completionInsertion(with result: Result<Void, Error>, at index: Int = 0) {
-        if case let .failure(error) = result {
-            insertionCompletions[index](error)
-        } else {
-            insertionCompletions[index](nil)
-        }
+        insertionCompletions[index](result)
     }
     
-    func completionRetrieval(with result: RetrieveCacheFeedResult, at index: Int = 0) {
+    func completionRetrieval(with result: FeedStore.RetrievalResult, at index: Int = 0) {
         retrievalCompletions[index](result)
     }
 }
