@@ -13,6 +13,12 @@ final class FeedImageCell: UITableViewCell {
     @IBOutlet weak var imgView: UIImageView!
     @IBOutlet weak var descriptionLabel: UILabel!
     
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        imgView.alpha = 0
+    }
+    
     func configure(with viewModel: FeedImageViewModel) {
         locationLabel.text = viewModel.location
         locationContainer.isHidden = viewModel.location == nil
@@ -20,8 +26,15 @@ final class FeedImageCell: UITableViewCell {
         descriptionLabel.text = viewModel.description
         descriptionLabel.isHidden = viewModel.description == nil
         
-        imgView.image = UIImage(named: viewModel.imageName)
+        fadeIn(UIImage(named: viewModel.imageName)!)
+    }
+    
+    func fadeIn(_ image: UIImage) {
+        imgView.image = image
         
+        UIView.animate(withDuration: 0.3, delay: 0.3) {
+            self.imgView.alpha = 1
+        }
     }
 }
 
