@@ -151,7 +151,7 @@
 		92FDC2342D64CD9400FE3709 /* EssentialFeediOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialFeediOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		92FDC2432D64CD9F00FE3709 /* EssentialFeediOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EssentialFeediOS.h; sourceTree = "<group>"; };
 		92FDC2462D64CDA200FE3709 /* EssentialFeediOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EssentialFeediOSTests.swift; sourceTree = "<group>"; };
-		92FDC2492D64CEDF00FE3709 /* CI_iOS.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = CI_iOS.xctestplan; path = EssentialFeediOSTests/CI_iOS.xctestplan; sourceTree = "<group>"; };
+		92FDC2492D64CEDF00FE3709 /* CI_iOS.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CI_iOS.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -214,7 +214,6 @@
 		080EDEE721B6DA7E00813479 = {
 			isa = PBXGroup;
 			children = (
-				92FDC2492D64CEDF00FE3709 /* CI_iOS.xctestplan */,
 				080EDEF321B6DA7E00813479 /* EssentialFeed */,
 				080EDEFE21B6DA7E00813479 /* EssentialFeedTests */,
 				921A222F2D465F7B00F16800 /* EssentialFeedEndToEndTests */,
@@ -437,6 +436,7 @@
 		92FDC2472D64CDA200FE3709 /* EssentialFeediOSTests */ = {
 			isa = PBXGroup;
 			children = (
+				92FDC2492D64CEDF00FE3709 /* CI_iOS.xctestplan */,
 				92FDC2462D64CDA200FE3709 /* EssentialFeediOSTests.swift */,
 			);
 			path = EssentialFeediOSTests;
