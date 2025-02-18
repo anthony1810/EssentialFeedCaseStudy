@@ -16,7 +16,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="FeedViewCell" rowHeight="580" id="xRT-rd-pX5">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="FeedViewCell" rowHeight="580" id="xRT-rd-pX5" customClass="FeedImageCell" customModule="EssentialFeedPrototye" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="50" width="393" height="580"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xRT-rd-pX5" id="XF1-Iw-OQD">
@@ -103,6 +103,12 @@ Location</string>
                                         <constraint firstAttribute="trailingMargin" secondItem="wGw-bz-ytm" secondAttribute="trailing" id="nF8-UH-kzw"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="descriptionLabel" destination="P5H-vO-4Mi" id="pCL-73-67o"/>
+                                    <outlet property="imgView" destination="IxH-FA-aOD" id="Qwq-pd-oo2"/>
+                                    <outlet property="locationContainer" destination="5bE-Lb-hSa" id="iC8-HP-lPQ"/>
+                                    <outlet property="locationLabel" destination="P5H-vO-4Mi" id="ymx-7e-Awq"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
