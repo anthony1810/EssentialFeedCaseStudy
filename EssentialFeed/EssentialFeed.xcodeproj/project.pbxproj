@@ -58,6 +58,9 @@
 		92DFD1C12D51006600CF68D0 /* CodableFeedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92DFD1C02D51006100CF68D0 /* CodableFeedStoreTests.swift */; };
 		92F1BD3D2D450B640002ED52 /* FeedMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1BD3C2D450B640002ED52 /* FeedMapper.swift */; };
 		92F1BD3F2D45101D0002ED52 /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1BD3E2D45101D0002ED52 /* HTTPClient.swift */; };
+		92FDC2352D64CD9400FE3709 /* EssentialFeediOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92FDC22D2D64CD9400FE3709 /* EssentialFeediOS.framework */; };
+		92FDC2452D64CD9F00FE3709 /* EssentialFeediOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 92FDC2432D64CD9F00FE3709 /* EssentialFeediOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		92FDC2482D64CDA200FE3709 /* EssentialFeediOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92FDC2462D64CDA200FE3709 /* EssentialFeediOSTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +84,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 080EDEF021B6DA7E00813479;
 			remoteInfo = EssentialFeed;
+		};
+		92FDC2362D64CD9400FE3709 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 080EDEE821B6DA7E00813479 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 92FDC22C2D64CD9400FE3709;
+			remoteInfo = EssentialFeediOS;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -137,6 +147,10 @@
 		92DFD1C02D51006100CF68D0 /* CodableFeedStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableFeedStoreTests.swift; sourceTree = "<group>"; };
 		92F1BD3C2D450B640002ED52 /* FeedMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedMapper.swift; sourceTree = "<group>"; };
 		92F1BD3E2D45101D0002ED52 /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
+		92FDC22D2D64CD9400FE3709 /* EssentialFeediOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EssentialFeediOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		92FDC2342D64CD9400FE3709 /* EssentialFeediOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialFeediOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		92FDC2432D64CD9F00FE3709 /* EssentialFeediOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EssentialFeediOS.h; sourceTree = "<group>"; };
+		92FDC2462D64CDA200FE3709 /* EssentialFeediOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EssentialFeediOSTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,6 +192,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		92FDC22A2D64CD9400FE3709 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		92FDC2312D64CD9400FE3709 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92FDC2352D64CD9400FE3709 /* EssentialFeediOS.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -189,6 +218,8 @@
 				921A222F2D465F7B00F16800 /* EssentialFeedEndToEndTests */,
 				92670BA42D579A3E009A434F /* EssentialFeedCacheInterationTests */,
 				9285A92D2D5E25690048799E /* EssentialFeedPrototye */,
+				92FDC2442D64CD9F00FE3709 /* EssentialFeediOS */,
+				92FDC2472D64CDA200FE3709 /* EssentialFeediOSTests */,
 				080EDEF221B6DA7E00813479 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -201,6 +232,8 @@
 				921A22242D465F7100F16800 /* EssentialFeedEndToEndTests.xctest */,
 				92670B992D579A36009A434F /* EssentialFeedCacheInterationTests.xctest */,
 				9285A9102D5E25300048799E /* EssentialFeedPrototye.app */,
+				92FDC22D2D64CD9400FE3709 /* EssentialFeediOS.framework */,
+				92FDC2342D64CD9400FE3709 /* EssentialFeediOSTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -391,6 +424,22 @@
 			path = Codable;
 			sourceTree = "<group>";
 		};
+		92FDC2442D64CD9F00FE3709 /* EssentialFeediOS */ = {
+			isa = PBXGroup;
+			children = (
+				92FDC2432D64CD9F00FE3709 /* EssentialFeediOS.h */,
+			);
+			path = EssentialFeediOS;
+			sourceTree = "<group>";
+		};
+		92FDC2472D64CDA200FE3709 /* EssentialFeediOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				92FDC2462D64CDA200FE3709 /* EssentialFeediOSTests.swift */,
+			);
+			path = EssentialFeediOSTests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -398,6 +447,14 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		92FDC2282D64CD9400FE3709 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92FDC2452D64CD9F00FE3709 /* EssentialFeediOS.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -499,6 +556,46 @@
 			productReference = 9285A9102D5E25300048799E /* EssentialFeedPrototye.app */;
 			productType = "com.apple.product-type.application";
 		};
+		92FDC22C2D64CD9400FE3709 /* EssentialFeediOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 92FDC2412D64CD9400FE3709 /* Build configuration list for PBXNativeTarget "EssentialFeediOS" */;
+			buildPhases = (
+				92FDC2282D64CD9400FE3709 /* Headers */,
+				92FDC2292D64CD9400FE3709 /* Sources */,
+				92FDC22A2D64CD9400FE3709 /* Frameworks */,
+				92FDC22B2D64CD9400FE3709 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EssentialFeediOS;
+			packageProductDependencies = (
+			);
+			productName = EssentialFeediOS;
+			productReference = 92FDC22D2D64CD9400FE3709 /* EssentialFeediOS.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		92FDC2332D64CD9400FE3709 /* EssentialFeediOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 92FDC2422D64CD9400FE3709 /* Build configuration list for PBXNativeTarget "EssentialFeediOSTests" */;
+			buildPhases = (
+				92FDC2302D64CD9400FE3709 /* Sources */,
+				92FDC2312D64CD9400FE3709 /* Frameworks */,
+				92FDC2322D64CD9400FE3709 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				92FDC2372D64CD9400FE3709 /* PBXTargetDependency */,
+			);
+			name = EssentialFeediOSTests;
+			packageProductDependencies = (
+			);
+			productName = EssentialFeediOSTests;
+			productReference = 92FDC2342D64CD9400FE3709 /* EssentialFeediOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -527,6 +624,12 @@
 					9285A90F2D5E25300048799E = {
 						CreatedOnToolsVersion = 16.2;
 					};
+					92FDC22C2D64CD9400FE3709 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					92FDC2332D64CD9400FE3709 = {
+						CreatedOnToolsVersion = 16.2;
+					};
 				};
 			};
 			buildConfigurationList = 080EDEEB21B6DA7E00813479 /* Build configuration list for PBXProject "EssentialFeed" */;
@@ -547,6 +650,8 @@
 				921A22232D465F7100F16800 /* EssentialFeedEndToEndTests */,
 				92670B982D579A36009A434F /* EssentialFeedCacheInterationTests */,
 				9285A90F2D5E25300048799E /* EssentialFeedPrototye */,
+				92FDC22C2D64CD9400FE3709 /* EssentialFeediOS */,
+				92FDC2332D64CD9400FE3709 /* EssentialFeediOSTests */,
 			);
 		};
 /* End PBXProject section */
@@ -589,6 +694,20 @@
 				9285A9302D5E25690048799E /* Assets.xcassets in Resources */,
 				9285A9322D5E25690048799E /* LaunchScreen.storyboard in Resources */,
 				9285A9332D5E25690048799E /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		92FDC22B2D64CD9400FE3709 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		92FDC2322D64CD9400FE3709 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -673,6 +792,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		92FDC2292D64CD9400FE3709 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		92FDC2302D64CD9400FE3709 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92FDC2482D64CDA200FE3709 /* EssentialFeediOSTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -690,6 +824,11 @@
 			isa = PBXTargetDependency;
 			target = 080EDEF021B6DA7E00813479 /* EssentialFeed */;
 			targetProxy = 92670B9E2D579A36009A434F /* PBXContainerItemProxy */;
+		};
+		92FDC2372D64CD9400FE3709 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 92FDC22C2D64CD9400FE3709 /* EssentialFeediOS */;
+			targetProxy = 92FDC2362D64CD9400FE3709 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1100,6 +1239,124 @@
 			};
 			name = Release;
 		};
+		92FDC23C2D64CD9400FE3709 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.viothun.EssentialFeediOS;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		92FDC23D2D64CD9400FE3709 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.viothun.EssentialFeediOS;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		92FDC23E2D64CD9400FE3709 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.viothun.EssentialFeediOSTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		92FDC23F2D64CD9400FE3709 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.viothun.EssentialFeediOSTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1153,6 +1410,24 @@
 			buildConfigurations = (
 				9285A9212D5E25310048799E /* Debug */,
 				9285A9222D5E25310048799E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		92FDC2412D64CD9400FE3709 /* Build configuration list for PBXNativeTarget "EssentialFeediOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				92FDC23C2D64CD9400FE3709 /* Debug */,
+				92FDC23D2D64CD9400FE3709 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		92FDC2422D64CD9400FE3709 /* Build configuration list for PBXNativeTarget "EssentialFeediOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				92FDC23E2D64CD9400FE3709 /* Debug */,
+				92FDC23F2D64CD9400FE3709 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
