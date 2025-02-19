@@ -218,9 +218,9 @@
 				080EDEFE21B6DA7E00813479 /* EssentialFeedTests */,
 				921A222F2D465F7B00F16800 /* EssentialFeedEndToEndTests */,
 				92670BA42D579A3E009A434F /* EssentialFeedCacheInterationTests */,
-				9285A92D2D5E25690048799E /* EssentialFeedPrototye */,
 				92FDC2442D64CD9F00FE3709 /* EssentialFeediOS */,
 				92FDC2472D64CDA200FE3709 /* EssentialFeediOSTests */,
+				9285A92D2D5E25690048799E /* EssentialFeedPrototye */,
 				080EDEF221B6DA7E00813479 /* Products */,
 			);
 			sourceTree = "<group>";
