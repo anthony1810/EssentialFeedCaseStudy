@@ -60,6 +60,16 @@ final class EssentialFeediOSTests: XCTestCase {
         XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), true)
     }
     
+    func test_pullToRefresh_hidesLoadingIndicatorAfterLoading() {
+        let (feedViewController, loader) = makeSUT()
+        
+        feedViewController.simulateAppearance()
+        feedViewController.simulatePullToRefresh()
+        loader.completeLoadingFeed()
+        
+        XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), false)
+    }
+    
     // MARK: - Helper
     
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
