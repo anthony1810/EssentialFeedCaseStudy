@@ -16,7 +16,7 @@ final class EssentialFeediOSTests: XCTestCase {
         XCTAssertEqual(loader.loadCalls, 0)
     }
     
-    func test_viewDidLoad_loadsFeed() {
+    func test_userInitiatedFeedReload_loadsFeed() {
         let (feedViewController, loader) = makeSUT()
         
         feedViewController.simulateAppearance()
@@ -29,7 +29,7 @@ final class EssentialFeediOSTests: XCTestCase {
         XCTAssertEqual(loader.loadCalls, 3)
     }
     
-    func test_viewDidLoad_showsLoadingIndicator() {
+    func test_userIninitedFeedReload_showsLoadingIndicator() {
         let (feedViewController, loader) = makeSUT()
         
         feedViewController.simulateAppearance()
