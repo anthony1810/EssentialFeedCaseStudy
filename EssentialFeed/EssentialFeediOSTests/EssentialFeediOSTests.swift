@@ -71,11 +71,13 @@ final class EssentialFeediOSTests: XCTestCase {
     
     func test_pullToRefresh_loadsFeed() {
         let (feedViewController, loader) = makeSUT()
-        
         feedViewController.loadViewIfNeeded()
-        feedViewController.simulatePullToRefresh()
         
+        feedViewController.simulatePullToRefresh()
         XCTAssertEqual(loader.loadCalls, 2)
+        
+        feedViewController.simulatePullToRefresh()
+        XCTAssertEqual(loader.loadCalls, 3)
     }
     
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
