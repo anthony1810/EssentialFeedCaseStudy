@@ -17,17 +17,15 @@ final class FeedViewController: UITableViewController {
         self.loader = loader
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        refreshControl = UIRefreshControl()
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
-        
         load()
     }
     
     @objc
     func load() {
+        refreshControl?.beginRefreshing()
         loader?.load { _ in }
     }
 }
@@ -35,6 +33,51 @@ final class FeedViewController: UITableViewController {
 extension FeedViewController {
     func simulatePullToRefresh() {
         refreshControl?.simulatePullToRefresh()
+    }
+    
+    func simulateAppearance() {
+        if !isViewLoaded {
+            loadViewIfNeeded()
+            prepareForFirstAppearance()
+        }
+        
+        beginAppearanceTransition(true, animated: false)
+        endAppearanceTransition()
+    }
+    
+    private func prepareForFirstAppearance() {
+        setSmallFrameToPreventRenderingCells()
+        replaceRefreshControlWithFakeForiOS17PlusSupport()
+    }
+    
+    private func setSmallFrameToPreventRenderingCells() {
+        tableView.frame = CGRect(x: 0, y: 0, width: 390, height: 1)
+    }
+    
+    private func replaceRefreshControlWithFakeForiOS17PlusSupport() {
+        let fakeRefreshControl = FakeUIRefreshControl()
+        
+        refreshControl?.allTargets.forEach { target in
+            refreshControl?.actions(forTarget: target, forControlEvent: .valueChanged)?.forEach { action in
+                fakeRefreshControl.addTarget(target, action: Selector(action), for: .valueChanged)
+            }
+        }
+        
+        refreshControl = fakeRefreshControl
+    }
+    
+    private class FakeUIRefreshControl: UIRefreshControl {
+        private var _isRefreshing = false
+        
+        override var isRefreshing: Bool { _isRefreshing }
+        
+        override func beginRefreshing() {
+            _isRefreshing = true
+        }
+        
+        override func endRefreshing() {
+            _isRefreshing = false
+        }
     }
 }
 
@@ -64,14 +107,14 @@ final class EssentialFeediOSTests: XCTestCase {
     func test_viewDidLoad_loadsFeed() {
         let (feedViewController, loader) = makeSUT()
         
-        feedViewController.loadViewIfNeeded()
+        feedViewController.simulateAppearance()
         
         XCTAssertEqual(loader.loadCalls, 1)
     }
     
     func test_pullToRefresh_loadsFeed() {
         let (feedViewController, loader) = makeSUT()
-        feedViewController.loadViewIfNeeded()
+        feedViewController.simulateAppearance()
         
         feedViewController.simulatePullToRefresh()
         XCTAssertEqual(loader.loadCalls, 2)
@@ -79,6 +122,16 @@ final class EssentialFeediOSTests: XCTestCase {
         feedViewController.simulatePullToRefresh()
         XCTAssertEqual(loader.loadCalls, 3)
     }
+    
+    func test_viewDidLoad_showsLoadingIndicator() {
+        let (feedViewController, _) = makeSUT()
+        
+        feedViewController.simulateAppearance()
+        
+        XCTAssertEqual(feedViewController.refreshControl?.isRefreshing, true)
+    }
+    
+    // MARK: - Helper
     
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
@@ -89,8 +142,7 @@ final class EssentialFeediOSTests: XCTestCase {
         
         return (feedViewController, loader)
     }
-    
-    // MARK: - Helper
+   
     class LoaderSpy: FeedLoader {
         var loadCalls = 0
         
