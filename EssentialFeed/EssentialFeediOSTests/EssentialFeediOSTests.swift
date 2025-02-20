@@ -20,13 +20,7 @@ final class EssentialFeediOSTests: XCTestCase {
         let (feedViewController, loader) = makeSUT()
         
         feedViewController.simulateAppearance()
-        
         XCTAssertEqual(loader.loadCalls, 1)
-    }
-    
-    func test_pullToRefresh_loadsFeed() {
-        let (feedViewController, loader) = makeSUT()
-        feedViewController.simulateAppearance()
         
         feedViewController.userInitiateFeedReload()
         XCTAssertEqual(loader.loadCalls, 2)
@@ -36,40 +30,20 @@ final class EssentialFeediOSTests: XCTestCase {
     }
     
     func test_viewDidLoad_showsLoadingIndicator() {
-        let (feedViewController, _) = makeSUT()
-        
-        feedViewController.simulateAppearance()
-        
-        XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), true)
-    }
-    
-    func test_viewDidLoad_hidesLoadingIndicatorAfterLoading() {
         let (feedViewController, loader) = makeSUT()
         
         feedViewController.simulateAppearance()
-        loader.completeLoadingFeed()
-        XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), false)
-    }
-    
-    func test_pullToRefresh_showsLoadingIndicator() {
-        let (feedViewController, _) = makeSUT()
-        
-        feedViewController.simulateAppearance()
-        feedViewController.userInitiateFeedReload()
-        
         XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), true)
-    }
-    
-    func test_pullToRefresh_hidesLoadingIndicatorAfterLoading() {
-        let (feedViewController, loader) = makeSUT()
-        
-        feedViewController.simulateAppearance()
-        feedViewController.userInitiateFeedReload()
+
         loader.completeLoadingFeed()
-        
+        XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), false)
+
+        feedViewController.userInitiateFeedReload()
+        XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), true)
+
+        loader.completeLoadingFeed()
         XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), false)
     }
-    
     // MARK: - Helper
     
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
