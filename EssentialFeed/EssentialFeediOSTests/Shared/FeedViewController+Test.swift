@@ -8,6 +8,10 @@ import UIKit
 import EssentialFeediOS
 
 extension FeedViewController {
+    func isLoadingIndicatorVisible() -> Bool {
+        refreshControl?.isRefreshing == true
+    }
+    
     func simulatePullToRefresh() {
         refreshControl?.simulatePullToRefresh()
     }

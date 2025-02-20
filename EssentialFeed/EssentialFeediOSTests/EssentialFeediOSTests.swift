@@ -40,7 +40,7 @@ final class EssentialFeediOSTests: XCTestCase {
         
         feedViewController.simulateAppearance()
         
-        XCTAssertEqual(feedViewController.refreshControl?.isRefreshing, true)
+        XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), true)
     }
     
     func test_viewDidLoad_hidesLoadingIndicatorAfterLoading() {
@@ -48,7 +48,7 @@ final class EssentialFeediOSTests: XCTestCase {
         
         feedViewController.simulateAppearance()
         loader.completeLoadingFeed()
-        XCTAssertEqual(feedViewController.refreshControl?.isRefreshing, false)
+        XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), false)
     }
     
     // MARK: - Helper
