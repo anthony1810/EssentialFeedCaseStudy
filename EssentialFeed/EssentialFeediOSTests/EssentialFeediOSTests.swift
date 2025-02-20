@@ -28,10 +28,10 @@ final class EssentialFeediOSTests: XCTestCase {
         let (feedViewController, loader) = makeSUT()
         feedViewController.simulateAppearance()
         
-        feedViewController.simulatePullToRefresh()
+        feedViewController.userInitiateFeedReload()
         XCTAssertEqual(loader.loadCalls, 2)
         
-        feedViewController.simulatePullToRefresh()
+        feedViewController.userInitiateFeedReload()
         XCTAssertEqual(loader.loadCalls, 3)
     }
     
@@ -55,7 +55,7 @@ final class EssentialFeediOSTests: XCTestCase {
         let (feedViewController, _) = makeSUT()
         
         feedViewController.simulateAppearance()
-        feedViewController.simulatePullToRefresh()
+        feedViewController.userInitiateFeedReload()
         
         XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), true)
     }
@@ -64,7 +64,7 @@ final class EssentialFeediOSTests: XCTestCase {
         let (feedViewController, loader) = makeSUT()
         
         feedViewController.simulateAppearance()
-        feedViewController.simulatePullToRefresh()
+        feedViewController.userInitiateFeedReload()
         loader.completeLoadingFeed()
         
         XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), false)
