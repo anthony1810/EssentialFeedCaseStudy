@@ -113,6 +113,29 @@ final class EssentialFeediOSTests: XCTestCase {
         sut.simulateFeedImageViewNotVisible(at: 1)
         XCTAssertEqual(loader.cancelledImageURLs, [feedImage0.url, feedImage1.url])
     }
+    
+    func test_feedImageView_showsLoadingIndicatorWhileVisible() {
+        let feedImage0 = makeFeedImage(description: "a description", location: "a location")
+        let feedImage1 = makeFeedImage(description: "a description", location: nil)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeLoadingFeed([feedImage0, feedImage1])
+        XCTAssertEqual(loader.loadedImageURLs, [])
+        
+        let view1 = sut.simulateFeedImageViewVisible(at: 0)
+        let view2 = sut.simulateFeedImageViewVisible(at: 0)
+        XCTAssertEqual(view1?.isShowingLoadingIndicator, true)
+        XCTAssertEqual(view2?.isShowingLoadingIndicator, true)
+        
+        loader.completeImageLoading(at: 0)
+        XCTAssertEqual(view1?.isShowingLoadingIndicator, false)
+        XCTAssertEqual(view2?.isShowingLoadingIndicator, true)
+        
+        loader.completeImageLoadingWithError(at: 1)
+        XCTAssertEqual(view1?.isShowingLoadingIndicator, false)
+        XCTAssertEqual(view2?.isShowingLoadingIndicator, false)
+    }
         
     // MARK: - Helper
     
@@ -220,20 +243,31 @@ final class EssentialFeediOSTests: XCTestCase {
             feedFetchingCompletions[index](.success(feeds))
         }
         
-        func completeLoadingFeedWithError(_ error: Error = NSError(domain: "", code: 0, userInfo: nil), at index: Int = 0) {
+        func completeLoadingFeedWithError(_ error: Error = anyNSError(), at index: Int = 0) {
             feedFetchingCompletions[index](.failure(error))
         }
         
         // MARK: - Image Data Loader
-        var loadedImageURLs = [URL]()
+        var imageRequest = [(url: URL, completion: (FeedImageDataLoader.Result) -> Void)]()
+        var loadedImageURLs: [URL] {
+            imageRequest.map(\.url)
+        }
         var cancelledImageURLs = [URL]()
         
-        func loadImageData(from url: URL) -> ImageDataLoaderTask {
-            loadedImageURLs.append(url)
+        func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> ImageDataLoaderTask {
+            imageRequest.append((url, completion))
             
             return TaskSpy { [weak self] in
                 self?.cancelledImageURLs.append(url)
             }
+        }
+        
+        func completeImageLoading(at index: Int, data: Data = Data()) {
+            imageRequest[index].completion(.success(data))
+        }
+        
+        func completeImageLoadingWithError(_ error: Error = anyNSError(), at index: Int) {
+            imageRequest[index].completion(.failure(error))
         }
     }
 }

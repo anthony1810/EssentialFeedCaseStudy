@@ -18,4 +18,8 @@ public extension FeedImageCell {
     var descriptionText: String? {
         descriptionLabel.text
     }
+    
+    var isShowingLoadingIndicator: Bool {
+        imageContainer.isShimmering
+    }
 }
