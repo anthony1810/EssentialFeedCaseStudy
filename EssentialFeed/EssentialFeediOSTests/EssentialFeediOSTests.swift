@@ -97,6 +97,22 @@ final class EssentialFeediOSTests: XCTestCase {
         sut.simulateFeedImageViewVisible(at: 1)
         XCTAssertEqual(loader.loadedImageURLs, [feedImage0.url, feedImage1.url])
     }
+    
+    func test_feedImageView_cancelsImageLoadingWhenNotVisible() {
+        let feedImage0 = makeFeedImage(description: "a description", location: "a location")
+        let feedImage1 = makeFeedImage(description: "a description", location: nil)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeLoadingFeed([feedImage0, feedImage1])
+        XCTAssertEqual(loader.loadedImageURLs, [])
+        
+        sut.simulateFeedImageViewNotVisible(at: 0)
+        XCTAssertEqual(loader.cancelledImageURLs, [feedImage0.url])
+        
+        sut.simulateFeedImageViewNotVisible(at: 1)
+        XCTAssertEqual(loader.cancelledImageURLs, [feedImage0.url, feedImage1.url])
+    }
         
     // MARK: - Helper
     
@@ -175,6 +191,17 @@ final class EssentialFeediOSTests: XCTestCase {
             file: file,
             line: line)
     }
+    
+    class TaskSpy: ImageDataLoaderTask {
+        let handler: () -> Void
+        init(handler: @escaping () -> Void) {
+            self.handler = handler
+        }
+        
+        func cancel() {
+            handler()
+        }
+    }
    
     class LoaderSpy: FeedLoader, FeedImageDataLoader {
         
@@ -199,9 +226,14 @@ final class EssentialFeediOSTests: XCTestCase {
         
         // MARK: - Image Data Loader
         var loadedImageURLs = [URL]()
+        var cancelledImageURLs = [URL]()
         
-        func loadImageData(from url: URL) {
+        func loadImageData(from url: URL) -> ImageDataLoaderTask {
             loadedImageURLs.append(url)
+            
+            return TaskSpy { [weak self] in
+                self?.cancelledImageURLs.append(url)
+            }
         }
     }
 }

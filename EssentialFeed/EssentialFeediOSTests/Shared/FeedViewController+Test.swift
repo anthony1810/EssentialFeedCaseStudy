@@ -8,6 +8,14 @@ import UIKit
 import EssentialFeediOS
 
 extension FeedViewController {
+    func simulateFeedImageViewNotVisible(at index: Int) {
+        let view = feedImageView(at: index)
+        
+        let delegate = tableView.delegate
+        let index = IndexPath(row: index, section: feedSection)
+        delegate?.tableView?(tableView, didEndDisplaying: view!, forRowAt: index)
+    }
+    
     func simulateFeedImageViewVisible(at index: Int) {
         _ = feedImageView(at: index)
     }
