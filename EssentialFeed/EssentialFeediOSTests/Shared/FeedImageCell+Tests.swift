@@ -22,4 +22,12 @@ public extension FeedImageCell {
     var isShowingLoadingIndicator: Bool {
         imageContainer.isShimmering
     }
+    
+    var isShowingRetryButton: Bool {
+        retryButton.isHidden == false
+    }
+    
+    func simulateButtonTapped() {
+        retryButton.simulateButtonTapped()
+    }
 }

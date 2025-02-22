@@ -64,16 +64,30 @@ public final class FeedViewController: UITableViewController {
         cell.descriptionLabel.text = feed.description
         cell.locationLabel.text = feed.location
         cell.imageContainer.isShimmering = true
-        let task = imageDataLoader?.loadImageData(from: feed.url) { [cell] _ in
-            cell.imageContainer.isShimmering = false
+        cell.retryButton.isHidden = true
+        cell.onRetry = { [unowned self] in
+            self.loadImageData(for: cell, at: indexPath, with: feed.url)
         }
-        imageDataTasks[indexPath] = task
-        
+        loadImageData(for: cell, at: indexPath, with: feed.url)
+    
         return cell
     }
     
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         imageDataTasks[indexPath]?.cancel()
         imageDataTasks[indexPath] = nil
+    }
+    
+    private func loadImageData(for cell: FeedImageCell, at indexPath: IndexPath, with url: URL) {
+        let task = imageDataLoader?.loadImageData(from: url) { [cell] completion in
+            switch completion {
+            case .success:
+                cell.retryButton.isHidden = true
+            case .failure:
+                cell.retryButton.isHidden = false
+            }
+            cell.imageContainer.isShimmering = false
+        }
+        imageDataTasks[indexPath] = task
     }
 }
