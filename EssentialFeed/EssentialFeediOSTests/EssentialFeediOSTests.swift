@@ -62,6 +62,19 @@ final class EssentialFeediOSTests: XCTestCase {
         loader.completeLoadingFeed([feedImage1, feedImage2, feedImage3], at: 1)
         assertThat(sut, isRendering: [feedImage1, feedImage2, feedImage3])
     }
+    
+    func test_loadFeedCompletion_doesNotAlterCurrentRenderedItems() {
+        let feedImage0 = makeFeedImage(description: "a description", location: "a location")
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        
+        loader.completeLoadingFeed([feedImage0])
+        assertThat(sut, isRendering: [feedImage0])
+        
+        sut.userInitiateFeedReload()
+        loader.completeLoadingFeedWithError(at: 1)
+        assertThat(sut, isRendering: [feedImage0])
+    }
         
     // MARK: - Helper
     
@@ -154,6 +167,10 @@ final class EssentialFeediOSTests: XCTestCase {
         
         func completeLoadingFeed(_ feeds: [FeedImage] = [], at index: Int = 0) {
             completions[index](.success(feeds))
+        }
+        
+        func completeLoadingFeedWithError(_ error: Error = NSError(domain: "", code: 0, userInfo: nil), at index: Int) {
+            completions[index](.failure(error))
         }
     }
 }
