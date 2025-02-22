@@ -13,20 +13,20 @@ final class EssentialFeediOSTests: XCTestCase {
     func test_init_doesNotLoadFeed() {
         let (_, loader) = makeSUT()
         
-        XCTAssertEqual(loader.loadCalls, 0)
+        XCTAssertEqual(loader.loadFeedCalls, 0)
     }
     
     func test_userInitiatedFeedReload_loadsFeed() {
         let (feedViewController, loader) = makeSUT()
         
         feedViewController.simulateAppearance()
-        XCTAssertEqual(loader.loadCalls, 1)
+        XCTAssertEqual(loader.loadFeedCalls, 1)
         
         feedViewController.userInitiateFeedReload()
-        XCTAssertEqual(loader.loadCalls, 2)
+        XCTAssertEqual(loader.loadFeedCalls, 2)
         
         feedViewController.userInitiateFeedReload()
-        XCTAssertEqual(loader.loadCalls, 3)
+        XCTAssertEqual(loader.loadFeedCalls, 3)
     }
     
     func test_userIninitedFeedReload_showsLoadingIndicator() {
@@ -102,7 +102,7 @@ final class EssentialFeediOSTests: XCTestCase {
     
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
-        let feedViewController = FeedViewController(loader: loader, imageDataLoader: loader)
+        let feedViewController = FeedViewController(feedLoader: loader, imageDataLoader: loader)
         
         trackMemoryLeaks(loader, file: file, line: line)
         trackMemoryLeaks(feedViewController, file: file, line: line)
@@ -177,25 +177,28 @@ final class EssentialFeediOSTests: XCTestCase {
     }
    
     class LoaderSpy: FeedLoader, FeedImageDataLoader {
-        var loadedImageURLs = [URL]()
         
-        var loadCalls: Int {
-            completions.count
+        // MARK: - Feed Loader
+        var loadFeedCalls: Int {
+            feedFetchingCompletions.count
         }
         
-        var completions: [(FeedLoader.Result) -> Void] = []
+        var feedFetchingCompletions: [(FeedLoader.Result) -> Void] = []
         
         func load(completion: @escaping (FeedLoader.Result) -> Void) {
-            completions.append(completion)
+            feedFetchingCompletions.append(completion)
         }
         
         func completeLoadingFeed(_ feeds: [FeedImage] = [], at index: Int = 0) {
-            completions[index](.success(feeds))
+            feedFetchingCompletions[index](.success(feeds))
         }
         
         func completeLoadingFeedWithError(_ error: Error = NSError(domain: "", code: 0, userInfo: nil), at index: Int = 0) {
-            completions[index](.failure(error))
+            feedFetchingCompletions[index](.failure(error))
         }
+        
+        // MARK: - Image Data Loader
+        var loadedImageURLs = [URL]()
         
         func loadImageData(from url: URL) {
             loadedImageURLs.append(url)
