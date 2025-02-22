@@ -151,15 +151,29 @@ final class EssentialFeediOSTests: XCTestCase {
         XCTAssertEqual(view0?.isShowingRetryButton, false)
         XCTAssertEqual(view1?.isShowingRetryButton, false)
         
-        loader.completeImageLoading(at: 0)
+        let imageData0  = UIImage.make(withColor: .red).pngData()!
+        loader.completeImageLoading(at: 0, data: imageData0)
         XCTAssertEqual(view0?.isShowingRetryButton, false)
         
         loader.completeImageLoadingWithError(at: 1)
         XCTAssertEqual(view1?.isShowingRetryButton, true)
         
         view1?.simulateButtonTapped()
-        loader.completeImageLoading(at: 2)
+        let imageData1  = UIImage.make(withColor: .blue).pngData()!
+        loader.completeImageLoading(at: 2, data: imageData1)
         XCTAssertEqual(view1?.isShowingRetryButton, false)
+    }
+    
+    func test_feedImageViewRetryButton_isVisibleOnInvalidImageData() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeLoadingFeed([makeFeedImage(description: nil, location: nil)])
+        let view0 = sut.simulateFeedImageViewVisible(at: 0)
+        XCTAssertEqual(view0?.isShowingRetryButton, false)
+        
+        loader.completeImageLoading(at: 0, data: Data("invalid data".utf8))
+        XCTAssertEqual(view0?.isShowingRetryButton, true)
     }
         
     // MARK: - Helper

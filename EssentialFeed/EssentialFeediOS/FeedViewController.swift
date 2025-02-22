@@ -80,10 +80,9 @@ public final class FeedViewController: UITableViewController {
     
     private func loadImageData(for cell: FeedImageCell, at indexPath: IndexPath, with url: URL) {
         let task = imageDataLoader?.loadImageData(from: url) { [cell] completion in
-            switch completion {
-            case .success:
+            if let data = try? completion.get(), let _ = UIImage(data: data) {
                 cell.retryButton.isHidden = true
-            case .failure:
+            } else {
                 cell.retryButton.isHidden = false
             }
             cell.imageContainer.isShimmering = false
