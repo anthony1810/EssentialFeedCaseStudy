@@ -43,6 +43,12 @@ final class EssentialFeediOSTests: XCTestCase {
 
         loader.completeLoadingFeed()
         XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), false)
+        
+        feedViewController.userInitiateFeedReload()
+        XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), true)
+        
+        loader.completeLoadingFeedWithError()
+        XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), false)
     }
     
     func test_loadFeedCompletion_rendersSuccessfullyLoadedFeedItems() {
@@ -169,7 +175,7 @@ final class EssentialFeediOSTests: XCTestCase {
             completions[index](.success(feeds))
         }
         
-        func completeLoadingFeedWithError(_ error: Error = NSError(domain: "", code: 0, userInfo: nil), at index: Int) {
+        func completeLoadingFeedWithError(_ error: Error = NSError(domain: "", code: 0, userInfo: nil), at index: Int = 0) {
             completions[index](.failure(error))
         }
     }
