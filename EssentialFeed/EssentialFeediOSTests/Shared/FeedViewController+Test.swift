@@ -8,6 +8,22 @@ import UIKit
 import EssentialFeediOS
 
 extension FeedViewController {
+    func feedImageView(at index: Int) -> FeedImageCell? {
+        let indexPath = IndexPath(row: index, section: feedSection)
+        let ds = tableView.dataSource
+        let cell = ds?.tableView(tableView, cellForRowAt: indexPath) as? FeedImageCell
+        
+        return cell
+    }
+    
+    func numberOfRenderedFeeds() -> Int {
+        tableView.numberOfRows(inSection: feedSection)
+    }
+    
+    var feedSection: Int {
+        0
+    }
+    
     func isLoadingIndicatorVisible() -> Bool {
         refreshControl?.isRefreshing == true
     }

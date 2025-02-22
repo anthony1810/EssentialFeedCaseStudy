@@ -44,6 +44,25 @@ final class EssentialFeediOSTests: XCTestCase {
         loader.completeLoadingFeed()
         XCTAssertEqual(feedViewController.isLoadingIndicatorVisible(), false)
     }
+    
+    func test_loadFeedCompletion_rendersSuccessfullyLoadedFeedItems() {
+        let feedImage0 = makeFeedImage(description: "a description", location: "a location")
+        let feedImage1 = makeFeedImage(description: "a description", location: nil)
+        let feedImage2 = makeFeedImage(description: nil, location: "a location")
+        let feedImage3 = makeFeedImage(description: nil, location: nil)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        assertThat(sut, isRendering: [])
+        
+        loader.completeLoadingFeed([feedImage0], at: 0)
+        assertThat(sut, isRendering: [feedImage0])
+        
+        sut.userInitiateFeedReload()
+        loader.completeLoadingFeed([feedImage1, feedImage2, feedImage3], at: 1)
+        assertThat(sut, isRendering: [feedImage1, feedImage2, feedImage3])
+    }
+        
     // MARK: - Helper
     
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
@@ -54,6 +73,72 @@ final class EssentialFeediOSTests: XCTestCase {
         trackMemoryLeaks(feedViewController, file: file, line: line)
         
         return (feedViewController, loader)
+    }
+    
+    func makeFeedImage(id: UUID = UUID(), description: String?, location: String?, url: URL = URL(string: "https://anyUrl.com")!) -> FeedImage {
+        return FeedImage(
+            id: id,
+            description: description,
+            location: location,
+            imageURL: url
+        )
+    }
+    
+    func assertThat(
+        _ sut: FeedViewController,
+        isRendering feeds: [FeedImage],
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
+        guard sut.numberOfRenderedFeeds() == feeds.count else {
+            XCTFail(
+                "Expected \(feeds.count) rendered feeds but \(sut.numberOfRenderedFeeds()) were rendered.",
+                file: file,
+                line: line
+            )
+            return
+        }
+        
+        feeds.enumerated().forEach { index, feed in
+            assertThat(sut, isRendering: feed, at: index, file: file, line: line)
+        }
+    }
+    
+    func assertThat(
+        _ sut: FeedViewController,
+        isRendering feed: FeedImage,
+        at index: Int,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
+        guard let cell = sut.feedImageView(at: index) else {
+            XCTFail("Missing feed cell at index \(index)", file: file, line: line)
+            return
+        }
+        
+        let isLocationHidden = feed.location == nil
+        
+        XCTAssertEqual(
+            feed.location,
+            cell.locationText,
+            "assert that feed location \(String(describing: feed.location)) matches cell location \(String(describing: cell.locationText)) at index = \(index)",
+            file: file,
+            line: line
+        )
+        
+        XCTAssertEqual(
+            feed.description,
+            cell.descriptionText,
+            "assert that feed description \(String(describing: feed.description)) matches cell description \(String(describing: cell.description)) at index = \(index)",
+            file: file,
+            line: line)
+        
+        XCTAssertEqual(
+            isLocationHidden,
+            !cell.isShowingLocation,
+            "assert that feed isLocationHidden \(String(describing: isLocationHidden)) matches cell isShowingLocation \(String(describing: cell.isShowingLocation)) at index = \(index)",
+            file: file,
+            line: line)
     }
    
     class LoaderSpy: FeedLoader {
@@ -67,8 +152,8 @@ final class EssentialFeediOSTests: XCTestCase {
             completions.append(completion)
         }
         
-        func completeLoadingFeed() {
-            completions[0](.success([]))
+        func completeLoadingFeed(_ feeds: [FeedImage] = [], at index: Int = 0) {
+            completions[index](.success(feeds))
         }
     }
 }
