@@ -81,12 +81,28 @@ final class EssentialFeediOSTests: XCTestCase {
         loader.completeLoadingFeedWithError(at: 1)
         assertThat(sut, isRendering: [feedImage0])
     }
+    
+    func test_feedImageView_loadsImageURLWhenVisible() {
+        let feedImage0 = makeFeedImage(description: "a description", location: "a location")
+        let feedImage1 = makeFeedImage(description: "a description", location: nil)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeLoadingFeed([feedImage0, feedImage1])
+        XCTAssertEqual(loader.loadedImageURLs, [])
+        
+        sut.simulateFeedImageViewVisible(at: 0)
+        XCTAssertEqual(loader.loadedImageURLs, [feedImage0.url])
+        
+        sut.simulateFeedImageViewVisible(at: 1)
+        XCTAssertEqual(loader.loadedImageURLs, [feedImage0.url, feedImage1.url])
+    }
         
     // MARK: - Helper
     
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
-        let feedViewController = FeedViewController(loader: loader)
+        let feedViewController = FeedViewController(loader: loader, imageDataLoader: loader)
         
         trackMemoryLeaks(loader, file: file, line: line)
         trackMemoryLeaks(feedViewController, file: file, line: line)
@@ -160,7 +176,9 @@ final class EssentialFeediOSTests: XCTestCase {
             line: line)
     }
    
-    class LoaderSpy: FeedLoader {
+    class LoaderSpy: FeedLoader, FeedImageDataLoader {
+        var loadedImageURLs = [URL]()
+        
         var loadCalls: Int {
             completions.count
         }
@@ -177,6 +195,10 @@ final class EssentialFeediOSTests: XCTestCase {
         
         func completeLoadingFeedWithError(_ error: Error = NSError(domain: "", code: 0, userInfo: nil), at index: Int = 0) {
             completions[index](.failure(error))
+        }
+        
+        func loadImageData(from url: URL) {
+            loadedImageURLs.append(url)
         }
     }
 }

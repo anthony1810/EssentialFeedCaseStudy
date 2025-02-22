@@ -8,6 +8,10 @@ import UIKit
 import EssentialFeediOS
 
 extension FeedViewController {
+    func simulateFeedImageViewVisible(at index: Int) {
+        _ = feedImageView(at: index)
+    }
+
     func feedImageView(at index: Int) -> FeedImageCell? {
         let indexPath = IndexPath(row: index, section: feedSection)
         let ds = tableView.dataSource
