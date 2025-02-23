@@ -30,4 +30,8 @@ public extension FeedImageCell {
     func simulateButtonTapped() {
         retryButton.simulateButtonTapped()
     }
+    
+    var renderedImage: Data? {
+        feedImageView.image?.pngData()
+    }
 }

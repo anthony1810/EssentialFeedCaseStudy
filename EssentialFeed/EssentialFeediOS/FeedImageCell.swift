@@ -11,6 +11,7 @@ public class FeedImageCell: UITableViewCell {
     public var locationLabel = UILabel()
     public let descriptionLabel = UILabel()
     public let imageContainer = UIView()
+    public let feedImageView = UIImageView()
     
     public var onRetry: (() -> Void)?
     

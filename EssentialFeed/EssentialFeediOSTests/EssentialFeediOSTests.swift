@@ -137,6 +137,30 @@ final class EssentialFeediOSTests: XCTestCase {
         XCTAssertEqual(view2?.isShowingLoadingIndicator, false)
     }
     
+    func test_feedImageView_rendersImageLoadedFromURL() {
+        let feedImage0 = makeFeedImage(description: "a description", location: "a location")
+        let feedImage1 = makeFeedImage(description: "a description", location: nil)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeLoadingFeed([feedImage0, feedImage1])
+        
+        let view1 = sut.simulateFeedImageViewVisible(at: 0)
+        let view2 = sut.simulateFeedImageViewVisible(at: 0)
+        XCTAssertEqual(view1?.renderedImage, .none)
+        XCTAssertEqual(view2?.renderedImage, .none)
+        
+        let imageData0  = UIImage.make(withColor: .red).pngData()!
+        loader.completeImageLoading(at: 0, data: imageData0)
+        XCTAssertNotNil(view1?.renderedImage)
+        XCTAssertEqual(view2?.renderedImage, .none)
+        
+        let imageData1  = UIImage.make(withColor: .blue).pngData()!
+        loader.completeImageLoading(at: 1, data: imageData1)
+        XCTAssertNotNil(view1?.renderedImage)
+        XCTAssertNotNil(view2?.renderedImage)
+    }
+    
     func test_feedImageView_showsRetryButtonWhenImageLoadingFails() {
         let feedImage0 = makeFeedImage(description: "a description", location: "a location")
         let feedImage1 = makeFeedImage(description: "a description", location: nil)
