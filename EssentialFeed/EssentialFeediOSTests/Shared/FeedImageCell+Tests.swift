@@ -27,7 +27,7 @@ public extension FeedImageCell {
         retryButton.isHidden == false
     }
     
-    func simulateButtonTapped() {
+    func simulateRetryButtonTapped() {
         retryButton.simulateButtonTapped()
     }
     

@@ -80,14 +80,12 @@ public final class FeedViewController: UITableViewController {
     
     private func loadImageData(for cell: FeedImageCell, at indexPath: IndexPath, with url: URL) {
         let task = imageDataLoader?.loadImageData(from: url) { [cell] completion in
-            if let data = try? completion.get(), let image = UIImage(data: data) {
-                cell.retryButton.isHidden = true
-                cell.feedImageView.image = image
-            } else {
-                cell.retryButton.isHidden = false
-                cell.feedImageView.image = nil
-            }
+            let data = try? completion.get()
+            let image = data.map(UIImage.init) ?? nil
+            
             cell.imageContainer.isShimmering = false
+            cell.feedImageView.image = image
+            cell.retryButton.isHidden = image != nil
         }
         imageDataTasks[indexPath] = task
     }

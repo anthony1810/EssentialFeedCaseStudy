@@ -172,8 +172,8 @@ final class EssentialFeediOSTests: XCTestCase {
         
         let view0 = sut.simulateFeedImageViewVisible(at: 0)
         let view1 = sut.simulateFeedImageViewVisible(at: 1)
-        XCTAssertEqual(view0?.isShowingRetryButton, false)
-        XCTAssertEqual(view1?.isShowingRetryButton, false)
+        XCTAssertEqual(view0?.isShowingRetryButton, false, "don't show retry button while loading")
+        XCTAssertEqual(view1?.isShowingRetryButton, false, "don't show retry button while loading")
         
         let imageData0  = UIImage.make(withColor: .red).pngData()!
         loader.completeImageLoading(at: 0, data: imageData0)
@@ -182,10 +182,10 @@ final class EssentialFeediOSTests: XCTestCase {
         loader.completeImageLoadingWithError(at: 1)
         XCTAssertEqual(view1?.isShowingRetryButton, true)
         
-        view1?.simulateButtonTapped()
+        view1?.simulateRetryButtonTapped()
         let imageData1  = UIImage.make(withColor: .blue).pngData()!
         loader.completeImageLoading(at: 2, data: imageData1)
-        XCTAssertEqual(view1?.isShowingRetryButton, false)
+        XCTAssertEqual(view1?.isShowingRetryButton, false, "retry button should disappear after image loaded on retry button tapped")
     }
     
     func test_feedImageViewRetryButton_isVisibleOnInvalidImageData() {
