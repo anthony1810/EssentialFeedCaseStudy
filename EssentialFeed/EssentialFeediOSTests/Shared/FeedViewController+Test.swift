@@ -8,16 +8,21 @@ import UIKit
 import EssentialFeediOS
 
 extension FeedViewController {
-    func simulateFeedImageViewNotVisible(at index: Int) {
+    
+    @discardableResult
+    func simulateFeedImageViewNotNearVisible(at index: Int) -> FeedImageCell? {
         let view = feedImageView(at: index)
         
-        let delegate = tableView.delegate
-        let index = IndexPath(row: index, section: feedSection)
-        delegate?.tableView?(tableView, didEndDisplaying: view!, forRowAt: index)
+        let fetchingDatasource = tableView.prefetchDataSource
+        let indexPath = IndexPath(row: index, section: feedSection)
+        fetchingDatasource?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
+        
+        return view
     }
     
     @discardableResult
     func simulateFeedImageViewNearVisible(at index: Int) -> FeedImageCell? {
+        
         let view = feedImageView(at: index)
         
         let fetchingDatasource = tableView.prefetchDataSource
@@ -25,6 +30,14 @@ extension FeedViewController {
         fetchingDatasource?.tableView(tableView, prefetchRowsAt: [indexPath])
         
         return view
+    }
+    
+    func simulateFeedImageViewNotVisible(at index: Int) {
+        let view = feedImageView(at: index)
+        
+        let delegate = tableView.delegate
+        let index = IndexPath(row: index, section: feedSection)
+        delegate?.tableView?(tableView, didEndDisplaying: view!, forRowAt: index)
     }
     
     @discardableResult

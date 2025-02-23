@@ -78,7 +78,7 @@ final class EssentialFeediOSTests: XCTestCase {
         assertThat(sut, isRendering: [feedImage0])
         
         sut.userInitiateFeedReload()
-        loader.completeLoadingFeedWithError(at: 1)
+        loader.completeLoadingFeedWithError(at: 0)
         assertThat(sut, isRendering: [feedImage0])
     }
     
@@ -145,20 +145,20 @@ final class EssentialFeediOSTests: XCTestCase {
         sut.simulateAppearance()
         loader.completeLoadingFeed([feedImage0, feedImage1])
         
+        let view0 = sut.simulateFeedImageViewVisible(at: 0)
         let view1 = sut.simulateFeedImageViewVisible(at: 0)
-        let view2 = sut.simulateFeedImageViewVisible(at: 0)
+        XCTAssertEqual(view0?.renderedImage, .none)
         XCTAssertEqual(view1?.renderedImage, .none)
-        XCTAssertEqual(view2?.renderedImage, .none)
         
         let imageData0  = UIImage.make(withColor: .red).pngData()!
         loader.completeImageLoading(at: 0, data: imageData0)
-        XCTAssertNotNil(view1?.renderedImage)
-        XCTAssertEqual(view2?.renderedImage, .none)
+        XCTAssertEqual(view0?.renderedImage, imageData0)
+        XCTAssertEqual(view1?.renderedImage, .none)
         
         let imageData1  = UIImage.make(withColor: .blue).pngData()!
         loader.completeImageLoading(at: 1, data: imageData1)
-        XCTAssertNotNil(view1?.renderedImage)
-        XCTAssertNotNil(view2?.renderedImage)
+        XCTAssertEqual(view0?.renderedImage, imageData0)
+        XCTAssertEqual(view1?.renderedImage, imageData1)
     }
     
     func test_feedImageView_showsRetryButtonWhenImageLoadingFails() {
@@ -188,6 +188,18 @@ final class EssentialFeediOSTests: XCTestCase {
         XCTAssertEqual(view1?.isShowingRetryButton, false, "retry button should disappear after image loaded on retry button tapped")
     }
     
+    func test_feedImageViewRetryButton_isVisibleOnInvalidImageData() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeLoadingFeed([makeFeedImage(description: nil, location: nil)])
+        let view0 = sut.simulateFeedImageViewVisible(at: 0)
+        XCTAssertEqual(view0?.isShowingRetryButton, false)
+        
+        loader.completeImageLoading(at: 0, data: Data("invalid data".utf8))
+        XCTAssertEqual(view0?.isShowingRetryButton, true)
+    }
+    
     func test_feedImageView_preloadsWhenViewIsNearVisible() {
         let feedImage0 = makeFeedImage(description: "a description", location: "a location")
         let feedImage1 = makeFeedImage(description: "a description", location: nil)
@@ -202,18 +214,6 @@ final class EssentialFeediOSTests: XCTestCase {
         loader.completeImageLoading(at: 0)
         sut.simulateFeedImageViewNearVisible(at: 1)
         XCTAssertEqual(loader.loadedImageURLs, [feedImage0.url, feedImage1.url])
-    }
-    
-    func test_feedImageViewRetryButton_isVisibleOnInvalidImageData() {
-        let (sut, loader) = makeSUT()
-        
-        sut.simulateAppearance()
-        loader.completeLoadingFeed([makeFeedImage(description: nil, location: nil)])
-        let view0 = sut.simulateFeedImageViewVisible(at: 0)
-        XCTAssertEqual(view0?.isShowingRetryButton, false)
-        
-        loader.completeImageLoading(at: 0, data: Data("invalid data".utf8))
-        XCTAssertEqual(view0?.isShowingRetryButton, true)
     }
         
     // MARK: - Helper

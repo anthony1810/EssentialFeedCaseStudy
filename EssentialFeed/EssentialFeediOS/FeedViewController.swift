@@ -92,6 +92,8 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
         indexPaths
              .map { (feed: items[$0.row], indexPath: $0) }
              .forEach { feed, indexPath in
+                 self.imageDataTasks[indexPath]?.cancel()
+                 self.imageDataTasks[indexPath] = nil
              }
     }
     
