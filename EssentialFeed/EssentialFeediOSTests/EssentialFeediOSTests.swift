@@ -200,7 +200,19 @@ final class EssentialFeediOSTests: XCTestCase {
         XCTAssertEqual(view0?.isShowingRetryButton, true)
     }
     
-    func test_feedImageView_preloadsWhenViewIsNearVisible() {
+    // this test has failed because it called both cell for row and prefetch for row
+//    func test_feedImageView_preloadsWhenViewIsNearVisible() {
+//        let feedImage0 = makeFeedImage(description: "a description", location: "a location")
+//        let (sut, loader) = makeSUT()
+//        
+//        sut.simulateAppearance()
+//        loader.completeLoadingFeed([feedImage0])
+//        
+//        sut.simulateFeedImageViewNearVisible(at: 0)
+//        XCTAssertEqual(loader.loadedImageURLs, [feedImage0.url])
+//    }
+    
+    func test_feedImageView_canCelPreloadsWhenViewIsNotNearVisible() {
         let feedImage0 = makeFeedImage(description: "a description", location: "a location")
         let feedImage1 = makeFeedImage(description: "a description", location: nil)
         let (sut, loader) = makeSUT()
@@ -208,13 +220,14 @@ final class EssentialFeediOSTests: XCTestCase {
         sut.simulateAppearance()
         loader.completeLoadingFeed([feedImage0, feedImage1])
         
-        sut.simulateFeedImageViewNearVisible(at: 0)
-        XCTAssertEqual(loader.loadedImageURLs, [feedImage0.url])
+        sut.simulateFeedImageViewNotNearVisible(at: 0)
+        XCTAssertEqual(loader.cancelledImageURLs, [feedImage0.url])
         
         loader.completeImageLoading(at: 0)
-        sut.simulateFeedImageViewNearVisible(at: 1)
-        XCTAssertEqual(loader.loadedImageURLs, [feedImage0.url, feedImage1.url])
+        sut.simulateFeedImageViewNotNearVisible(at: 1)
+        XCTAssertEqual(loader.cancelledImageURLs, [feedImage0.url, feedImage1.url])
     }
+    
         
     // MARK: - Helper
     

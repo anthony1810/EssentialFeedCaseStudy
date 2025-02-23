@@ -34,6 +34,7 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        tableView.prefetchDataSource = self
         refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
         load()
     }
@@ -98,7 +99,7 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     }
     
     private func loadImageData(for cell: FeedImageCell, at indexPath: IndexPath, with url: URL) {
-        let task = imageDataLoader?.loadImageData(from: url) { [cell] completion in
+        imageDataTasks[indexPath] = imageDataLoader?.loadImageData(from: url) { [cell] completion in
             let data = try? completion.get()
             let image = data.map(UIImage.init) ?? nil
             
@@ -106,6 +107,5 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
             cell.feedImageView.image = image
             cell.retryButton.isHidden = image != nil
         }
-        imageDataTasks[indexPath] = task
     }
 }
