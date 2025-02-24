@@ -9,7 +9,7 @@ import XCTest
 import EssentialFeediOS
 import EssentialFeed
 
-final class EssentialFeediOSTests: XCTestCase {
+final class FeedViewControllerTests: XCTestCase {
     func test_init_doesNotLoadFeed() {
         let (_, loader) = makeSUT()
         
