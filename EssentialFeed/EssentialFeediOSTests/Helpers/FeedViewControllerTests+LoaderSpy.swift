@@ -9,6 +9,18 @@ import EssentialFeediOS
 import Foundation
 
 extension FeedViewControllerTests {
+    
+    class TaskSpy: ImageDataLoaderTask {
+        let handler: () -> Void
+        init(handler: @escaping () -> Void) {
+            self.handler = handler
+        }
+        
+        func cancel() {
+            handler()
+        }
+    }
+    
     class LoaderSpy: FeedLoader, FeedImageDataLoader {
         
         // MARK: - Feed Loader

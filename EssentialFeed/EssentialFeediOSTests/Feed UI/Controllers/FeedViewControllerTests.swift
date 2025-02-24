@@ -230,7 +230,6 @@ final class FeedViewControllerTests: XCTestCase {
     
         
     // MARK: - Helper
-    
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
         let feedViewController = FeedViewController(feedLoader: loader, imageDataLoader: loader)
@@ -248,16 +247,5 @@ final class FeedViewControllerTests: XCTestCase {
             location: location,
             imageURL: url
         )
-    }
-    
-    class TaskSpy: ImageDataLoaderTask {
-        let handler: () -> Void
-        init(handler: @escaping () -> Void) {
-            self.handler = handler
-        }
-        
-        func cancel() {
-            handler()
-        }
     }
 }
