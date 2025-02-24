@@ -510,7 +510,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		92E87D5C2D676FF00084796B /* Shared */ = {
+		92E87D5C2D676FF00084796B /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
 				922246102D6CB4B5002F89E7 /* FeedViewControllerTests+Assertions.swift */,
@@ -523,7 +523,7 @@
 				92E87D602D6770520084796B /* UIControl+Test.swift */,
 				92E87D5D2D676FF90084796B /* FeedViewController+Test.swift */,
 			);
-			path = Shared;
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 		92FDC2442D64CD9F00FE3709 /* EssentialFeediOS */ = {
@@ -539,7 +539,7 @@
 		92FDC2472D64CDA200FE3709 /* EssentialFeediOSTests */ = {
 			isa = PBXGroup;
 			children = (
-				92E87D5C2D676FF00084796B /* Shared */,
+				92E87D5C2D676FF00084796B /* Helpers */,
 				92FDC2492D64CEDF00FE3709 /* CI_iOS.xctestplan */,
 				92FDC2462D64CDA200FE3709 /* FeedViewControllerTests.swift */,
 			);
