@@ -22,7 +22,7 @@ public final class FeedImageCellController {
         self.feed = feed
     }
     
-    deinit {
+    func cancel() {
         imageDownloadTask?.cancel()
         imageDownloadTask = nil
     }
