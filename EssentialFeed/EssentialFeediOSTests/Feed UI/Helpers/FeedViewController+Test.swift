@@ -76,8 +76,8 @@ extension FeedViewController {
     func simulateAppearance() {
         if !isViewLoaded {
             loadViewIfNeeded()
-            prepareForFirstAppearance()
         }
+        prepareForFirstAppearance()
         
         beginAppearanceTransition(true, animated: false)
         endAppearanceTransition()
@@ -102,5 +102,6 @@ extension FeedViewController {
         }
         
         refreshControl = fakeRefreshControl
+        refreshViewController?.view = fakeRefreshControl
     }
 }

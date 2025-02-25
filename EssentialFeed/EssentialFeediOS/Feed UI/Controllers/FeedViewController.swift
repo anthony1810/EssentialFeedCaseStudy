@@ -9,24 +9,38 @@ import UIKit
 import EssentialFeed
 
 public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
+    public var refreshViewController: FeedRefreshViewController?
     var feedLoader: FeedLoader?
     var imageDataLoader: FeedImageDataLoader?
     
     var items: [FeedImage] = []
     var imageDataTasks: [IndexPath: ImageDataLoaderTask] = [:]
     
-    public convenience init(feedLoader: FeedLoader, imageDataLoader: FeedImageDataLoader) {
+    public convenience init(
+        feedLoader: FeedLoader,
+        imageDataLoader: FeedImageDataLoader,
+        refreshViewController: FeedRefreshViewController
+    ) {
         self.init()
         
         self.feedLoader = feedLoader
         self.imageDataLoader = imageDataLoader
+        self.refreshViewController = refreshViewController
+    }
+    
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        tableView.prefetchDataSource = self
+        refreshControl = self.refreshViewController?.view
+        self.refreshViewController?.onRefresh = { [weak self] items in
+            self?.reloadData(with: items)
+        }
     }
     
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        tableView.prefetchDataSource = self
-        refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
         load()
     }
     
@@ -35,11 +49,15 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
         refreshControl?.beginRefreshing()
         feedLoader?.load { [unowned self] result in
             if case let .success(items) = result {
-                self.items = items
-                self.tableView.reloadData()
+                reloadData(with: items)
             }
             self.refreshControl?.endRefreshing()
         }
+    }
+    
+    private func reloadData(with items: [FeedImage]) {
+        self.items = items
+        self.tableView.reloadData()
     }
     
     public override func numberOfSections(in tableView: UITableView) -> Int {
