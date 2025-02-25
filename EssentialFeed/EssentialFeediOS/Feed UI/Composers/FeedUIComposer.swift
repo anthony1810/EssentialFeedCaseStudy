@@ -20,11 +20,15 @@ public enum FeedUIComposer {
             refreshViewController: refreshViewController
         )
         
-        refreshViewController.onRefresh = { [weak feedVC] feeds in
+        refreshViewController.onRefresh = adapterFeedsToCellControllers(forwarding: feedVC, imageDataLoader: imageDataLoader)
+        
+        return feedVC
+    }
+    
+    static func adapterFeedsToCellControllers(forwarding feedVC: FeedViewController, imageDataLoader: FeedImageDataLoader) -> ([FeedImage]) -> Void {
+        return { [weak feedVC] feeds in
             feedVC?.tableModels = feeds
                 .map { FeedImageCellController(imageDataLoader: imageDataLoader, feed: $0) }
         }
-        
-        return feedVC
     }
 }
