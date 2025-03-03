@@ -21,7 +21,7 @@ public enum FeedUIComposer {
             refreshViewController: refreshViewController
         )
         
-        feedRefreshViewModel.onRefresh = adapterFeedsToCellControllers(forwarding: feedVC, imageDataLoader: imageDataLoader)
+        feedRefreshViewModel.onLoadedFeed = adapterFeedsToCellControllers(forwarding: feedVC, imageDataLoader: imageDataLoader)
         
         return feedVC
     }

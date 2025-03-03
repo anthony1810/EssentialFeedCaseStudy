@@ -9,40 +9,15 @@ import Foundation
 import EssentialFeed
 
 public final class FeedRefreshViewModel {
-    enum State {
-        case pending
-        case loadinng
-        case loaded([FeedImage])
-        case failed
-    }
-    
     public var onChanged: ((FeedRefreshViewModel) -> Void)?
-    public var onRefresh: (([FeedImage]) -> Void)?
+    public var onLoadedFeed: (([FeedImage]) -> Void)?
     
-    private(set) var state: State = .pending {
+    public var isLoading: Bool = false {
         didSet {
             onChanged?(self)
         }
     }
-    
-    public var isLoading: Bool {
-        switch state {
-        case .loadinng:
-            return true
-        default:
-            return false
-        }
-    }
-    
-    public var feeds: [FeedImage]? {
-        switch state {
-        case .loaded(let feeds):
-            return feeds
-        default:
-            return nil
-        }
-    }
-    
+
     private let feedLoader: FeedLoader
     
     public init(feedLoader: FeedLoader) {
@@ -50,16 +25,13 @@ public final class FeedRefreshViewModel {
     }
     
     func loadFeed() {
-        state = .loadinng
+        isLoading = true
         feedLoader.load { [weak self] result in
            if let items = try? result.get() {
-               self?.state = .loaded(items)
-               self?.onRefresh?(items)
-           } else {
-               self?.state = .failed
+               self?.onLoadedFeed?(items)
            }
             
-            self?.state = .pending
+            self?.isLoading = false
         }
     }
 }
