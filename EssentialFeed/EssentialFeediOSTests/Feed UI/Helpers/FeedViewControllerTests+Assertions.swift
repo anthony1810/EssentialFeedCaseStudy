@@ -1,70 +1,30 @@
-//
-//  FeedViewControllerTests+Assertions.swift
-//  EssentialFeed
-//
-//  Created by Anthony on 24/2/25.
-//
-
-import Foundation
+import XCTest
 import EssentialFeed
 import EssentialFeediOS
-import XCTest
 
 extension FeedViewControllerTests {
-    func assertThat(
-        _ sut: FeedViewController,
-        isRendering feeds: [FeedImage],
-        file: StaticString = #file,
-        line: UInt = #line
-    ) {
-        guard sut.numberOfRenderedFeeds() == feeds.count else {
-            XCTFail(
-                "Expected \(feeds.count) rendered feeds but \(sut.numberOfRenderedFeeds()) were rendered.",
-                file: file,
-                line: line
-            )
-            return
+    func assertThat(_ sut: FeedViewController, isRendering feed: [FeedImage], file: StaticString = #file, line: UInt = #line) {
+        guard sut.numberOfRenderedFeedImageViews() == feed.count else {
+            return XCTFail("Expected \(feed.count) images, got \(sut.numberOfRenderedFeedImageViews()) instead.", file: file, line: line)
         }
         
-        feeds.enumerated().forEach { index, feed in
-            assertThat(sut, isRendering: feed, at: index, file: file, line: line)
+        feed.enumerated().forEach { index, image in
+            assertThat(sut, hasViewConfiguredFor: image, at: index, file: file, line: line)
         }
     }
     
-    func assertThat(
-        _ sut: FeedViewController,
-        isRendering feed: FeedImage,
-        at index: Int,
-        file: StaticString = #file,
-        line: UInt = #line
-    ) {
-        guard let cell = sut.feedImageView(at: index) else {
-            XCTFail("Missing feed cell at index \(index)", file: file, line: line)
-            return
+    func assertThat(_ sut: FeedViewController, hasViewConfiguredFor image: FeedImage, at index: Int, file: StaticString = #file, line: UInt = #line) {
+        let view = sut.feedImageView(at: index)
+        
+        guard let cell = view as? FeedImageCell else {
+            return XCTFail("Expected \(FeedImageCell.self) instance, got \(String(describing: view)) instead", file: file, line: line)
         }
         
-        let isLocationHidden = feed.location == nil
+        let shouldLocationBeVisible = (image.location != nil)
+        XCTAssertEqual(cell.isShowingLocation, shouldLocationBeVisible, "Expected `isShowingLocation` to be \(shouldLocationBeVisible) for image view at index (\(index))", file: file, line: line)
         
-        XCTAssertEqual(
-            feed.location,
-            cell.locationText,
-            "assert that feed location \(String(describing: feed.location)) matches cell location \(String(describing: cell.locationText)) at index = \(index)",
-            file: file,
-            line: line
-        )
+        XCTAssertEqual(cell.locationText, image.location, "Expected location text to be \(String(describing: image.location)) for image  view at index (\(index))", file: file, line: line)
         
-        XCTAssertEqual(
-            feed.description,
-            cell.descriptionText,
-            "assert that feed description \(String(describing: feed.description)) matches cell description \(String(describing: cell.description)) at index = \(index)",
-            file: file,
-            line: line)
-        
-        XCTAssertEqual(
-            isLocationHidden,
-            !cell.isShowingLocation,
-            "assert that feed isLocationHidden \(String(describing: isLocationHidden)) matches cell isShowingLocation \(String(describing: cell.isShowingLocation)) at index = \(index)",
-            file: file,
-            line: line)
+        XCTAssertEqual(cell.descriptionText, image.description, "Expected description text to be \(String(describing: image.description)) for image view at index (\(index)", file: file, line: line)
     }
 }

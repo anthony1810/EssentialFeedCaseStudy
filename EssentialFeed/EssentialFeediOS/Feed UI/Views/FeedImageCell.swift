@@ -1,29 +1,22 @@
-//
-//  FeedImageCell.swift
-//  EssentialFeed
-//
-//  Created by Anthony on 22/2/25.
-//
 import UIKit
 
-public class FeedImageCell: UITableViewCell {
-    public var locationContainer = UIView()
-    public var locationLabel = UILabel()
+public final class FeedImageCell: UITableViewCell {
+    public let locationContainer = UIView()
+    public let locationLabel = UILabel()
     public let descriptionLabel = UILabel()
-    public let imageContainer = UIView()
+    public let feedImageContainer = UIView()
     public let feedImageView = UIImageView()
     
-    public var onRetry: (() -> Void)?
     
-    public private(set) lazy var retryButton: UIButton = {
-        let button = UIButton(type: .system)
+    private(set) public lazy var feedImageRetryButton: UIButton = {
+        let button = UIButton()
         button.addTarget(self, action: #selector(retryButtonTapped), for: .touchUpInside)
         return button
     }()
     
-    @objc public func retryButtonTapped() {
+    var onRetry: (() -> Void)?
+    
+    @objc private func retryButtonTapped() {
         onRetry?()
     }
-    
 }
-
