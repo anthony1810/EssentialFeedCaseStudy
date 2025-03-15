@@ -2,7 +2,9 @@ import Foundation
 import EssentialFeed
 
 final class FeedImageViewModel<Image> {
+    
     typealias Observer<T> = (T) -> Void
+    
     private var task: FeedImageDataLoaderTask?
     private let model: FeedImage
     let imageLoader: FeedImageDataLoader
