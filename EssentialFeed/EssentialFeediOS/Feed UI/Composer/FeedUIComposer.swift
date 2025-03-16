@@ -5,8 +5,10 @@ public final class FeedUIComposer {
     private init() {}
     
     public static func feedComposedWith(feedLoader: FeedLoader, imageLoader: FeedImageDataLoader) -> FeedViewController {
-        let feedPresenter = FeedPresenter(feedLoader: feedLoader)
-        let refreshController = FeedRefreshViewController(loadFeed: feedPresenter.loadFeed)
+        let feedPresenter = FeedPresenter()
+        let feedLoaderPresenterAdapter = FeedLoaderPresenterAdapter(loader: feedLoader, presenter: feedPresenter)
+        
+        let refreshController = FeedRefreshViewController(loadFeed: feedLoaderPresenterAdapter.loadFeed)
         feedPresenter.loadingView = WeakRefVirtual(object: refreshController)
         let feedController = FeedViewController(refreshController: refreshController)
         
@@ -51,5 +53,28 @@ class WeakRefVirtual<T: AnyObject> {
 extension WeakRefVirtual: LoadingView where T: LoadingView {
     func display(viewModel: LoadingViewModel) {
         object?.display(viewModel: viewModel)
+    }
+}
+
+class FeedLoaderPresenterAdapter {
+    private let feedLoader: FeedLoader
+    private let presenter: FeedPresenter
+    
+    init(loader: FeedLoader, presenter: FeedPresenter) {
+        self.feedLoader = loader
+        self.presenter = presenter
+    }
+    
+    func loadFeed() {
+        presenter.didStartLoading()
+        
+        feedLoader.load { [weak self] result in
+            switch result {
+            case .success(let feeds):
+                self?.presenter.display(feeds: feeds)
+            case .failure(let error):
+                self?.presenter.didFinishLoading(with: error)
+            }
+        }
     }
 }
