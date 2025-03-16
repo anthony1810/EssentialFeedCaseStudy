@@ -1,8 +1,11 @@
 import Foundation
 import EssentialFeed
 
+struct LoadingViewModel {
+    var isLoading: Bool
+}
 protocol LoadingView {
-    func display(isLoading: Bool)
+    func display(viewModel: LoadingViewModel)
 }
 
 protocol FeedView {
@@ -20,14 +23,14 @@ final class FeedPresenter {
     var feedView: FeedView?
     
     func loadFeed() {
-        loadingView?.display(isLoading: true)
+        loadingView?.display(viewModel: LoadingViewModel(isLoading: true))
         
         feedLoader.load { [weak self] result in
             if let feed = try? result.get() {
                 self?.feedView?.display(feeds: feed)
             }
             
-            self?.loadingView?.display(isLoading: false)
+            self?.loadingView?.display(viewModel: LoadingViewModel(isLoading: false))
         }
     }
 }

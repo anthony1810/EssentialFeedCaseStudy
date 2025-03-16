@@ -49,7 +49,7 @@ class WeakRefVirtual<T: AnyObject> {
 }
 
 extension WeakRefVirtual: LoadingView where T: LoadingView {
-    func display(isLoading: Bool) {
-        object?.display(isLoading: isLoading)
+    func display(viewModel: LoadingViewModel) {
+        object?.display(viewModel: viewModel)
     }
 }
