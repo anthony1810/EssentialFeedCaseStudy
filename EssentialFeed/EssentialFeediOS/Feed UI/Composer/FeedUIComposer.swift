@@ -32,8 +32,8 @@ public final class FeedUIComposer {
             self.loader = loader
         }
         
-        func display(feeds: [FeedImage]) {
-            controller?.tableModel = feeds.map { model in
+        func display(viewModel: FeedViewModel) {
+            controller?.tableModel = viewModel.feeds.map { model in
                 FeedImageCellController(viewModel: FeedImageViewModel(model: model, imageLoader: loader, imageTransformer: UIImage.init))
             }
         }
