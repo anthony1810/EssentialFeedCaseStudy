@@ -6,7 +6,7 @@
 //
 import UIKit
 
-class WeakRefVirtual<T: AnyObject> {
+class WeakRefVirtualProxy<T: AnyObject> {
     private weak var object: T?
     
     init(object: T ) {
@@ -14,13 +14,13 @@ class WeakRefVirtual<T: AnyObject> {
     }
 }
 
-extension WeakRefVirtual: LoadingView where T: LoadingView {
+extension WeakRefVirtualProxy: LoadingView where T: LoadingView {
     func display(viewModel: LoadingViewModel) {
         object?.display(viewModel: viewModel)
     }
 }
 
-extension WeakRefVirtual: FeedImageView where T: FeedImageView, T.Image == UIImage {
+extension WeakRefVirtualProxy: FeedImageView where T: FeedImageView, T.Image == UIImage {
     func display(viewModel: FeedImageViewModel<UIImage>) {
         object?.display(viewModel: viewModel)
     }

@@ -12,7 +12,7 @@ public final class FeedUIComposer {
         let feedController = FeedViewController(refreshController: refreshController)
         
         let feedPresenter = FeedPresenter(
-            loadingView: WeakRefVirtual(object: refreshController),
+            loadingView: WeakRefVirtualProxy(object: refreshController),
             feedView: FeedViewAdapter(controller: feedController, loader: imageLoader)
         )
         feedLoaderPresenterAdapter.presenter = feedPresenter
