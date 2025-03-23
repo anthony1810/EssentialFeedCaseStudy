@@ -15,10 +15,10 @@ final class FeedImageCellController: FeedImageView {
     }
     
     func view(in tableView: UITableView) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "FeedImageCell") as! FeedImageCell
+        let cell: FeedImageCell? = tableView.dequeueReusableCell()
         self.cell = cell
         delegate.didRequestImage()
-        return cell
+        return cell!
     }
 
     func preload() {
@@ -44,3 +44,4 @@ final class FeedImageCellController: FeedImageView {
         cell = nil
     }
 }
+
