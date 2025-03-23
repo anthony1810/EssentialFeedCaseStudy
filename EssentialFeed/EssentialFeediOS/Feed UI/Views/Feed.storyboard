@@ -120,6 +120,7 @@ Location</string>
                         <connections>
                             <outlet property="dataSource" destination="msa-ck-oOR" id="mAc-P6-BfN"/>
                             <outlet property="delegate" destination="msa-ck-oOR" id="usS-jW-vGc"/>
+                            <outlet property="prefetchDataSource" destination="msa-ck-oOR" id="nwF-LS-nbH"/>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="8uf-Np-Sfx"/>
