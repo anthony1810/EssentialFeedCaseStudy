@@ -24,6 +24,10 @@ final class FeedPresenter {
         self.feedView = feedView
     }
     
+    static var title: String {
+        "My Feed"
+    }
+    
     func didStartLoading() {
         self.loadingView.display(viewModel: LoadingViewModel(isLoading: true))
     }
