@@ -7,7 +7,7 @@
 import EssentialFeed
 import UIKit
 
-class FeedLoaderPresenterAdapter: FeedRefreshViewControllerDelegate {
+class FeedLoaderPresenterAdapter: FeedViewControllerDelegate {
     private let feedLoader: FeedLoader
     var presenter: FeedPresenter?
     
