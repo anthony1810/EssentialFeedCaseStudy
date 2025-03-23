@@ -255,6 +255,20 @@ final class FeedUIIntegrationTests: XCTestCase {
         XCTAssertNil(view?.renderedImage, "Expected image view to not display image until it becomes visible again")
     }
     
+    func test_feedImageView_dispatchesFromBackgroundToMainThread() {
+        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+       
+        let expectation = self.expectation(description: "Expected image view to dispatch image loading from background to main thread")
+        DispatchQueue.global().async {
+            loader.completeFeedLoading(with: [image0])
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1.0)
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
