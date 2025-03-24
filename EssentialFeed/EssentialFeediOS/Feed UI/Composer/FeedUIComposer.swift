@@ -28,36 +28,3 @@ public final class FeedUIComposer {
         return feedController
     }
 }
-
-final class MainQueueDecorator<T> {
-    private let decoratee: T
-    
-    init(decoratee: T) {
-        self.decoratee = decoratee
-    }
-    
-    func dispatch(completion: @escaping () -> Void) {
-        guard Thread.isMainThread else {
-            return DispatchQueue.main.async(execute: completion)
-        }
-        
-        completion()
-    }
-}
-
-extension MainQueueDecorator: FeedLoader where T == FeedLoader {
-    func load(completion: @escaping (FeedLoader.Result) -> Void) {
-        decoratee.load { [weak self] result in
-            self?.dispatch(completion: { completion(result) })
-        }
-    }
-}
-
-extension MainQueueDecorator: FeedImageDataLoader where T == FeedImageDataLoader {
-    func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> any FeedImageDataLoaderTask {
-        decoratee.loadImageData(from: url) { [weak self] result in
-            self?.dispatch(completion: { completion(result) })
-        }
-    }
-}
-
