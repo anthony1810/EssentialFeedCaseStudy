@@ -6,3 +6,4 @@
   
 */
 "FEED_VIEW_TITLE" = "Feed Của Tôi";
+"FEED_VIEW_CONNECTION_ERROR" = "Không thể kết nối tới máy chủ";
