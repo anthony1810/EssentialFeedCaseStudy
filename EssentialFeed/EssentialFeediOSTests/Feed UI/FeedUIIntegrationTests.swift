@@ -294,6 +294,15 @@ final class FeedUIIntegrationTests: XCTestCase {
         XCTAssertNil(sut.errorMessage, "Expect error message to be nil initially")
     }
     
+    func test_loadFeedCompletion_rendersErrorMessageOnError() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeFeedLoadingWithError(at: 0)
+        
+        XCTAssertEqual(sut.errorMessage, localized("FEED_VIEW_CONNECTION_ERROR"), "Expect error message to be nil initially")
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
@@ -312,6 +321,16 @@ final class FeedUIIntegrationTests: XCTestCase {
     
     private func anyImageData() -> Data {
         UIImage.make(withColor: .red).pngData()!
+    }
+    
+    func localized(_ key: String, file: StaticString = #filePath, line: UInt = #line) -> String {
+        let table = "Feed"
+        let bundle = Bundle(for: FeedViewController.self)
+        let value = bundle.localizedString(forKey: key, value: nil, table: table)
+        if value == key {
+            XCTFail("Missing localized string for key: \(key) in table: \(table)", file: file, line: line)
+        }
+        return value
     }
     
 }
