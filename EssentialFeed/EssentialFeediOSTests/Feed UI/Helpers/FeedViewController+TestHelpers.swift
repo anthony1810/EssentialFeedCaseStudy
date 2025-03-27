@@ -65,6 +65,10 @@ extension FeedViewController {
         endAppearanceTransition()
     }
     
+    var errorMessage: String? {
+        errorView.message
+    }
+    
     private func prepareForFirstAppearance() {
         setSmallFrameToPreventRenderingCells()
         replaceRefreshControlWithFakeForiOS17PlusSupport()
