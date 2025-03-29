@@ -9,83 +9,6 @@ import Foundation
 import EssentialFeed
 import XCTest
 
-struct LoadingViewModel {
-    var isLoading: Bool
-}
-protocol FeedLoadingView {
-    func display(viewModel: LoadingViewModel)
-}
-
-struct FeedErrorViewModel {
-    let message: String?
-    
-    static var noError: Self {
-        FeedErrorViewModel(message: nil)
-    }
-    
-    static func error(message: String) -> FeedErrorViewModel {
-        FeedErrorViewModel(message: message)
-    }
-}
-protocol FeedErrorView {
-    func display(_ viewModel: FeedErrorViewModel)
-}
-
-struct FeedViewModel {
-    var feeds: [FeedImage]
-}
-protocol FeedView {
-    func display(viewModel: FeedViewModel)
-}
-
-
-
-final class FeedPresenter {
-    private let loadingView: FeedLoadingView
-    private let feedView: FeedView
-    private let errorView: FeedErrorView
-    
-    static var title: String {
-        NSLocalizedString(
-            "FEED_VIEW_TITLE",
-            tableName: "Feed",
-            bundle: Bundle(for: FeedPresenter.self),
-            comment: "Title for the feed view"
-        )
-    }
-    
-    static var loadError: String {
-        NSLocalizedString(
-            "FEED_VIEW_CONNECTION_ERROR",
-            tableName: "Feed",
-            bundle: Bundle(for: FeedPresenter.self),
-            comment: "Load error for the feed view"
-        )
-    }
-    
-    init(loadingView: FeedLoadingView, feedView: FeedView, errorView: FeedErrorView) {
-        self.loadingView = loadingView
-        self.feedView = feedView
-        self.errorView = errorView
-    }
-    
-    func didStartLoading() {
-        self.errorView.display(.noError)
-        self.loadingView.display(viewModel: LoadingViewModel(isLoading: true))
-    }
-    
-    func didFinishLoading(with error: Error) {
-        self.errorView.display(.error(message: FeedPresenter.loadError))
-        self.loadingView.display(viewModel: LoadingViewModel(isLoading: false))
-    }
-    
-    func display(feeds: [FeedImage]) {
-        self.feedView.display(viewModel: FeedViewModel(feeds: feeds))
-        self.loadingView.display(viewModel: LoadingViewModel(isLoading: false))
-        self.errorView.display(.noError)
-    }
-}
-
 final class FeedPresenterTests: XCTestCase {
     
     func test_title_isLocalized() {
@@ -151,7 +74,7 @@ final class FeedPresenterTests: XCTestCase {
     
     private func localized(_ key: String, file: StaticString = #file, line: UInt = #line) -> String {
         let table = "Feed"
-        let bundle = Bundle(for: FeedPresenterTests.self)
+        let bundle = Bundle(for: FeedPresenter.self)
         let value = bundle.localizedString(forKey: key, value: nil, table: table)
         
         if value == key {
