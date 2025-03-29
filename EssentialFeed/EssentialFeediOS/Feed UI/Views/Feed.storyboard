@@ -19,22 +19,24 @@
                             <rect key="frame" x="0.0" y="0.0" width="393" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="koK-xL-1Et">
-                                    <rect key="frame" x="20" y="11.999999999999998" width="353" height="20.333333333333329"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hp2-nO-EIS">
+                                    <rect key="frame" x="20" y="5" width="353" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="Button">
+                                        <fontDescription key="titleFontDescription" type="system" pointSize="17"/>
+                                        <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </buttonConfiguration>
+                                </button>
                             </subviews>
                             <color key="backgroundColor" red="1" green="0.41568627450980389" blue="0.41568627450980389" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
-                                <constraint firstItem="koK-xL-1Et" firstAttribute="centerX" secondItem="Lcd-Hc-4Ou" secondAttribute="centerX" id="7P8-tN-hm4"/>
-                                <constraint firstAttribute="trailing" secondItem="koK-xL-1Et" secondAttribute="trailing" constant="20" id="OWP-Yv-OpK"/>
-                                <constraint firstItem="koK-xL-1Et" firstAttribute="centerY" secondItem="Lcd-Hc-4Ou" secondAttribute="centerY" id="VFP-eT-P0g"/>
-                                <constraint firstItem="koK-xL-1Et" firstAttribute="leading" secondItem="Lcd-Hc-4Ou" secondAttribute="leading" constant="20" id="VFs-d2-DrI"/>
+                                <constraint firstItem="Hp2-nO-EIS" firstAttribute="leading" secondItem="Lcd-Hc-4Ou" secondAttribute="leading" constant="20" id="Aov-JM-Thu"/>
+                                <constraint firstAttribute="trailing" secondItem="Hp2-nO-EIS" secondAttribute="trailing" constant="20" id="Otw-7X-ESB"/>
+                                <constraint firstItem="Hp2-nO-EIS" firstAttribute="centerY" secondItem="Lcd-Hc-4Ou" secondAttribute="centerY" id="Xip-Bc-1X8"/>
+                                <constraint firstItem="Hp2-nO-EIS" firstAttribute="centerX" secondItem="Lcd-Hc-4Ou" secondAttribute="centerX" id="grt-XR-9Vp"/>
                             </constraints>
                             <connections>
-                                <outlet property="label" destination="koK-xL-1Et" id="HRM-7z-3I0"/>
+                                <outlet property="button" destination="Hp2-nO-EIS" id="jWV-Jh-B8A"/>
                             </connections>
                         </view>
                         <prototypes>

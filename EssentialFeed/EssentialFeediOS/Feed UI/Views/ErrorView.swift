@@ -7,17 +7,17 @@
 import UIKit
 
 public final class ErrorView: UIView {
-    @IBOutlet private var label: UILabel!
+    @IBOutlet private var button: UIButton!
     
     public var message: String? {
-        get { label.text }
-        set { label.text = newValue }
+        get { button.title(for: .normal) }
+        set { button.setTitle(newValue, for: .normal) }
     }
     
     public override func awakeFromNib() {
         super.awakeFromNib()
         
-        label.text = nil
+        button.setTitle(nil, for: .normal)
     }
     
     private var isVisible: Bool {
@@ -33,7 +33,7 @@ public final class ErrorView: UIView {
     }
     
     private func showAnimated(_ message: String) {
-        label.text = message
+        button.setTitle(message, for: .normal)
         
         UIView.animate(withDuration: 0.3) {
             self.alpha = 1
@@ -46,7 +46,7 @@ public final class ErrorView: UIView {
             animations: { self.alpha = 0},
             completion: { completed in
                 if !completed { return }
-                self.label.text = nil
+                self.button.setTitle(nil, for: .normal)
             })
     }
 }
