@@ -6,35 +6,6 @@
 //
 import Foundation
 
-public struct LoadingViewModel {
-    public var isLoading: Bool
-}
-public protocol FeedLoadingView {
-    func display(viewModel: LoadingViewModel)
-}
-
-public struct FeedErrorViewModel {
-    public let message: String?
-    
-    static var noError: Self {
-        FeedErrorViewModel(message: nil)
-    }
-    
-    static func error(message: String) -> FeedErrorViewModel {
-        FeedErrorViewModel(message: message)
-    }
-}
-public protocol FeedErrorView {
-    func display(_ viewModel: FeedErrorViewModel)
-}
-
-public struct FeedViewModel {
-    public var feeds: [FeedImage]
-}
-public protocol FeedView {
-    func display(viewModel: FeedViewModel)
-}
-
 public final class FeedPresenter {
     private let loadingView: FeedLoadingView
     private let feedView: FeedView
