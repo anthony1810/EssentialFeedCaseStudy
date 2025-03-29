@@ -106,7 +106,7 @@ final class FeedPresenterTests: XCTestCase {
         XCTAssertEqual(
             viewSpy.receivedMessages,
             [
-                .display(errorMessage: FeedPresenter.loadError),
+                .display(errorMessage: localized("FEED_VIEW_CONNECTION_ERROR")),
                 .display(isLoading: false)
             ]
         )
@@ -135,6 +135,19 @@ final class FeedPresenterTests: XCTestCase {
         
         return (sut, viewSpy)
     }
+    
+    private func localized(_ key: String, file: StaticString = #file, line: UInt = #line) -> String {
+        let table = "Feed"
+        let bundle = Bundle(for: FeedPresenterTests.self)
+        let value = bundle.localizedString(forKey: key, value: nil, table: table)
+        
+        if value == key {
+            XCTFail("Missing localization for key: \(key) in table \(table)", file: file, line: line)
+        }
+        
+        return value
+    }
+    
     private class ViewSpy: FeedErrorView, FeedLoadingView, FeedView {
         
         enum Message: Hashable {
