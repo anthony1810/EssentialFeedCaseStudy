@@ -18,7 +18,24 @@
                         <view key="tableHeaderView" contentMode="scaleToFill" id="Lcd-Hc-4Ou" customClass="ErrorView" customModule="EssentialFeediOS" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="393" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="koK-xL-1Et">
+                                    <rect key="frame" x="20" y="11.999999999999998" width="353" height="20.333333333333329"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" red="1" green="0.41568627450980389" blue="0.41568627450980389" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <constraints>
+                                <constraint firstItem="koK-xL-1Et" firstAttribute="centerX" secondItem="Lcd-Hc-4Ou" secondAttribute="centerX" id="7P8-tN-hm4"/>
+                                <constraint firstAttribute="trailing" secondItem="koK-xL-1Et" secondAttribute="trailing" constant="20" id="OWP-Yv-OpK"/>
+                                <constraint firstItem="koK-xL-1Et" firstAttribute="centerY" secondItem="Lcd-Hc-4Ou" secondAttribute="centerY" id="VFP-eT-P0g"/>
+                                <constraint firstItem="koK-xL-1Et" firstAttribute="leading" secondItem="Lcd-Hc-4Ou" secondAttribute="leading" constant="20" id="VFs-d2-DrI"/>
+                            </constraints>
+                            <connections>
+                                <outlet property="label" destination="koK-xL-1Et" id="HRM-7z-3I0"/>
+                            </connections>
                         </view>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="FeedImageCell" rowHeight="580" id="Txt-LL-RvC" customClass="FeedImageCell" customModule="EssentialFeediOS" customModuleProvider="target">
