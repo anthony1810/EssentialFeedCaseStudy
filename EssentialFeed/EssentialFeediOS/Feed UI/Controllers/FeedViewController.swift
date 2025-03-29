@@ -35,7 +35,7 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
         }
     }
     
-    func display(viewModel: FeedErrorViewModel) {
+    func display(_ viewModel: FeedErrorViewModel) {
         errorView.setMessageAnimated(viewModel.message)
     }
     

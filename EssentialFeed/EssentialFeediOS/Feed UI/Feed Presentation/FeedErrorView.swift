@@ -11,10 +11,14 @@ import EssentialFeed
 struct FeedErrorViewModel {
     let message: String?
     
-    static var none: Self {
-        .init(message: nil)
+    static var noError: Self {
+        FeedErrorViewModel(message: nil)
+    }
+    
+    static func error(message: String) -> FeedErrorViewModel {
+        FeedErrorViewModel(message: message)
     }
 }
 protocol FeedErrorView {
-    func display(viewModel: FeedErrorViewModel)
+    func display(_ viewModel: FeedErrorViewModel)
 }

@@ -31,18 +31,18 @@ final class FeedPresenter {
     }
     
     func didStartLoading() {
-        self.errorView.display(viewModel: .none)
+        self.errorView.display(.noError)
         self.loadingView.display(viewModel: LoadingViewModel(isLoading: true))
     }
     
     func didFinishLoading(with error: Error) {
-        self.errorView.display(viewModel: FeedErrorViewModel(message: FeedPresenter.loadError))
+        self.errorView.display(.error(message: FeedPresenter.loadError))
         self.loadingView.display(viewModel: LoadingViewModel(isLoading: false))
     }
     
     func display(feeds: [FeedImage]) {
         self.feedView.display(viewModel: FeedViewModel(feeds: feeds))
         self.loadingView.display(viewModel: LoadingViewModel(isLoading: false))
-        self.errorView.display(viewModel: .none)
+        self.errorView.display(.noError)
     }
 }
