@@ -1,31 +1,6 @@
 import Foundation
 import EssentialFeed
 
-struct LoadingViewModel {
-    var isLoading: Bool
-}
-protocol FeedLoadingView {
-    func display(viewModel: LoadingViewModel)
-}
-
-struct FeedViewModel {
-    var feeds: [FeedImage]
-}
-protocol FeedView {
-    func display(viewModel: FeedViewModel)
-}
-
-struct FeedErrorViewModel {
-    let message: String?
-    
-    static var none: Self {
-        .init(message: nil)
-    }
-}
-protocol FeedErrorView {
-    func display(viewModel: FeedErrorViewModel)
-}
-
 final class FeedPresenter {
     private let loadingView: FeedLoadingView
     private let feedView: FeedView
