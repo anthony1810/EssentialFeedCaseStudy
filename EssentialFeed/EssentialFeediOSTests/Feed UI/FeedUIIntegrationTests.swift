@@ -306,16 +306,17 @@ final class FeedUIIntegrationTests: XCTestCase {
         XCTAssertNil(sut.errorMessage, "Expect error message to be nil when reload")
     }
     
-//    func test_errorView_dismissesErrorMessageOnTap() {
-//        let (sut, loader) = makeSUT()
-//        
-//        sut.simulateAppearance()
-//        
-//        loader.completeFeedLoadingWithError(at: 0)
-//        XCTAssertEqual(sut.errorMessage, localized("FEED_VIEW_CONNECTION_ERROR"), "Expect error message to be nil initially")
-//        
-//        sut.errorView.simulate(event: .)
-//    }
+    func test_errorView_dismissesErrorMessageOnTap() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        
+        loader.completeFeedLoadingWithError(at: 0)
+        XCTAssertEqual(sut.errorMessage, localized("FEED_VIEW_CONNECTION_ERROR"), "Expect error message to be nil initially")
+        
+        sut.simulateErrorViewTap()
+        XCTAssertNil(sut.errorMessage, "Expect error message to be nil when tapped")
+    }
     
     // MARK: Helpers
     

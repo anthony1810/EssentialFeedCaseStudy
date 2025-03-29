@@ -7,11 +7,10 @@
 import UIKit
 
 public final class ErrorView: UIView {
-    @IBOutlet private var button: UIButton!
+    @IBOutlet public private(set) var button: UIButton!
     
     public var message: String? {
-        get { button.title(for: .normal) }
-        set { button.setTitle(newValue, for: .normal) }
+        isVisible ? button.title(for: .normal) : nil
     }
     
     public override func awakeFromNib() {
@@ -20,11 +19,15 @@ public final class ErrorView: UIView {
         button.setTitle(nil, for: .normal)
     }
     
+    @IBAction private func didTapButton() {
+        hideMessageAnimated()
+    }
+    
     private var isVisible: Bool {
         alpha > 0
     }
     
-    private func setMessageAnimated(_ message: String?) {
+    func setMessageAnimated(_ message: String?) {
         if let message {
             showAnimated(message)
         } else {

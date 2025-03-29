@@ -69,6 +69,10 @@ extension FeedViewController {
         errorView.message
     }
     
+    func simulateErrorViewTap() {
+        errorView.button.simulateTap()
+    }
+    
     private func prepareForFirstAppearance() {
         setSmallFrameToPreventRenderingCells()
         replaceRefreshControlWithFakeForiOS17PlusSupport()
