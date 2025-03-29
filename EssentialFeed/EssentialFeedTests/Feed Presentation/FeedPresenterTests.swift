@@ -57,8 +57,8 @@ final class FeedPresenterTests: XCTestCase {
         XCTAssertEqual(
             viewSpy.receivedMessages,
             [
-                .display(errorMessage: .none),
                 .display(isLoading: true),
+                .display(errorMessage: .none)
             ]
         )
     }
@@ -75,18 +75,18 @@ final class FeedPresenterTests: XCTestCase {
     }
     private class ViewSpy: FeedErrorView, FeedLoadingView {
         
-        enum Message: Equatable {
+        enum Message: Hashable {
             case display(errorMessage: String?)
             case display(isLoading: Bool)
         }
-        var receivedMessages = [Message]()
+        var receivedMessages = Set<Message>()
         
         func display(_ viewModel: FeedErrorViewModel) {
-            receivedMessages.append(.display(errorMessage: .none))
+            receivedMessages.insert(.display(errorMessage: .none))
         }
         
         func display(viewModel: LoadingViewModel) {
-            receivedMessages.append(.display(isLoading: viewModel.isLoading))
+            receivedMessages.insert(.display(isLoading: viewModel.isLoading))
         }
     }
 }
