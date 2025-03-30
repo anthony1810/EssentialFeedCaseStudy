@@ -6,23 +6,6 @@
 //
 import Foundation
 
-public struct FeedImageViewModel<Image> {
-    public var location: String?
-    public var description: String?
-    public var image: Image?
-    public var isLoading: Bool
-    public var shouldRetry: Bool
-
-    public var hasLocation: Bool {
-        location != nil
-    }
-}
-
-public protocol FeedImageView {
-    associatedtype Image
-    func display(viewModel: FeedImageViewModel<Image>)
-}
-
 public final class FeedImagePresenter<View: FeedImageView, Image> where View.Image == Image {
     
     private let view: View
