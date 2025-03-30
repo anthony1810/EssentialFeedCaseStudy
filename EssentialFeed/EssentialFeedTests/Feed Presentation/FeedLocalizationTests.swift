@@ -4,7 +4,6 @@
 //
 //  Created by Anthony on 23/3/25.
 //
-@testable import EssentialFeediOS
 import EssentialFeed
 import XCTest
 
