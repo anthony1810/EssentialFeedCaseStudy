@@ -9,69 +9,6 @@ import Foundation
 import EssentialFeed
 import XCTest
 
-struct FeedImageViewModel<Image> {
-    var location: String?
-    var description: String?
-    var image: Image?
-    var isLoading: Bool
-    var shouldRetry: Bool
-    
-    var hasLocation: Bool {
-        location != nil
-    }
-}
-
-protocol FeedImageView {
-    associatedtype Image
-    func display(viewModel: FeedImageViewModel<Image>)
-}
-
-final class FeedImagePresenter<View: FeedImageView, Image> where View.Image == Image {
-    
-    private let view: View
-    private let imageTransformer: (Data) -> Image?
-    
-    init(view: View, imageTransformer: @escaping (Data) -> Image?) {
-        self.view = view
-        self.imageTransformer = imageTransformer
-    }
-    
-    func didStartLoadingImageData(for model: FeedImage) {
-        view.display(
-            viewModel: FeedImageViewModel(
-                location: model.location,
-                description: model.description,
-                isLoading: true,
-                shouldRetry: false)
-        )
-    }
-    
-    func didFinishedLoadingImageData(with error: Error, for model: FeedImage) {
-        view.display(viewModel: FeedImageViewModel(
-            location: model.location,
-            description: model.description,
-            isLoading: false,
-            shouldRetry: true)
-        )
-    }
-    
-    private struct InvalidImageDataError: Error {}
-    
-    func didFinishedLoadingImageData(with data: Data, for model: FeedImage) {
-        guard let _ = imageTransformer(data) else {
-            return didFinishedLoadingImageData(with: InvalidImageDataError(), for: model)
-        }
-        
-        view.display(viewModel: FeedImageViewModel(
-            location: model.location,
-            description: model.description,
-            image: imageTransformer(data),
-            isLoading: false,
-            shouldRetry: false)
-        )
-    }
-}
-
 final class FeedImagePresenterTests: XCTestCase {
     func test_init_doesNotMessageView() {
         let (_, viewSpy) = makeSUT()
