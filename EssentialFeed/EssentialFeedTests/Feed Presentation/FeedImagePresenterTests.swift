@@ -99,7 +99,7 @@ final class FeedImagePresenterTests: XCTestCase {
     }
     
     func test_didFinishedLoadingImageDataWithInvalidData_hideLoadingIndicatorAndShowRetryButton() {
-        let (sut, viewSpy) = makeSUT()
+        let (sut, viewSpy) = makeSUT(imageTransformer: failImageTransformer)
         let feed = uniqueFeed().model
         let invalidImageData = Data()
         
@@ -127,6 +127,10 @@ final class FeedImagePresenterTests: XCTestCase {
         trackMemoryLeaks(sut, file: file, line: line)
         
         return (sut, viewSpy)
+    }
+    
+    private var failImageTransformer: (Data) -> Any? {
+        { _ in nil }
     }
     
     private final class ViewSpy: FeedImageView {
