@@ -46,19 +46,11 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
     
     func test_loadImageData_returnsErrorOnClientError() {
         let (sut, client) = makeSUT()
-        var receivedError: Error?
+        let expectedError = anyNSError()
         
-        let exp = expectation(description: "Wait for completion")
-        sut.loadImageData(from: anyURL()) { result in
-            if case let .failure(error) = result {
-                receivedError = error
-            }
-            exp.fulfill()
+        expect(sut, toCompleteWith: .failure(expectedError)) {
+            client.complete(withError: expectedError)
         }
-        client.complete(withError: anyNSError())
-        wait(for: [exp], timeout: 1.0)
-        
-        XCTAssertNotNil(receivedError)
     }
 
     
@@ -71,6 +63,37 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         trackMemoryLeaks(sut, file: file, line: line)
         
         return (sut, client)
+    }
+    
+    func expect(
+        _ sut: RemoteFeedImageDataLoader,
+        toCompleteWith expectedResult: FeedImageDataLoader.Result?,
+        when action: () -> Void,
+        file: StaticString = #file,
+        line: UInt = #line) {
+            var receivedResult: FeedImageDataLoader.Result?
+            
+            let exp = expectation(description: "Wait for completion")
+            sut.loadImageData(from: anyURL()) {
+                receivedResult = $0
+                exp.fulfill()
+            }
+            
+            action()
+            wait(for: [exp], timeout: 1.0)
+            
+            switch (expectedResult, receivedResult!) {
+            case let (.success(expectedData), .success(receivedData)):
+                XCTAssertEqual(receivedData, expectedData, file: file, line: line)
+            case let (.failure(expectedError as NSError), .failure(receivedError as NSError)):
+                XCTAssertEqual(expectedError, receivedError, file: file, line: line)
+            default:
+                XCTFail(
+                    "Expected result to be \(String(describing: expectedResult)), but got \(receivedResult!) instead",
+                    file: file,
+                    line: line
+                )
+            }
     }
     
     private class HTTPClientSpy: HTTPClient {
