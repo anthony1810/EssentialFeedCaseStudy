@@ -28,21 +28,20 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         XCTAssertEqual(client.requestedURLs, [expectedURL, expectedURL, expectedURL])
     }
     
-    func test_loadImageData_returnsErrorOnClientError() {
-        let (sut, client) = makeSUT()
-        let expectedError = anyNSError()
-        
-        expect(sut, toCompleteWith: .failure(expectedError)) {
-            client.complete(withError: expectedError)
-        }
-    }
-    
     func test_loadImageData_deliversErrorOnEmptyData() {
         let (sut, client) = makeSUT()
         let emptyData = Data()
         
         expect(sut, toCompleteWith: .failure(RemoteFeedImageDataLoader.Error.invalidData)) {
             client.complete(withStatusCode: 200, data: emptyData)
+        }
+    }
+    
+    func test_loadImageData_deliversConnectivityErrorOnClientError() {
+        let (sut, client) = makeSUT()
+        
+        expect(sut, toCompleteWith: .failure(RemoteFeedImageDataLoader.Error.connectivity)) {
+            client.complete(withError: anyNSError())
         }
     }
     
