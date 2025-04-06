@@ -43,10 +43,7 @@ final class EssentialFeedEndToEndTests: XCTestCase {
     }
     
     private func getFeedResult(file: StaticString = #filePath, line: UInt = #line) -> FeedLoader.Result? {
-        let client = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
-        let loader = RemoteFeedLoader(url: feedTestServerURL, client: client)
-        
-        trackMemoryLeaks(client, file: file, line: line)
+        let loader = RemoteFeedLoader(url: feedTestServerURL, client: ephemeralClient())
         trackMemoryLeaks(loader,  file: file, line: line)
         
         let exp = expectation(description: "wait for feed loading")
@@ -61,15 +58,7 @@ final class EssentialFeedEndToEndTests: XCTestCase {
     
     private func getFeedImageDataResult(file: StaticString = #file, line: UInt = #line) -> RemoteFeedImageDataLoader.Result? {
         let testServerURL = feedTestServerURL.appending(path: "73A7F70C-75DA-4C2E-B5A3-EED40DC53AA6/image")
-        
-        
-        let configuration = URLSessionConfiguration.ephemeral
-        
-        let client = URLSessionHTTPClient(session: URLSession(configuration: configuration))
-        
-        let loader = RemoteFeedImageDataLoader(client: client)
-        
-        trackMemoryLeaks(client, file: file, line: line)
+        let loader = RemoteFeedImageDataLoader(client: ephemeralClient())
         trackMemoryLeaks(loader, file: file, line: line)
         
         let exp = expectation(description: "wait for image loading")
@@ -83,6 +72,17 @@ final class EssentialFeedEndToEndTests: XCTestCase {
     
     private var feedTestServerURL: URL {
         URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
+    }
+    
+    private func ephemeralClient(file: StaticString = #file, line: UInt = #line) -> HTTPClient {
+        
+        let configuration = URLSessionConfiguration.ephemeral
+        
+        let client = URLSessionHTTPClient(session: URLSession(configuration: configuration))
+        
+        trackMemoryLeaks(client, file: file, line: line)
+        
+        return client
     }
 }
 
