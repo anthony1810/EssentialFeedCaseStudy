@@ -174,14 +174,27 @@ class URLSessionHTTPClientTests: XCTestCase {
         private static var _stub: Stub?
         
         private struct Stub {
-            var data: Data?
-            var response: URLResponse?
-            var error: Error?
-            var requestObserver: ((URLRequest) -> Void)?
+            let onStartLoading: (URLProtocolStub) -> Void
         }
         
         static func stub(data: Data? = nil, response: URLResponse? = nil, error: Error? = nil) {
-            stub = Stub(data: data, response: response, error: error)
+            stub = Stub(onStartLoading: { urlProtocol in
+                guard let client = urlProtocol.client else { return }
+                
+                if let data {
+                    client.urlProtocol(urlProtocol, didLoad: data)
+                }
+                
+                if let response {
+                    client.urlProtocol(urlProtocol, didReceive: response, cacheStoragePolicy: .notAllowed)
+                }
+                
+                if let error  {
+                    client.urlProtocol(urlProtocol, didFailWithError: error)
+                } else {
+                    client.urlProtocolDidFinishLoading(urlProtocol)
+                }
+            })
         }
         
         static func removeStub() {
@@ -189,7 +202,11 @@ class URLSessionHTTPClientTests: XCTestCase {
         }
         
         static func observeRequest(_ block: @escaping (URLRequest) -> Void) {
-            stub = Stub(data: nil, response: nil, error: nil, requestObserver: block)
+            stub = Stub(onStartLoading: { urlProtocol in
+                urlProtocol.client?.urlProtocolDidFinishLoading(urlProtocol)
+                
+                block(urlProtocol.request)
+            })
         }
         
         override class func canInit(with request: URLRequest) -> Bool {
@@ -197,22 +214,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         }
         
         override func startLoading() {
-        
-            if let data = Self.stub?.data {
-                client?.urlProtocol(self, didLoad: data)
-            }
-            
-            if let response = Self.stub?.response {
-                client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .allowed)
-            }
-            
-            if let error = Self.stub?.error {
-                client?.urlProtocol(self, didFailWithError: error)
-            }
-            
-            Self.stub?.requestObserver?(request)
-            
-            client?.urlProtocolDidFinishLoading(self)
+            URLProtocolStub.stub?.onStartLoading(self)
         }
         
         override func stopLoading() {}
