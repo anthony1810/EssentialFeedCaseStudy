@@ -97,7 +97,6 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
         
         XCTAssertNil(result)
     }
-
     
     // MARK: - Helpers
     private func makeSUT(url: URL = anyURL(), file: StaticString = #file, line: UInt = #line) -> (RemoteFeedImageDataLoader, HTTPClientSpy) {
@@ -144,8 +143,14 @@ class RemoteFeedImageDataLoaderTests: XCTestCase {
             messages.map(\.url)
         }
         
-        func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) {
+        private class Task: HTTPClientTask {
+            func cancel() {}
+        }
+        
+        func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
             messages.append((url, completion))
+            
+            return Task()
         }
         
         func complete(withError error: Error, at index: Int = 0) {
