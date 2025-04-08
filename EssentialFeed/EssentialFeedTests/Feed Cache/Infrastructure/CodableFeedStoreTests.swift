@@ -98,7 +98,7 @@ final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
     }
     
     func test_delete_deliversErrorWhenThereIsError() throws {
-        let uneditableURLPath = Self.cacheDirectory
+        let uneditableURLPath = URL(fileURLWithPath: "/")
         let sut = makeSUT(storeUrl: uneditableURLPath)
         
         assertThatDeleteDeliversErrorWhenDeletionError(on: sut)
