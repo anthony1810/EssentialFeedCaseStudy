@@ -23,6 +23,7 @@ final class LocalFeedImageDataLoader: FeedImageDataLoader {
     
     enum Error: Swift.Error {
         case failed
+        case notFound
     }
     
     class Task: FeedImageDataLoaderTask {
@@ -32,7 +33,17 @@ final class LocalFeedImageDataLoader: FeedImageDataLoader {
     func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
         
         store.retrieve(dataForURL: url) { result in
-            completion(.failure(Error.failed))
+            completion(
+                result
+                    .mapError { _ in LocalFeedImageDataLoader.Error.failed }
+                    .flatMap { data in
+                        if case .some(let data) = data {
+                            .success(data)
+                        } else {
+                            .failure(LocalFeedImageDataLoader.Error.notFound)
+                        }
+                    }
+            )
         }
         
         return Task()
@@ -63,6 +74,17 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
             store.completeRetrieval(with: .failure(anyNSError()))
         }
     }
+    
+    func test_loadImageDataFromURL_deliversNotFoundErrorOnStoreSuccessWithNoData() {
+        let (sut, store) = makeSUT()
+        let url = anyURL()
+        
+        expect(sut, toFinishWith: notFound(), from: url) {
+            store.completeRetrieval(with: .success(nil))
+        }
+    }
+    
+    // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: LocalFeedImageDataLoader, store: FeedStoreSpy) {
         let store = FeedStoreSpy()
@@ -102,6 +124,10 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
     
     private func failed() -> FeedImageDataStore.Result {
         .failure(LocalFeedImageDataLoader.Error.failed)
+    }
+    
+    private func notFound() -> FeedImageDataStore.Result {
+        .failure(LocalFeedImageDataLoader.Error.notFound)
     }
     
     private class FeedStoreSpy: FeedImageDataStore {
