@@ -70,7 +70,7 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
     }
     
     func test_loadImageDataFromURL_doesNotDeliversDataAfterSUTDeinit() {
-        let store = FeedStoreSpy()
+        let store = FeedImageDataStoreSpy()
         var sut: LocalFeedImageDataLoader? = LocalFeedImageDataLoader(store: store)
         var receivedResults = [LocalFeedImageDataLoader.Result]()
         
@@ -93,8 +93,8 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: LocalFeedImageDataLoader, store: FeedStoreSpy) {
-        let store = FeedStoreSpy()
+    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: LocalFeedImageDataLoader, store: FeedImageDataStoreSpy) {
+        let store = FeedImageDataStoreSpy()
         let sut = LocalFeedImageDataLoader(store: store)
         
         trackMemoryLeaks(store, file: file, line: line)
@@ -135,28 +135,5 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
     
     private func notFound() -> FeedImageDataStore.RetrievalResult {
         .failure(LocalFeedImageDataLoader.LoadError.notFound)
-    }
-    
-    private class FeedStoreSpy: FeedImageDataStore {
-        enum Message: Equatable {
-            case retrieve(dataFor: URL)
-            case insert(dataFor: URL)
-        }
-        
-        var receivedMessages: [Message] = []
-        var completions: [(FeedImageDataStore.RetrievalResult) -> Void]  = []
-        
-        func retrieve(dataForURL url: URL, completion: @escaping (FeedImageDataStore.RetrievalResult) -> Void) {
-            receivedMessages.append(.retrieve(dataFor: url))
-            completions.append(completion)
-        }
-        
-        func insert(_ data: Data, for url: URL, completion: @escaping (InsertionResult) -> Void) {
-            receivedMessages.append(.insert(dataFor: url))
-        }
-        
-        func completeRetrieval(with result: FeedImageDataStore.RetrievalResult, at index: Int = 0) {
-            completions[index](result)
-        }
     }
 }
