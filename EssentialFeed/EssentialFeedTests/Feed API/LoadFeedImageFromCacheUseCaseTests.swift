@@ -9,60 +9,6 @@ import Foundation
 import EssentialFeed
 import XCTest
 
-protocol FeedImageDataStore {
-    typealias Result = Swift.Result<Data?, Error>
-    func retrieve(dataForURL url: URL, completion: @escaping (FeedImageDataStore.Result) -> Void)
-}
-
-final class LocalFeedImageDataLoader: FeedImageDataLoader {
-    let store: FeedImageDataStore
-    
-    init(store: FeedImageDataStore) {
-        self.store = store
-    }
-    
-    enum Error: Swift.Error {
-        case failed
-        case notFound
-    }
-    
-    class Task: FeedImageDataLoaderTask {
-        var completion: ((FeedImageDataLoader.Result) -> Void)?
-        
-        init(completion: @escaping ((FeedImageDataLoader.Result) -> Void)) {
-            self.completion = completion
-        }
-        
-        func complete(with result: FeedImageDataLoader.Result) {
-            completion?(result)
-        }
-        
-        func cancel() {
-            preventFutherCompletions()
-        }
-        
-        private func preventFutherCompletions() {
-            completion = nil
-        }
-    }
-    
-    func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
-        
-        let task = Task(completion: completion)
-        store.retrieve(dataForURL: url) { [weak self] result in
-            guard self != nil else { return }
-            
-            task.complete(with: result
-                .mapError { _ in LocalFeedImageDataLoader.Error.failed }
-                .flatMap { data in
-                    data.map { .success($0) } ?? .failure(LocalFeedImageDataLoader.Error.notFound)
-                })
-        }
-        
-        return task
-    }
-}
-
 final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
     func test_init_deosNotRequestdatafromCache() {
         let (_, store) = makeSUT()
