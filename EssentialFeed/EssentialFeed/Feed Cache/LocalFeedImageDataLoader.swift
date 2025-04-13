@@ -7,19 +7,22 @@
 
 import Foundation
 
-public final class LocalFeedImageDataLoader: FeedImageDataLoader {
+public final class LocalFeedImageDataLoader {
     let store: FeedImageDataStore
     
     public init(store: FeedImageDataStore) {
         self.store = store
     }
-    
-    public enum Error: Swift.Error {
+}
+
+// MARK: - FeedImageDataLoader
+extension LocalFeedImageDataLoader: FeedImageDataLoader {
+    public enum LoadError: Swift.Error {
         case failed
         case notFound
     }
     
-    class Task: FeedImageDataLoaderTask {
+    class LoadImageDataTask: FeedImageDataLoaderTask {
         var completion: ((FeedImageDataLoader.Result) -> Void)?
         
         init(completion: @escaping ((FeedImageDataLoader.Result) -> Void)) {
@@ -41,21 +44,25 @@ public final class LocalFeedImageDataLoader: FeedImageDataLoader {
     
     public func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
         
-        let task = Task(completion: completion)
+        let task = LoadImageDataTask(completion: completion)
         store.retrieve(dataForURL: url) { [weak self] result in
             guard self != nil else { return }
             
             task.complete(with: result
-                .mapError { _ in LocalFeedImageDataLoader.Error.failed }
+                .mapError { _ in LocalFeedImageDataLoader.LoadError.failed }
                 .flatMap { data in
-                    data.map { .success($0) } ?? .failure(LocalFeedImageDataLoader.Error.notFound)
+                    data.map { .success($0) } ?? .failure(LocalFeedImageDataLoader.LoadError.notFound)
                 })
         }
         
         return task
     }
+}
+
+// MARK: - SaveResult
+extension LocalFeedImageDataLoader {
+    public typealias SaveResult = Swift.Result<Void, LoadError>
     
-    public typealias SaveResult = Swift.Result<Void, Error>
     public func save(_ data: Data, for url: URL, completion: @escaping (SaveResult) -> Void) {
         store.insert(data, for: url, completion: { result in
             completion(result.mapError { _ in .failed })
