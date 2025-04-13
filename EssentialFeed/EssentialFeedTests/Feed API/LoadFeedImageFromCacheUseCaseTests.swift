@@ -37,11 +37,7 @@ final class LocalFeedImageDataLoader: FeedImageDataLoader {
                 result
                     .mapError { _ in LocalFeedImageDataLoader.Error.failed }
                     .flatMap { data in
-                        if case .some(let data) = data {
-                            .success(data)
-                        } else {
-                            .failure(LocalFeedImageDataLoader.Error.notFound)
-                        }
+                        data.map { .success($0) } ?? .failure(LocalFeedImageDataLoader.Error.notFound)
                     }
             )
         }
@@ -81,6 +77,16 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
         
         expect(sut, toFinishWith: notFound(), from: url) {
             store.completeRetrieval(with: .success(nil))
+        }
+    }
+    
+    func test_loadImageDataFromURL_deliversDataOnStoreSuccessWithData() {
+        let (sut, store) = makeSUT()
+        let url = anyURL()
+        let expectedData = anydata()
+        
+        expect(sut, toFinishWith: .success(expectedData), from: url) {
+            store.completeRetrieval(with: .success(expectedData))
         }
     }
     
