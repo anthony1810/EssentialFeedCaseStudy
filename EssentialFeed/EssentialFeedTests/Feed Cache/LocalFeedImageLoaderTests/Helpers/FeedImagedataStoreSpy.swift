@@ -14,18 +14,24 @@ final class FeedImageDataStoreSpy: FeedImageDataStore {
     }
     
     var receivedMessages: [Message] = []
-    var completions: [(FeedImageDataStore.RetrievalResult) -> Void]  = []
+    var retrivalCompletions: [(FeedImageDataStore.RetrievalResult) -> Void]  = []
+    var insertionCompletions: [(FeedImageDataStore.InsertionResult) -> Void]  = []
     
     func retrieve(dataForURL url: URL, completion: @escaping (FeedImageDataStore.RetrievalResult) -> Void) {
         receivedMessages.append(.retrieve(dataFor: url))
-        completions.append(completion)
+        retrivalCompletions.append(completion)
     }
     
     func insert(_ data: Data, for url: URL, completion: @escaping (InsertionResult) -> Void) {
         receivedMessages.append(.insert(dataFor: url))
+        insertionCompletions.append(completion)
     }
     
     func completeRetrieval(with result: FeedImageDataStore.RetrievalResult, at index: Int = 0) {
-        completions[index](result)
+        retrivalCompletions[index](result)
+    }
+    
+    func completeInsertion(with result: LocalFeedImageDataLoader.SaveResult, at index: Int = 0) {
+        insertionCompletions[index](result)
     }
 }
