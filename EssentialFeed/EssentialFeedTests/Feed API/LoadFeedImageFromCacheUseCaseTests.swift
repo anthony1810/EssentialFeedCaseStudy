@@ -27,22 +27,39 @@ final class LocalFeedImageDataLoader: FeedImageDataLoader {
     }
     
     class Task: FeedImageDataLoaderTask {
-        func cancel() {}
+        var completion: ((FeedImageDataLoader.Result) -> Void)?
+        
+        init(completion: @escaping ((FeedImageDataLoader.Result) -> Void)) {
+            self.completion = completion
+        }
+        
+        func complete(with result: FeedImageDataLoader.Result) {
+            completion?(result)
+        }
+        
+        func cancel() {
+            preventFutherCompletions()
+        }
+        
+        private func preventFutherCompletions() {
+            completion = nil
+        }
     }
     
     func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
         
-        store.retrieve(dataForURL: url) { result in
-            completion(
-                result
-                    .mapError { _ in LocalFeedImageDataLoader.Error.failed }
-                    .flatMap { data in
-                        data.map { .success($0) } ?? .failure(LocalFeedImageDataLoader.Error.notFound)
-                    }
-            )
+        let task = Task(completion: completion)
+        store.retrieve(dataForURL: url) { [weak self] result in
+            guard self != nil else { return }
+            
+            task.complete(with: result
+                .mapError { _ in LocalFeedImageDataLoader.Error.failed }
+                .flatMap { data in
+                    data.map { .success($0) } ?? .failure(LocalFeedImageDataLoader.Error.notFound)
+                })
         }
         
-        return Task()
+        return task
     }
 }
 
@@ -88,6 +105,34 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
         expect(sut, toFinishWith: .success(expectedData), from: url) {
             store.completeRetrieval(with: .success(expectedData))
         }
+    }
+    
+    func test_loadImageDataFromURL_doesNotDeliversDataAfterCancellingTask() {
+        let (sut, store) = makeSUT()
+        let url = anyURL()
+        var receivedResult: LocalFeedImageDataLoader.Result?
+        
+        let task = sut.loadImageData(from: url) { receivedResult = $0 }
+        task.cancel()
+        
+        store.completeRetrieval(with: .success(anydata()))
+        store.completeRetrieval(with: .success(.none))
+        store.completeRetrieval(with: failed())
+        store.completeRetrieval(with: notFound())
+        
+        XCTAssertNil(receivedResult)
+    }
+    
+    func test_loadImageDataFromURL_doesNotDeliversDataAfterSUTDeinit() {
+        let store = FeedStoreSpy()
+        var sut: LocalFeedImageDataLoader? = LocalFeedImageDataLoader(store: store)
+        var receivedResults = [LocalFeedImageDataLoader.Result]()
+        
+        _ = sut?.loadImageData(from: anyURL()) { receivedResults.append($0) }
+        sut = nil
+        
+        store.completeRetrieval(with: failed())
+        XCTAssertTrue(receivedResults.isEmpty)
     }
     
     // MARK: - Helpers
