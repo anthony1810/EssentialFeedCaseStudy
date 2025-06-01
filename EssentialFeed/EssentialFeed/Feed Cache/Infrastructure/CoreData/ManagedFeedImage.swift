@@ -12,7 +12,7 @@ class ManagedFeedImage: NSManagedObject {
     @NSManaged var imageDescription: String?
     @NSManaged var location: String?
     @NSManaged var url: URL
-    @NSManaged var data: Data
+    @NSManaged var data: Data?
     @NSManaged var cache: ManagedCache
     
     var local: LocalFeedImage {
@@ -28,7 +28,6 @@ extension ManagedFeedImage {
             managedFeedImage.imageDescription = localFeedImage.description
             managedFeedImage.location = localFeedImage.location
             managedFeedImage.url = localFeedImage.url
-            managedFeedImage.data = Data()
             
             return managedFeedImage
         })
