@@ -19,10 +19,9 @@ extension CoreDataFeedStore: FeedImageDataStore {
     public func insert(_ data: Data, for url: URL, completion: @escaping (InsertionResult) -> Void) {
         perform { context in
             completion(Result {
-                guard let managedCache = try ManagedFeedImage.first(with: url, in: context)
-                else { return }
+                let image = try ManagedFeedImage.first(with: url, in: context)
                 
-                managedCache.data = data
+                image?.data = data
                 try context.save()
             })
         }

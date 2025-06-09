@@ -46,6 +46,28 @@ final class CoreDataFeedImageStoreTests: XCTestCase {
         expect(sut, toCompleteRetrieveWith: .success(overrideStoredData), for: url)
     }
     
+    func test_sideEffects_runSerially() throws {
+        let sut = try makeSUT()
+        let url = anyURL()
+        
+        let op1 = expectation(description: "Operation 1")
+        sut.insert(anydata(), for: url) { _ in
+            op1.fulfill()
+        }
+        
+        let op2 = expectation(description: "Operation 2")
+        sut.insert(anydata(), for: url) { _ in
+            op2.fulfill()
+        }
+        
+        let op3 = expectation(description: "Operation 3")
+        sut.insert(anydata(), for: url) { _ in
+            op3.fulfill()
+        }
+        
+        wait(for: [op1, op2, op3], enforceOrder: true)
+    }
+    
     // MARK: - Helpers
     private func makeSUT(file: StaticString = #file, line: UInt = #line) throws -> CoreDataFeedStore {
         let storeBundle = Bundle(for: CoreDataFeedStore.self)
