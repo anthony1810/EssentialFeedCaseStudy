@@ -8,16 +8,6 @@
 import XCTest
 import EssentialFeed
 
-extension CoreDataFeedStore: FeedImageDataStore {
-    public func retrieve(dataForURL url: URL, completion: @escaping (Result<Data?, any Error>) -> Void) {
-        completion(.success(.none))
-    }
-    
-    public func insert(_ data: Data, for url: URL, completion: @escaping (InsertionResult) -> Void) {
-        
-    }
-}
-
 final class CoreDataFeedImageStoreTests: XCTestCase {
     
     func test_retrieveImageData_deliversNotFoundWhenEmpty() throws {
@@ -29,11 +19,20 @@ final class CoreDataFeedImageStoreTests: XCTestCase {
     func test_retrieveImageData_deliversNotFoundWhenStoredDataURLNotMatch() throws {
         let sut = try makeSUT()
         
-        let url = URL(string: "https:a-url.com")!
+        let url = URL(string: "https://a-url.com")!
         let aNonMatchingURL = URL(string: "https://example.com/2")!
         
         insert(anydata(), for: url, into: sut)
         expect(sut, toCompleteRetrieveWith: notFound(), for: aNonMatchingURL)
+    }
+    
+    func test_retrieveImageData_deliversFoundDataWhenThereIsStoredImageDataMatchingTheURL() throws {
+        let sut = try makeSUT()
+        let storedData = anydata()
+        let url = URL(string: "https://a-url.com")!
+        
+        insert(anydata(), for: url, into: sut)
+        expect(sut, toCompleteRetrieveWith: .success(storedData), for: url)
     }
     
     // MARK: - Helpers
@@ -46,7 +45,13 @@ final class CoreDataFeedImageStoreTests: XCTestCase {
         return sut
     }
     
-    private func expect(_ sut: FeedImageDataStore, toCompleteRetrieveWith expectedResult: FeedImageDataStore.RetrievalResult, for url: URL, file: StaticString = #file, line: UInt = #line) {
+    private func expect(
+        _ sut: FeedImageDataStore,
+        toCompleteRetrieveWith expectedResult: FeedImageDataStore.RetrievalResult,
+        for url: URL,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
         
         let expectation = self.expectation(description: "waiting for completion")
         sut.retrieve(dataForURL: url) { actualResult in
@@ -62,7 +67,13 @@ final class CoreDataFeedImageStoreTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
     
-    private func insert(_ data: Data, for url: URL, into sut: CoreDataFeedStore, file: StaticString = #file, line: UInt = #line) {
+    private func insert(
+        _ data: Data,
+        for url: URL,
+        into sut: CoreDataFeedStore,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
         
         let expectation = self.expectation(description: "waiting for completion")
         let image = localImage(url: url)
