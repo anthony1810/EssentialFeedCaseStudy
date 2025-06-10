@@ -23,14 +23,14 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
     }
     
     func test_load_deliversNoItemsOnEmptyCache() throws {
-        let sut = try makeSUT()
+        let sut = try makeFeedLoader()
         
         expect(sut, toFinishWith: .success([]))
     }
     
     func test_load_deliversItemsOnNonEmptyCache() throws {
-        let sutToSave = try makeSUT()
-        let sutToLoad = try makeSUT()
+        let sutToSave = try makeFeedLoader()
+        let sutToLoad = try makeFeedLoader()
         
         let expectectedItems: [FeedImage] = [uniqueFeed().model]
         
@@ -39,9 +39,9 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
     }
     
     func test_save_overridesItemsSavedOnASeparateInstance() throws {
-        let sutToPerformFirstSave = try makeSUT()
-        let sutToPerformSecondSave = try makeSUT()
-        let sutToPerformLoadAfterSecondSave = try makeSUT()
+        let sutToPerformFirstSave = try makeFeedLoader()
+        let sutToPerformSecondSave = try makeFeedLoader()
+        let sutToPerformLoadAfterSecondSave = try makeFeedLoader()
         
         let firstExpectectedItems: [FeedImage] = [uniqueFeed().model]
         let secondExpectectedItems: [FeedImage] = [uniqueFeed().model, uniqueFeed().model]
@@ -51,8 +51,21 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         expect(sutToPerformLoadAfterSecondSave, toFinishWith: .success(secondExpectectedItems))
     }
     
-    // MARK: - Helpers
-    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) throws -> LocalFeedLoader {
+    func test_loadImageData_deliversSaveDataOnASeparateInstance() throws {
+        let imageLoaderToSave = try makeFeedImageLoader()
+        let imageLoaderToLoad = try makeFeedImageLoader()
+        let feedLoaderToSave = try makeFeedLoader()
+        let image = uniqueFeed()
+        let dataToSave = anydata()
+        let url = anyURL()
+        
+        expect(feedLoaderToSave, toFinishSaveItems: [image.model], withError: nil)
+        save(dataToSave, for: url, with: imageLoaderToSave)
+        expect(imageLoaderToLoad, toLoad: dataToSave, for: url)
+    }
+    
+    // MARK: - FeedLoader Helpers
+    private func makeFeedLoader(file: StaticString = #filePath, line: UInt = #line) throws -> LocalFeedLoader {
         let storeURL = testSpecificStoreURL()
         let store = try CoreDataFeedStore(storeURL: storeURL)
         let sut = LocalFeedLoader(store: store, currentDate: Date.init)
@@ -62,8 +75,14 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         
         return sut
     }
-     
-    private func expect(_ sut: LocalFeedLoader, toFinishSaveItems items: [FeedImage], withError expectedError: Error?, file: StaticString = #file, line: UInt = #line) {
+    
+    private func expect(
+        _ sut: LocalFeedLoader,
+        toFinishSaveItems items: [FeedImage],
+        withError expectedError: Error?,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
         let exp = expectation(description: "Waiting for cache to save")
         sut.save(items) { receivedError in
             XCTAssertEqual(receivedError as NSError?, expectedError as NSError?, "Expected error \(String(describing: expectedError)), got \(String(describing: receivedError))", file: file, line: line)
@@ -72,7 +91,12 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    private func expect(_ sut: LocalFeedLoader, toFinishWith expectedResult: LocalFeedLoader.LoadResult, file: StaticString = #file, line: UInt = #line) {
+    private func expect(
+        _ sut: LocalFeedLoader,
+        toFinishWith expectedResult: LocalFeedLoader.LoadResult,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
         let exp = expectation(description: "Waiting for cache to save")
         sut.load { receivedResult in
             switch (receivedResult, expectedResult) {
@@ -88,6 +112,54 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
+    // MARK: - FeedImageLoader Helpers
+    private func makeFeedImageLoader(
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws -> LocalFeedImageDataLoader {
+        let storeURL = testSpecificStoreURL()
+        let store = try CoreDataFeedStore(storeURL: storeURL)
+        let sut = LocalFeedImageDataLoader(store: store)
+        
+        trackMemoryLeaks(sut, file: file, line: line)
+        trackMemoryLeaks(store, file: file, line: line)
+        
+        return sut
+    }
+    
+    private func save(
+        _ data: Data,
+        for url: URL,
+        with loader: LocalFeedImageDataLoader,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let saveExpectation = expectation(description: "Save expectation")
+        loader.save(data, for: url, completion: { error in
+            if case let .failure(error) = error {
+                XCTFail("Expect to save image data successfully, got error: \(error)", file: file, line: line)
+            }
+            saveExpectation.fulfill()
+        })
+        wait(for: [saveExpectation], timeout: 1.0)
+    }
+    
+    private func expect(_ sut: LocalFeedImageDataLoader, toLoad expectedData: Data, for url: URL, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "wait for load to complete")
+        _ = sut.loadImageData(from: url) { result in
+            switch result {
+            case let .success(loadedData):
+                XCTAssertEqual(expectedData, loadedData, file: file, line: line)
+            case let .failure(error):
+                XCTFail("Expected to load image data successfully, got error: \(error)", file: file, line: line)
+            }
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+    }
+     
+   
+    // MARK: - Helpers
     private func testSpecificStoreURL() -> URL {
         cacheDirectoryURL().appendingPathComponent("\(type(of: self)).store")
     }
