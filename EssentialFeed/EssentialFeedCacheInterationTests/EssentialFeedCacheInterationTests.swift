@@ -22,13 +22,13 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         deleteStoreArtifacts()
     }
     
-    func test_load_deliversNoItemsOnEmptyCache() throws {
+    func test_loadFeed_deliversNoItemsOnEmptyCache() throws {
         let sut = try makeFeedLoader()
         
         expect(sut, toFinishWith: .success([]))
     }
     
-    func test_load_deliversItemsOnNonEmptyCache() throws {
+    func test_loadFeed_deliversItemsOnNonEmptyCache() throws {
         let sutToSave = try makeFeedLoader()
         let sutToLoad = try makeFeedLoader()
         
@@ -38,7 +38,7 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         expect(sutToLoad, toFinishWith: .success(expectectedItems))
     }
     
-    func test_save_overridesItemsSavedOnASeparateInstance() throws {
+    func test_saveFeed_overridesItemsSavedOnASeparateInstance() throws {
         let sutToPerformFirstSave = try makeFeedLoader()
         let sutToPerformSecondSave = try makeFeedLoader()
         let sutToPerformLoadAfterSecondSave = try makeFeedLoader()
