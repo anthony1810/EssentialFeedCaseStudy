@@ -81,6 +81,16 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         expect(imageLoaderToLoad, toLoad: dataToSaveSecond, for: urlToSave)
     }
     
+    func test_validateCacheFeed_doesNotDeleteRecentlySaveFeed() throws {
+        let feedLoaderToSave = try makeFeedLoader()
+        let feedLoaderToPerformValidation = try makeFeedLoader()
+        let image = uniqueFeed().model
+        
+        expect(feedLoaderToSave, toFinishSaveItems: [image], withError: nil)
+        validateCache(with: feedLoaderToPerformValidation)
+        expect(feedLoaderToSave, toFinishWith: .success([image]))
+    }
+    
     // MARK: - FeedLoader Helpers
     private func makeFeedLoader(file: StaticString = #filePath, line: UInt = #line) throws -> LocalFeedLoader {
         let storeURL = testSpecificStoreURL()
@@ -127,6 +137,19 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
             exp.fulfill()
         }
         wait(for: [exp], timeout: 1.0)
+    }
+    
+    func validateCache(with loader: LocalFeedLoader, file: StaticString = #file, line: UInt = #line) {
+        
+        let saveExp = expectation(description: "Save expectation")
+        loader.validate { completion in
+            if case let .failure(error) = completion {
+                XCTFail("Validation failed with error: \(error)", file: file, line: line)
+            }
+            saveExp.fulfill()
+        }
+        
+        wait(for: [saveExp], timeout: 1.0)
     }
     
     // MARK: - FeedImageLoader Helpers
