@@ -19,7 +19,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let expectedError = anyNSError()
         
-        sut.validate()
+        sut.validate(completion: {_ in })
         
         store.completionRetrieval(with: .failure(expectedError))
         
@@ -61,7 +61,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         let lessThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge()
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
-        sut.validate()
+        sut.validate(completion: {_ in })
         
         store.completionRetrieval(with: .success((feed: [feed.local], timestamp: lessThanSevenDayTimestamp)))
         
@@ -74,7 +74,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         let moreThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge().addingTimeInterval(-1)
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
-        sut.validate()
+        sut.validate(completion: {_ in })
         
         store.completionRetrieval(with: .success((feed: [feed.local], timestamp: moreThanSevenDayTimestamp)))
         
@@ -88,7 +88,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         let store = FeedStoreSpy()
         var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: { fixedCurrentDate })
 
-        sut?.validate()
+        sut?.validate(completion: {_ in })
         sut = nil
         
         store.completionRetrieval(with: .success((feed: [feed.local], timestamp: moreThanSevenDayTimestamp)))

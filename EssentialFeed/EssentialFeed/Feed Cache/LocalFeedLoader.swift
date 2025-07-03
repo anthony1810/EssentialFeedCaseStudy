@@ -47,9 +47,7 @@ public final class LocalFeedLoader: FeedLoader {
         }
     }
     
-    public func validate(
-        completion: @escaping (ValidationResult) -> Void = { _ in }
-    ) {
+    public func validate(completion: @escaping (ValidationResult) -> Void) {
         store.retrievalCachedFeed { [weak self] result in
             guard let self else { return }
             switch result {
