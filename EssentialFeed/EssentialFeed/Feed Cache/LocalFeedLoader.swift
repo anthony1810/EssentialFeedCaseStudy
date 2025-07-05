@@ -52,9 +52,9 @@ public final class LocalFeedLoader: FeedLoader {
             guard let self else { return }
             switch result {
             case .failure:
-                store.deleteCachedFeed(completion: { _ in completion(.success(())) })
+                store.deleteCachedFeed(completion: completion)
             case .success(.some((_, let timestamp))) where FeedCachePolicy.isCacheValidated(with: timestamp, against: currentDate()) == false:
-                store.deleteCachedFeed(completion: { _ in completion(.success(()))})
+                store.deleteCachedFeed(completion: completion)
             case .success(.none), .success:
                 completion(.success(()))
             }

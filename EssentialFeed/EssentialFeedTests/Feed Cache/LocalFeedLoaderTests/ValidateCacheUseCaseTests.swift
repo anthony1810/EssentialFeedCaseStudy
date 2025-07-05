@@ -96,6 +96,25 @@ class ValidateCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
     
+    func test_validateCache_failsOnDeletionErrorOfFailedRetrieval() {
+        let (sut, store) = makeSUT()
+        let deletionError = anyNSError()
+        
+        expect(sut, toCompleteWith: .failure(deletionError)) {
+            store.completionRetrieval(with: .failure(anyNSError()))
+            store.completeDeletion(with: .failure(deletionError))
+        }
+    }
+    
+    func test_validateCache_succeedsOnSuccessfulDeletionOfFailedRetrieval() {
+        let (sut, store) = makeSUT()
+        
+        expect(sut, toCompleteWith: .success(())) {
+            store.completionRetrieval(with: .failure(anyNSError()))
+            store.completeDeletion(with: .success(()))
+        }
+    }
+    
     // MARK: - Helpers
     private func makeSUT(
         currentDate: @escaping () -> Date = Date.init,
@@ -109,5 +128,31 @@ class ValidateCacheUseCaseTests: XCTestCase {
         trackMemoryLeaks(loader, file: file, line: line)
         
         return (loader, store)
+    }
+    
+    private func expect(
+        _ sut: LocalFeedLoader,
+        toCompleteWith expectedResult: LocalFeedLoader.ValidationResult,
+        when action: () -> Void,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        
+        let expectation = expectation(description: "Waiting for validation completion")
+        sut.validate(completion: { actualResult in
+            switch (actualResult, expectedResult) {
+            case (.success, .success):
+                break
+            case let (.failure(receivedError as NSError), .failure(actualError as NSError)):
+                XCTAssertEqual(receivedError, actualError, file: file, line: line)
+            default:
+                XCTFail("Expect result \(expectedResult), got result \(actualResult)", file: file, line: line)
+            }
+            expectation.fulfill()
+        })
+        
+        action()
+        wait(for: [expectation], timeout: 1.0)
+        
     }
 }
