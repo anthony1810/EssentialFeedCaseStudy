@@ -36,6 +36,13 @@ final class FeedImageLoaderWithFallbackComposite: FeedImageDataLoader {
 }
 
 final class FeedImageLoaderWithFallbackCompositeTests: XCTestCase {
+    func test_loadImageData_doesNotLoadImageDataOnInitialization() {
+        let (_, primary, fallback) = makeSUT(primaryResult: .failure(anyNSError()), fallbackResult: .success(anydata()))
+        
+        XCTAssertEqual(primary.loadedImageURLs.count, 0)
+        XCTAssertEqual(fallback.loadedImageURLs.count, 0)
+    }
+    
     func test_loadImageData_deliversPrimaryDataOnPrimarySuccess() {
         let primaryData = anydata()
         let fallbackData = anydata()
@@ -151,7 +158,11 @@ final class FeedImageLoaderWithFallbackCompositeTests: XCTestCase {
         
         private let result: FeedImageDataLoader.Result
         private var messages = [(url: URL, completion: (FeedImageDataLoader.Result) -> Void)]()
-        private(set )var cancelURLs: [URL] = []
+        private(set) var cancelURLs: [URL] = []
+        
+        var loadedImageURLs: [URL] {
+            messages.map { $0.url }
+        }
         
         init(result: FeedImageDataLoader.Result) {
             self.result = result
