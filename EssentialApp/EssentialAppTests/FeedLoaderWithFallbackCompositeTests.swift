@@ -97,20 +97,5 @@ extension FeedLoaderWithFallbackCompositeTests {
             completion(result)
         }
     }
-    
-    func anyNSError() -> NSError {
-        NSError(domain: "Test", code: 0, userInfo: nil)
-    }
-    
-    func anyURL() -> URL {
-        URL(string: "https://example.com")!
-    }
 }
 
-extension XCTestCase {
-    func trackMemoryLeaks(_ instance: AnyObject, file: StaticString = #file, line: UInt = #line) {
-        addTeardownBlock { [weak instance] in
-            XCTAssertNil(instance, "Potential memory leak", file: file, line: line)
-        }
-    }
-}
