@@ -32,13 +32,11 @@ final class FeedLoaderWithFallbackCompositeTests: XCTestCase {
     func test_load_deliversFeedOnPrimaryLoaderSuccess() {
         let primaryFeed = uniqueFeed().model
         let fallbackFeed = uniqueFeed().model
-    
-        let primaryLoader = LoaderStub(result: .success([primaryFeed]))
-        let fallbackLoader = LoaderStub(result: .success([fallbackFeed]))
-        let composite = FeedLoaderWithFallbackComposite(primaryLoader: primaryLoader, fallbackLoader: fallbackLoader)
+        
+        let sut = makeSUT(primaryResult: .success([primaryFeed]), fallbackResult: .success([fallbackFeed]))
         
         let expectation = XCTestExpectation(description: "Wait for load")
-        composite.load { result in
+        sut.load { result in
             if case .success(let feed) = result {
                 XCTAssertEqual(feed, [primaryFeed])
             } else {
@@ -53,14 +51,10 @@ final class FeedLoaderWithFallbackCompositeTests: XCTestCase {
     func test_load_deliversFallbackFeedsOnPrimaryLoaderFailure() {
         let primaryFailureError = anyNSError()
         let fallbackFeed = uniqueFeed().model
-        
-        let primaryLoader = LoaderStub(result: .failure(primaryFailureError))
-        let fallbackLoader = LoaderStub(result: .success([fallbackFeed]))
-        
-        let composite = FeedLoaderWithFallbackComposite(primaryLoader: primaryLoader, fallbackLoader: fallbackLoader)
+        let sut = makeSUT(primaryResult: .failure(primaryFailureError), fallbackResult:  .success([fallbackFeed]))
         
         let expectation = XCTestExpectation(description: "Wait for load")
-        composite.load { result in
+        sut.load { result in
             if case .success(let feed) = result {
                 XCTAssertEqual(feed, [fallbackFeed])
             } else {
@@ -75,6 +69,21 @@ final class FeedLoaderWithFallbackCompositeTests: XCTestCase {
 
 // MARK: - Helpers
 extension FeedLoaderWithFallbackCompositeTests {
+    
+    func makeSUT(primaryResult: FeedLoader.Result, fallbackResult: FeedLoader.Result, file: StaticString = #file, line: UInt = #line) -> FeedLoaderWithFallbackComposite {
+        
+        let primaryLoader = LoaderStub(result: primaryResult)
+        let fallbackLoader = LoaderStub(result: fallbackResult)
+        
+        let composite = FeedLoaderWithFallbackComposite(primaryLoader: primaryLoader, fallbackLoader: fallbackLoader)
+        
+        trackMemoryLeaks(primaryLoader, file: file, line: line)
+        trackMemoryLeaks(fallbackLoader, file: file, line: line)
+        trackMemoryLeaks(composite, file: file, line: line)
+        
+        return composite
+    }
+    
     func uniqueFeed() -> (model: FeedImage, local: LocalFeedImage) {
         
         let model = FeedImage(id: UUID(), description: "any description", location: "any location", imageURL: anyURL())
@@ -102,5 +111,13 @@ extension FeedLoaderWithFallbackCompositeTests {
     
     func anyURL() -> URL {
         URL(string: "https://example.com")!
+    }
+}
+
+extension XCTestCase {
+    func trackMemoryLeaks(_ instance: AnyObject, file: StaticString = #file, line: UInt = #line) {
+        addTeardownBlock { [weak instance] in
+            XCTAssertNil(instance, "Potential memory leak", file: file, line: line)
+        }
     }
 }
