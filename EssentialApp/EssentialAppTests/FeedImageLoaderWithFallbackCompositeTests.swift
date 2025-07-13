@@ -23,15 +23,7 @@ final class FeedImageLoaderWithFallbackCompositeTests: XCTestCase {
         
         let sut = makeSUT(primaryResult: .success(primaryData), fallbackResult: .success(fallbackData))
         
-        let expectation = self.expectation(description: "wait for image data to load")
-        _ = sut.loadImageData(from: anyURL()) { actualResult in
-            if case .success(let actualData) = actualResult {
-                XCTAssertEqual(actualData, primaryData)
-            }
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 1.0)
+        expect(sut, toFinishWith: .success(primaryData))
     }
     
     // MARK: - Helpers
@@ -55,6 +47,28 @@ final class FeedImageLoaderWithFallbackCompositeTests: XCTestCase {
             
             return sut
         }
+    
+    private func expect(
+        _ sut: FeedImageLoaderWithFallbackComposite,
+        toFinishWith expectedResult: FeedImageDataLoader.Result,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let expectation = self.expectation(description: "wait for image data to load")
+        _ = sut.loadImageData(from: anyURL()) { actualResult in
+            switch (actualResult, expectedResult) {
+            case (.success(let actualData), .success(let expectedData)):
+                XCTAssertEqual(actualData, expectedData, file: file, line: line)
+            case (.failure(let actualError as NSError), .failure(let expectedError as NSError)):
+                XCTAssertEqual(actualError, expectedError, file: file, line: line)
+            default:
+                XCTFail("expected \(expectedResult), got \(actualResult)", file: file, line: line)
+            }
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1.0)
+    }
     
     private class ImageLoaderStub: FeedImageDataLoader {
         private let result: FeedImageDataLoader.Result
