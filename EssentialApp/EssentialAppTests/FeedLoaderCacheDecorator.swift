@@ -23,7 +23,7 @@ final class FeedLoaderCacheDecorator: FeedLoader {
 final class FeedLoaderCacheDecoratorTests: XCTestCase {
     func test_load_deliversFeedOnLoaderSuccess() {
         let feed = uniqueFeed().model
-        let loader = LoaderStub(result: .success([feed]))
+        let loader = FeedLoaderStub(result: .success([feed]))
         let sut = FeedLoaderCacheDecorator(decoratee: loader)
         
         expect(sut, toFinishWith: .success([feed]))
@@ -31,7 +31,7 @@ final class FeedLoaderCacheDecoratorTests: XCTestCase {
     
     func test_load_deliversErrorOnLoaderFailure() {
         let expectedError = anyNSError()
-        let loader = LoaderStub(result: .failure(expectedError))
+        let loader = FeedLoaderStub(result: .failure(expectedError))
         let sut = FeedLoaderCacheDecorator(decoratee: loader)
         
         expect(sut, toFinishWith: .failure(expectedError))
@@ -58,17 +58,5 @@ final class FeedLoaderCacheDecoratorTests: XCTestCase {
         }
         
         wait(for: [expectation], timeout: 1.0)
-    }
-    
-    private class LoaderStub: FeedLoader {
-        private let result: FeedLoader.Result
-        
-        init(result: FeedLoader.Result) {
-            self.result = result
-        }
-        
-        func load(completion: @escaping (FeedLoader.Result) -> Void) {
-            completion(result)
-        }
     }
 }
