@@ -112,11 +112,11 @@
 		924B26882E2C9D0300908320 /* EssentialApp */ = {
 			isa = PBXGroup;
 			children = (
-				924B26A02E2CA99F00908320 /* FeedLoaderCacheDecorator.swift */,
 				924B267E2E2C9D0300908320 /* AppDelegate.swift */,
 				924B26872E2C9D0300908320 /* SceneDelegate.swift */,
 				924B26802E2C9D0300908320 /* FeedImageLoaderWithFallbackComposite.swift */,
 				924B26812E2C9D0300908320 /* FeedLoaderWithFallbackComposite.swift */,
+				924B26A02E2CA99F00908320 /* FeedLoaderCacheDecorator.swift */,
 				924B267F2E2C9D0300908320 /* Assets.xcassets */,
 				924B26822E2C9D0300908320 /* Info.plist */,
 				924B26842E2C9D0300908320 /* LaunchScreen.storyboard */,
