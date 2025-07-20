@@ -10,26 +10,12 @@ public final class LocalFeedLoader: FeedLoader {
     let store: FeedStore
     let currentDate: () -> Date
     
-    public typealias SaveResult = Error?
     public typealias LoadResult = FeedLoader.Result
     public typealias ValidationResult = Swift.Result<Void, Error>
     
     public init(store: FeedStore, currentDate: @escaping () -> Date) {
         self.store = store
         self.currentDate = currentDate
-    }
-    
-    public func save(_ items: [FeedImage], completion: @escaping (SaveResult) -> Void) {
-        store.deleteCachedFeed(completion: { [weak self] deletionResult in
-            guard let self else { return }
-            
-            switch deletionResult {
-            case .success:
-                self.cacheFeeds(items, completion: completion)
-            case .failure(let error):
-                completion(error)
-            }
-        })
     }
     
     public func load(completion: @escaping (LoadResult) -> Void) {
@@ -71,6 +57,23 @@ public final class LocalFeedLoader: FeedLoader {
                 completion(error)
             }
         }
+    }
+}
+
+extension LocalFeedLoader: FeedCache {
+    public typealias SaveResult = FeedCache.SaveResult
+    
+    public func save(_ items: [FeedImage], completion: @escaping (SaveResult) -> Void) {
+        store.deleteCachedFeed(completion: { [weak self] deletionResult in
+            guard let self else { return }
+            
+            switch deletionResult {
+            case .success:
+                self.cacheFeeds(items, completion: completion)
+            case .failure(let error):
+                completion(error)
+            }
+        })
     }
 }
 
