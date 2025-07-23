@@ -49,13 +49,6 @@
         "identifier" : "080EDEF921B6DA7E00813479",
         "name" : "EssentialFeedTests"
       }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:..\/EssentialApp\/EssentialApp.xcodeproj",
-        "identifier" : "92288F122E309EDA005170EF",
-        "name" : "EssentialAppUIAcceptanceTests"
-      }
     }
   ],
   "version" : 1
