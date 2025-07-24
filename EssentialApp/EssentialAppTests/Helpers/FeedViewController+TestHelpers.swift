@@ -55,6 +55,10 @@ extension FeedViewController {
         return ds?.tableView(tableView, cellForRowAt: index)
     }
     
+    func renderedFeedImageData(at index: Int) -> Data? {
+        return simulateFeedImageViewVisible(at: index)?.renderedImage
+    }
+    
     func simulateAppearance() {
         if !isViewLoaded {
             loadViewIfNeeded()
