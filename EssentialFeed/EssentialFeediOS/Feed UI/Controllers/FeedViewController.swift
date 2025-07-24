@@ -29,6 +29,10 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
         onViewIsAppearing?(self)
     }
     
+    public func display(_ tableModel: [FeedImageCellController]) {
+        self.tableModel = tableModel
+    }
+    
     public func display(viewModel: LoadingViewModel) {
         if viewModel.isLoading {
             refreshControl?.beginRefreshing()
