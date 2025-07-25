@@ -41,7 +41,26 @@ final class FeedAcceptanceTests: XCTestCase {
         XCTAssertEqual(offline.numberOfRenderedFeedImageViews(), 0)
     }
     
+    func test_onEnteringBackground_deletesExpiredFeedCache() {
+        let store = InMemoryStore.expiredCacheFeed
+        enteringBackground(with: store)
+        
+        XCTAssertTrue(store.cacheFeed == nil)
+    }
+    
+    func test_onEnteringForeground_keepsNonExpiredFeedCache() {
+        let store = InMemoryStore.nonExpiredCacheFeed
+        enteringBackground(with: store)
+        
+        XCTAssertTrue(store.cacheFeed != nil)
+    }
+    
     // MARK: - Helpers
+    private func enteringBackground(with store: InMemoryStore) {
+        let sut = SceneDelegate(httpClient: HTTPClientStub.offline, store: store)
+        sut.sceneWillResignActive(UIApplication.shared.connectedScenes.first!)
+    }
+    
     private func launch(
         httpClient: HTTPClientStub = .offline,
         store: InMemoryStore = .empty
@@ -89,11 +108,29 @@ final class FeedAcceptanceTests: XCTestCase {
     
     private class InMemoryStore: FeedImageDataStore & FeedStore {
         
-        private var cacheFeed: CacheFeed?
+        private(set) var cacheFeed: CacheFeed?
         private var feedImageDataCache: [URL: Data] = [:]
         
         static var empty: InMemoryStore {
             .init()
+        }
+        
+        static var expiredCacheFeed: InMemoryStore {
+            .init(cacheFeed: CacheFeed(
+                [],
+                Date.distantPast
+            ))
+        }
+        
+        static var nonExpiredCacheFeed: InMemoryStore {
+            .init(cacheFeed: CacheFeed(
+                [],
+                Date.now
+            ))
+        }
+        
+        init(cacheFeed: CacheFeed? = nil) {
+            self.cacheFeed = cacheFeed
         }
         
         // MARK: - FeedStore
