@@ -19,6 +19,21 @@ final class FeedAcceptanceTests: XCTestCase {
         XCTAssertEqual(sut.renderedFeedImageData(at: 1), makeImageData())
     }
     
+    func test_onLauch_displaysLocalFeedWhenCustomerHasNoConnectivity() {
+        let sharedStore = InMemoryStore.empty
+        let online = launch(httpClient: .online(response), store: sharedStore)
+        online.simulateAppearance()
+        online.simulateFeedImageViewVisible(at: 0)
+        online.simulateFeedImageViewVisible(at: 1)
+        
+        let offline = launch(httpClient: .offline, store: sharedStore)
+        offline.simulateAppearance()
+        
+        XCTAssertEqual(offline.numberOfRenderedFeedImageViews(), 2)
+        XCTAssertEqual(offline.renderedFeedImageData(at: 0), makeImageData())
+        XCTAssertEqual(offline.renderedFeedImageData(at: 1), makeImageData())
+    }
+    
     // MARK: - Helpers
     private func launch(
         httpClient: HTTPClientStub = .offline,
@@ -77,6 +92,7 @@ final class FeedAcceptanceTests: XCTestCase {
         // MARK: - FeedStore
         func deleteCachedFeed(completion: @escaping DeletionCompletion) {
             cacheFeed = nil
+            completion(.success(()))
         }
         
         func insertCachedFeed(_ items: [EssentialFeed.LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
