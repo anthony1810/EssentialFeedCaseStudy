@@ -15,7 +15,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <view key="tableHeaderView" hidden="YES" contentMode="scaleToFill" id="Lcd-Hc-4Ou" customClass="ErrorView" customModule="EssentialFeediOS" customModuleProvider="target">
+                        <view key="tableHeaderView" contentMode="scaleToFill" id="Lcd-Hc-4Ou" customClass="ErrorView" customModule="EssentialFeediOS" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="393" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>

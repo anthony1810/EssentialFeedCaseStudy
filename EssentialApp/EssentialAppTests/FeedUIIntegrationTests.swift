@@ -303,6 +303,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         loader.completeFeedLoadingWithError(at: 0)
         
         XCTAssertEqual(sut.errorMessage, localized("FEED_VIEW_CONNECTION_ERROR"), "Expect error message to be nil initially")
+        XCTAssertEqual(sut.isErrorViewVisible, true, "Expect error view to be shown initially")
         
         sut.simulateUserInitiatedFeedReload()
         XCTAssertNil(sut.errorMessage, "Expect error message to be nil when reload")
