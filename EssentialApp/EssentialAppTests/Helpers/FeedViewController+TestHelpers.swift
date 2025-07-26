@@ -77,6 +77,10 @@ extension FeedViewController {
         errorView.message
     }
     
+    var isErrorViewVisible: Bool {
+        errorView.isHidden == false
+    }
+    
     func simulateErrorViewTap() {
         errorView.button.simulateTap()
     }

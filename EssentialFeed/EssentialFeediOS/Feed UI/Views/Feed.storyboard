@@ -15,17 +15,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <view key="tableHeaderView" contentMode="scaleToFill" id="Lcd-Hc-4Ou" customClass="ErrorView" customModule="EssentialFeediOS" customModuleProvider="target">
+                        <view key="tableHeaderView" hidden="YES" contentMode="scaleToFill" id="Lcd-Hc-4Ou" customClass="ErrorView" customModule="EssentialFeediOS" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="393" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hp2-nO-EIS">
-                                    <rect key="frame" x="20" y="5" width="353" height="34.333333333333336"/>
+                                    <rect key="frame" x="20" y="15" width="353" height="14"/>
                                     <state key="normal" title="Button"/>
-                                    <buttonConfiguration key="configuration" style="plain" title="Button">
-                                        <fontDescription key="titleFontDescription" type="system" pointSize="17"/>
-                                        <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </buttonConfiguration>
+                                    <buttonConfiguration key="configuration" style="plain"/>
                                     <connections>
                                         <action selector="didTapButton" destination="Lcd-Hc-4Ou" eventType="touchUpInside" id="0LJ-Es-bGj"/>
                                     </connections>

@@ -292,6 +292,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         
         sut.simulateAppearance()
         
+        XCTAssertEqual(sut.isErrorViewVisible, false, "Expect error view to be hidden initially")
         XCTAssertNil(sut.errorMessage, "Expect error message to be nil initially")
     }
     
