@@ -92,6 +92,9 @@
 		92DFD1BF2D50ECBC00CF68D0 /* FeedCachePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92DFD1BE2D50ECB700CF68D0 /* FeedCachePolicy.swift */; };
 		92DFD1C12D51006600CF68D0 /* CodableFeedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92DFD1C02D51006100CF68D0 /* CodableFeedStoreTests.swift */; };
 		92E5232A2D8E5DBC0060CB7D /* Feed.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92E523292D8E5DBC0060CB7D /* Feed.storyboard */; };
+		92E6772A2E348D1C00F0DCA8 /* NOT_EMPTY_FEED.png in Resources */ = {isa = PBXBuildFile; fileRef = 92E677282E348D1C00F0DCA8 /* NOT_EMPTY_FEED.png */; };
+		92E6772B2E348D1C00F0DCA8 /* ERROR_OCCURED.png in Resources */ = {isa = PBXBuildFile; fileRef = 92E677272E348D1C00F0DCA8 /* ERROR_OCCURED.png */; };
+		92E6772C2E348D1C00F0DCA8 /* EMPTY_FEED.png in Resources */ = {isa = PBXBuildFile; fileRef = 92E677262E348D1C00F0DCA8 /* EMPTY_FEED.png */; };
 		92E7935E2DA570EB00AB5012 /* LoadFeedImageFromCacheUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E7935D2DA5706400AB5012 /* LoadFeedImageFromCacheUseCaseTests.swift */; };
 		92E87D572D676EC50084796B /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 080EDEF121B6DA7E00813479 /* EssentialFeed.framework */; platformFilter = ios; };
 		92E87D582D676EC50084796B /* EssentialFeed.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 080EDEF121B6DA7E00813479 /* EssentialFeed.framework */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -242,6 +245,9 @@
 		92DFD1BE2D50ECB700CF68D0 /* FeedCachePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCachePolicy.swift; sourceTree = "<group>"; };
 		92DFD1C02D51006100CF68D0 /* CodableFeedStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableFeedStoreTests.swift; sourceTree = "<group>"; };
 		92E523292D8E5DBC0060CB7D /* Feed.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Feed.storyboard; sourceTree = "<group>"; };
+		92E677262E348D1C00F0DCA8 /* EMPTY_FEED.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EMPTY_FEED.png; sourceTree = "<group>"; };
+		92E677272E348D1C00F0DCA8 /* ERROR_OCCURED.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ERROR_OCCURED.png; sourceTree = "<group>"; };
+		92E677282E348D1C00F0DCA8 /* NOT_EMPTY_FEED.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NOT_EMPTY_FEED.png; sourceTree = "<group>"; };
 		92E7935D2DA5706400AB5012 /* LoadFeedImageFromCacheUseCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadFeedImageFromCacheUseCaseTests.swift; sourceTree = "<group>"; };
 		92F1BD3C2D450B640002ED52 /* FeedMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedMapper.swift; sourceTree = "<group>"; };
 		92F1BD3E2D45101D0002ED52 /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
@@ -376,6 +382,7 @@
 		9210CF152E34748500B1FEA5 /* EssentialFeediOSTests */ = {
 			isa = PBXGroup;
 			children = (
+				92E677292E348D1C00F0DCA8 /* snapshots */,
 				9210CF192E34823500B1FEA5 /* UIImage+TestHelpers.swift */,
 				9210CF172E3474B700B1FEA5 /* FeedSnapshotTests.swift */,
 			);
@@ -626,6 +633,16 @@
 				92CDC2DD2D524F410084AFC0 /* CodableFeedStore.swift */,
 			);
 			path = Codable;
+			sourceTree = "<group>";
+		};
+		92E677292E348D1C00F0DCA8 /* snapshots */ = {
+			isa = PBXGroup;
+			children = (
+				92E677262E348D1C00F0DCA8 /* EMPTY_FEED.png */,
+				92E677272E348D1C00F0DCA8 /* ERROR_OCCURED.png */,
+				92E677282E348D1C00F0DCA8 /* NOT_EMPTY_FEED.png */,
+			);
+			path = snapshots;
 			sourceTree = "<group>";
 		};
 		92E87D562D676EC50084796B /* Frameworks */ = {
@@ -884,6 +901,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				92E6772A2E348D1C00F0DCA8 /* NOT_EMPTY_FEED.png in Resources */,
+				92E6772B2E348D1C00F0DCA8 /* ERROR_OCCURED.png in Resources */,
+				92E6772C2E348D1C00F0DCA8 /* EMPTY_FEED.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

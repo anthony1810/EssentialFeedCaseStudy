@@ -26,6 +26,14 @@ final class FeedSnapshotTests: XCTestCase {
         record(snapshot: sut.snapshot(), named: "NOT_EMPTY_FEED")
     }
     
+    func test_renderFeed_whenThereIsError() throws {
+        let sut = makeSUT()
+        
+        sut.display(errorOccured())
+        
+        record(snapshot: sut.snapshot(), named: "ERROR_OCCURED")
+    }
+    
     // MARK: - Helpers
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> FeedViewController {
         let bundle = Bundle(for: FeedViewController.self)
@@ -37,6 +45,10 @@ final class FeedSnapshotTests: XCTestCase {
     
     private func emptyFeed() -> [FeedImageCellController] {
         []
+    }
+    
+    private func errorOccured() -> FeedErrorViewModel {
+        .error(message: "There is an error \n please try again later \n")
     }
     
     private func nonEmptyFeed() -> [ImageStub] {
