@@ -10,9 +10,12 @@ import UIKit
 
 class FeedViewAdapter: FeedView {
     private weak var controller: FeedViewController?
-    private let loader: FeedImageDataLoader
+    private let loader: (URL) -> FeedImageDataLoader.Publisher
     
-    init(controller: FeedViewController? = nil, loader: FeedImageDataLoader) {
+    init(
+        controller: FeedViewController? = nil,
+        loader: @escaping (URL) -> FeedImageDataLoader.Publisher
+    ) {
         self.controller = controller
         self.loader = loader
     }
@@ -20,7 +23,9 @@ class FeedViewAdapter: FeedView {
     func display(viewModel: FeedViewModel) {
         controller?.display(viewModel.feeds.map { model in
             let adapter = FeedImageDataLoaderPresentationAdapter<WeakRefVirtualProxy<FeedImageCellController>, UIImage>(model: model, imageLoader: loader)
+            
             let view = FeedImageCellController(delegate: adapter)
+            
             adapter.presenter = FeedImagePresenter(view: WeakRefVirtualProxy(object: view), imageTransformer: UIImage.init)
             return view
         })

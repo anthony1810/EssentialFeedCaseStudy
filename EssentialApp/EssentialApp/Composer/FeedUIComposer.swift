@@ -6,7 +6,10 @@ import Combine
 public final class FeedUIComposer {
     private init() {}
     
-    public static func feedComposedWith(feedLoaderPublisher: @escaping () -> FeedLoader.Publisher, imageLoader: FeedImageDataLoader) -> FeedViewController {
+    public static func feedComposedWith(
+        feedLoaderPublisher: @escaping () -> FeedLoader.Publisher,
+        imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher
+    ) -> FeedViewController {
         
         let feedLoaderPresenterAdapter = FeedLoaderPresenterAdapter(feedLoaderPublisher: {
             feedLoaderPublisher().dispatchOnMainQueueIfNeeded()
@@ -16,7 +19,9 @@ public final class FeedUIComposer {
         
         let feedPresenter = FeedPresenter(
             loadingView: WeakRefVirtualProxy(object: feedController),
-            feedView: FeedViewAdapter(controller: feedController, loader: MainQueueDecorator(decoratee: imageLoader)),
+            feedView: FeedViewAdapter(controller: feedController, loader: {
+                imageLoader($0).dispatchOnMainQueueIfNeeded()
+            }),
             errorView: WeakRefVirtualProxy(object: feedController)
         )
         feedLoaderPresenterAdapter.presenter = feedPresenter
