@@ -40,7 +40,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let _ = (scene as? UIWindowScene) else { return }
+        guard let scene = (scene as? UIWindowScene) else { return }
+        
+        window = UIWindow(windowScene: scene)
         
         configureWindow()
     }
@@ -50,6 +52,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func configureWindow() {
+        
         let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
         
         let remoteFeedLoader = RemoteFeedLoader(url: url, client: httpClient)
@@ -80,6 +83,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
         
         window?.rootViewController = UINavigationController(rootViewController: feedVC)
+        
+        window?.makeKeyAndVisible()
     }
 }
 
