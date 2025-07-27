@@ -5,6 +5,7 @@
 //  Created by Anthony on 13/7/25.
 //
 import EssentialFeed
+import Combine
 
 public final class FeedLoaderWithFallbackComposite: FeedLoader {
     private let primaryLoader: FeedLoader
