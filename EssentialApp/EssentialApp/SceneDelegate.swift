@@ -89,32 +89,4 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
-public extension FeedImageDataLoader {
-    typealias Publisher = AnyPublisher<Data, Swift.Error>
-    
-    func loadPublisher(from url: URL) -> Publisher {
-        var task: FeedImageDataLoaderTask?
-        return Deferred {
-            Future { promise in
-                task = self.loadImageData(from: url, completion: promise)
-            }
-        }
-        .handleEvents(receiveCancel: { task?.cancel() })
-        .eraseToAnyPublisher()
-    }
-}
 
-extension FeedImageCache {
-    func saveIgnoringResult(data: Data, for url: URL) {
-        save(data, for: url) { _ in }
-    }
-}
-
-extension Publisher where Output == Data {
-    func caching(to cacher: FeedImageCache, using url: URL) -> AnyPublisher<Output, Failure> {
-        handleEvents(receiveOutput: {
-            cacher.saveIgnoringResult(data: $0, for: url)
-        })
-        .eraseToAnyPublisher()
-    }
-}

@@ -18,6 +18,21 @@ public extension FeedLoader {
     }
 }
 
+public extension FeedImageDataLoader {
+    typealias Publisher = AnyPublisher<Data, Swift.Error>
+    
+    func loadPublisher(from url: URL) -> Publisher {
+        var task: FeedImageDataLoaderTask?
+        return Deferred {
+            Future { promise in
+                task = self.loadImageData(from: url, completion: promise)
+            }
+        }
+        .handleEvents(receiveCancel: { task?.cancel() })
+        .eraseToAnyPublisher()
+    }
+}
+
 extension Publisher where Output == [FeedImage] {
     func caching(to cache: FeedCache) -> AnyPublisher<Output, Failure> {
         handleEvents(receiveOutput: {
@@ -27,9 +42,24 @@ extension Publisher where Output == [FeedImage] {
     }
 }
 
+extension Publisher where Output == Data {
+    func caching(to cacher: FeedImageCache, using url: URL) -> AnyPublisher<Output, Failure> {
+        handleEvents(receiveOutput: {
+            cacher.saveIgnoringResult(data: $0, for: url)
+        })
+        .eraseToAnyPublisher()
+    }
+}
+
 extension FeedCache {
     func saveIgnoringCompletion(feed: [FeedImage]) {
         self.save(feed) { _ in }
+    }
+}
+
+extension FeedImageCache {
+    func saveIgnoringResult(data: Data, for url: URL) {
+        save(data, for: url) { _ in }
     }
 }
 
