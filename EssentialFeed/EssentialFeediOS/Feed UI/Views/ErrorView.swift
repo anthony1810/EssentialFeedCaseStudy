@@ -23,8 +23,8 @@ public final class ErrorView: UIView {
         hideMessageAnimated()
     }
     
-    private var isVisible: Bool {
-        alpha > 0
+    var isVisible: Bool {
+        isHidden == false
     }
     
     func setMessageAnimated(_ message: String?) {
@@ -36,6 +36,7 @@ public final class ErrorView: UIView {
     }
     
     private func showAnimated(_ message: String) {
+        isHidden = false
         button.setTitle(message, for: .normal)
         
         UIView.animate(withDuration: 0.3) {
@@ -44,6 +45,7 @@ public final class ErrorView: UIView {
     }
     
     private func hideMessageAnimated() {
+        isHidden = true
         UIView.animate(
             withDuration: 0.25,
             animations: { self.alpha = 0},

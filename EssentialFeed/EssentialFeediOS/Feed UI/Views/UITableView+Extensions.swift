@@ -12,4 +12,17 @@ extension UITableView {
         
         return dequeueReusableCell(withIdentifier: identifier) as? T
     }
+    
+    func sizeTableHeaderToFit() {
+        guard let header = tableHeaderView else { return }
+        
+        let size = header.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+        print("-> tableHeaderView?.frame.size \(header.frame.size)")
+        print("-> size \(size)")
+        let needsFrameUpdate = header.frame.size != size
+        if needsFrameUpdate {
+            header.frame.size = size
+            tableHeaderView = header
+        }
+    }
 }

@@ -9,7 +9,7 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
    
     public var delegate: FeedViewControllerDelegate?
     @IBOutlet public private(set) var errorView: ErrorView!
-    private var imageLoader: FeedImageDataLoader?
+    
     private var onViewIsAppearing: ((FeedViewController) -> Void)?
     var tableModel = [FeedImageCellController]() {
         didSet { tableView.reloadData() }
@@ -27,6 +27,10 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     public override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
         onViewIsAppearing?(self)
+    }
+    
+    public func display(_ tableModel: [FeedImageCellController]) {
+        self.tableModel = tableModel
     }
     
     public func display(viewModel: LoadingViewModel) {
