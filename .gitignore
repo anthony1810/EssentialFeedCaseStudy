@@ -44,3 +44,5 @@ injected_container.xcconfig
 
 # Other
 *.log
+EssentialApp.xcworkspace/xcuserdata/*/UserInterfaceState.xcuserstate
+*.xcuserstate
