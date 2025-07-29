@@ -8,7 +8,7 @@ import Foundation
 
 public final class RemoteLoader<T> {
     
-    public typealias Result = Swift.Result<T, Error>
+    public typealias Result = Swift.Result<T, Swift.Error>
     public typealias Mapper = (Data, HTTPURLResponse) throws -> T
     
     let url: URL
