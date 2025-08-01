@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ImageCommentMapper {
+public enum ImageCommentMapper {
     private struct Root: Decodable {
         private let items: [RemoteImageComment]
         
@@ -29,7 +29,7 @@ enum ImageCommentMapper {
         }
     }
 
-    static func map(_ data: Data, res: HTTPURLResponse) throws -> [ImageComment] {
+    public static func map(_ data: Data, res: HTTPURLResponse) throws -> [ImageComment] {
         guard isOkayResponse(res) else {
             throw RemoteImageCommentLoader.Error.connectivity
         }
