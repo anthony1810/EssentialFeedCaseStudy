@@ -56,9 +56,5 @@ class FeedImageMapperTests: XCTestCase {
         let mappedItems = try FeedMapper.map(makeItemsJson([itemJson0, itemJson1]), res: HTTPURLResponse(url: url, statusCode: 200))
         XCTAssertEqual(mappedItems, [feedImage0, feedImage1])
     }
-    
-    func failure(_ error: RemoteFeedLoader.Error) -> RemoteFeedLoader.Result {
-        .failure(error)
-    }
 }
 
