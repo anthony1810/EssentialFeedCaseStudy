@@ -9,39 +9,35 @@ import XCTest
 import EssentialFeed
 
 class FeedImageMapperTests: XCTestCase {
-    func test_load_deliversErrorOnNon200HTTPResponse() {
+    func test_map_deliversErrorOnNon200HTTPResponse() throws {
         let url = anyURL()
-        let (sut, client) = makeSUT(url: url)
         
         let samples = [199, 201, 300, 400, 500]
-        samples.enumerated().forEach { index, statusCode in
-            expect(sut, toFinishedWith: failure(.invalidData)) {
-                client.complete(withStatusCode: statusCode, at: index)
-            }
+        try samples.forEach { statusCode in
+            let response = HTTPURLResponse(url: url, statusCode: statusCode)
+            XCTAssertThrowsError(
+                try FeedMapper.map(anydata(), res: response)
+            )
         }
     }
     
-    func test_load_deliversErrorOn200HTTPResponseWithInvalidJson() {
+    func test_map_deliversErrorOn200HTTPResponseWithInvalidJson() throws {
         let url = anyURL()
-        let (sut, client) = makeSUT(url: url)
         
-        expect(sut, toFinishedWith: failure(.invalidData)) {
-            client.complete(withStatusCode: 200, data: anyInvalidJson())
-        }
+        XCTAssertThrowsError(
+            try FeedMapper.map(anyInvalidJson(), res: HTTPURLResponse(url: url, statusCode: 200))
+        )
     }
     
-    func test_load_deliversNoItemsOn200HTTPResponseWithEmptyJson() {
+    func test_map_deliversNoItemsOn200HTTPResponseWithEmptyJson() throws {
         let url = anyURL()
-        let (sut, client) = makeSUT(url: url)
         
-        expect(sut, toFinishedWith: .success([])) {
-            client.complete(withStatusCode: 200, data: makeItemsJson([]))
-        }
+        let mappedItems = try FeedMapper.map(makeItemsJson([]), res: HTTPURLResponse(url: url, statusCode: 200))
+        XCTAssertEqual(mappedItems, [])
     }
     
-    func test_load_deliversItemsOn200HTTPResponseWithValidJson() {
+    func test_load_deliversItemsOn200HTTPResponseWithValidJson() throws {
         let url = anyURL()
-        let (sut, client) = makeSUT(url: url)
         
         let (feedImage0, itemJson0) = makeItem(
             id: UUID(),
@@ -57,46 +53,8 @@ class FeedImageMapperTests: XCTestCase {
             imageURL: anyURL()
         )
         
-        expect(sut, toFinishedWith: .success([feedImage0, feedImage1])) {
-            client.complete(withStatusCode: 200, data: makeItemsJson([itemJson0, itemJson1]))
-        }
-    }
-
-    // MARK: - Helpers
-    private func makeSUT(url: URL,file: StaticString = #file, line: UInt = #line) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
-        let client = HTTPClientSpy()
-        let loader = RemoteFeedLoader(url: url, client: client)
-        
-        trackMemoryLeaks(client, file: file, line: line)
-        trackMemoryLeaks(loader, file: file, line: line)
-        
-        return (loader, client)
-    }
-    
-    private func expect(
-        _ sut: RemoteFeedLoader,
-        toFinishedWith expectedResult: RemoteFeedLoader.Result,
-        when action: @escaping () -> Void,
-        file: StaticString = #filePath,
-        line: UInt = #line
-    ) {
-        let exp = expectation(description: "wait for load completion")
-        
-        sut.load { capturedResult in
-            switch (capturedResult, expectedResult) {
-            case let (.success(capturedItems), .success(expectedItems)):
-                XCTAssertEqual(capturedItems, expectedItems, file: file, line: line)
-            case let (.failure(capturedError as RemoteFeedLoader.Error), .failure(expectedError as RemoteFeedLoader.Error)):
-                XCTAssertEqual(capturedError, expectedError, file: file, line: line)
-            default:
-                XCTFail("expected \(expectedResult) got \(capturedResult) instead", file: file, line: line)
-            }
-            exp.fulfill()
-        }
-        
-        action()
-        
-        wait(for: [exp], timeout: 1.0)
+        let mappedItems = try FeedMapper.map(makeItemsJson([itemJson0, itemJson1]), res: HTTPURLResponse(url: url, statusCode: 200))
+        XCTAssertEqual(mappedItems, [feedImage0, feedImage1])
     }
     
     func failure(_ error: RemoteFeedLoader.Error) -> RemoteFeedLoader.Result {
