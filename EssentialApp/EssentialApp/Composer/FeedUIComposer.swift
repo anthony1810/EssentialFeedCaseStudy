@@ -7,7 +7,7 @@ public final class FeedUIComposer {
     private init() {}
     
     public static func feedComposedWith(
-        feedLoaderPublisher: @escaping () -> FeedLoader.Publisher,
+        feedLoaderPublisher: @escaping () -> AnyPublisher<[FeedImage], Error>,
         imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher
     ) -> FeedViewController {
         

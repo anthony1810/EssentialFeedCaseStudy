@@ -10,11 +10,11 @@ import UIKit
 import Combine
 
 class FeedLoaderPresenterAdapter: FeedViewControllerDelegate {
-    private let feedLoaderPublisher: () -> FeedLoader.Publisher
+    private let feedLoaderPublisher: () -> AnyPublisher<[FeedImage], Error>
     private var cancellable: Cancellable?
     var presenter: FeedPresenter?
     
-    init(feedLoaderPublisher: @escaping () -> FeedLoader.Publisher) {
+    init(feedLoaderPublisher: @escaping () -> AnyPublisher<[FeedImage], Error>) {
         self.feedLoaderPublisher = feedLoaderPublisher
     }
     
