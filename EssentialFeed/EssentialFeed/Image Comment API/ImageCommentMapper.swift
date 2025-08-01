@@ -28,10 +28,15 @@ public enum ImageCommentMapper {
             }
         }
     }
+    
+    enum Error: Swift.Error {
+        case connectivity
+        case invalidData
+    }
 
     public static func map(_ data: Data, res: HTTPURLResponse) throws -> [ImageComment] {
         guard isOkayResponse(res) else {
-            throw RemoteImageCommentLoader.Error.connectivity
+            throw Error.connectivity
         }
         
         do {
@@ -41,7 +46,7 @@ public enum ImageCommentMapper {
             return root.comments
         } catch {
             print(error)
-            throw RemoteImageCommentLoader.Error.invalidData
+            throw Error.invalidData
         }
     }
     
