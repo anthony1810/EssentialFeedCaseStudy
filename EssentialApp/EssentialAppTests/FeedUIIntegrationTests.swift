@@ -302,7 +302,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         sut.simulateAppearance()
         loader.completeFeedLoadingWithError(at: 0)
         
-        XCTAssertEqual(sut.errorMessage, localized("GENERIC_CONNECTION_ERROR"), "Expect error message to be nil initially")
+        XCTAssertEqual(sut.errorMessage, loadError, "Expect error message to be nil initially")
         XCTAssertEqual(sut.isErrorViewVisible, true, "Expect error view to be shown initially")
         
         sut.simulateUserInitiatedFeedReload()
@@ -315,7 +315,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         sut.simulateAppearance()
         
         loader.completeFeedLoadingWithError(at: 0)
-        XCTAssertEqual(sut.errorMessage, localized("GENERIC_CONNECTION_ERROR"), "Expect error message to be nil initially")
+        XCTAssertEqual(sut.errorMessage, loadError, "Expect error message to be nil initially")
         
         sut.simulateErrorViewTap()
         XCTAssertNil(sut.errorMessage, "Expect error message to be nil when tapped")
@@ -341,14 +341,16 @@ final class FeedUIIntegrationTests: XCTestCase {
         UIImage.make(withColor: .red).pngData()!
     }
     
-    func localized(_ key: String, file: StaticString = #filePath, line: UInt = #line) -> String {
-        let table = "Feed"
-        let bundle = Bundle(for: FeedPresenter.self)
-        let value = bundle.localizedString(forKey: key, value: nil, table: table)
-        if value == key {
-            XCTFail("Missing localized string for key: \(key) in table: \(table)", file: file, line: line)
-        }
-        return value
+    private class DummyResourceView: ResourceView {
+        typealias ResourceViewModel = Any
+        func display(_ viewModel: ResourceViewModel) {}
     }
     
+    var loadError: String {
+        LoadResourcePresenter<Any, DummyResourceView>.loadError
+    }
+    
+    var feedTitle: String {
+        FeedPresenter.title
+    }
 }
