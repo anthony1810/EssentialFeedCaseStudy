@@ -42,11 +42,11 @@ final class EssentialFeedEndToEndTests: XCTestCase {
         }
     }
     
-    private func getFeedResult(file: StaticString = #filePath, line: UInt = #line) -> FeedLoader.Result? {
+    private func getFeedResult(file: StaticString = #filePath, line: UInt = #line) -> Swift.Result<[FeedImage], Error>? {
     
         let exp = expectation(description: "wait for feed loading")
         
-        var receivedResult: FeedLoader.Result?
+        var receivedResult: Swift.Result<[FeedImage], Error>?
         ephemeralClient().get(from: feedTestServerURL, completion: { result in
             receivedResult = result.flatMap { (data, res) in
                 do {
@@ -63,14 +63,21 @@ final class EssentialFeedEndToEndTests: XCTestCase {
         return receivedResult
     }
     
-    private func getFeedImageDataResult(file: StaticString = #file, line: UInt = #line) -> RemoteFeedImageDataLoader.Result? {
+    private func getFeedImageDataResult(file: StaticString = #file, line: UInt = #line) -> Swift.Result<Data, Error>? {
         let testServerURL = feedTestServerURL.appending(path: "73A7F70C-75DA-4C2E-B5A3-EED40DC53AA6/image")
-        let loader = RemoteFeedImageDataLoader(client: ephemeralClient())
-        trackMemoryLeaks(loader, file: file, line: line)
-        
+        var receivedResult: Swift.Result<Data, Error>?
         let exp = expectation(description: "wait for image loading")
-        var receivedResult: RemoteFeedImageDataLoader.Result?
-        _ = loader.loadImageData(from: testServerURL) { receivedResult = $0; exp.fulfill() }
+        ephemeralClient().get(from: testServerURL, completion: { result in
+            receivedResult = result.flatMap { (data, res) in
+                do {
+                    return .success(try FeedImageDataMapper.map(data, from: res))
+                } catch {
+                    return .failure(error)
+                }
+            }
+            
+            exp.fulfill()
+        })
         
         wait(for: [exp], timeout: 5.0)
         
