@@ -60,11 +60,13 @@ final class LoadResourcePresenterTests: XCTestCase {
     }
     
     // MARK: - Helpers
+    private typealias SUT = LoadResourcePresenter<String, ViewSpy>
+    
     private func makeSUT(
         mapper: @escaping (String) -> String = { _ in "any" },
         file: StaticString = #filePath,
         line: UInt = #line
-    ) -> (sut: LoadResourcePresenter, view: ViewSpy) {
+    ) -> (sut: SUT, view: ViewSpy) {
         let viewSpy = ViewSpy()
         let sut = LoadResourcePresenter(
             loadingView: viewSpy,
@@ -92,6 +94,7 @@ final class LoadResourcePresenterTests: XCTestCase {
     }
     
     private class ViewSpy: FeedErrorView, FeedLoadingView, ResourceView {
+        typealias ResourceViewModel = String
         
         enum Message: Hashable {
             case display(errorMessage: String?)
