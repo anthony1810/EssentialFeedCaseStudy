@@ -9,98 +9,39 @@ import XCTest
 import EssentialFeed
 
 class FeedImageDataMapperTests: XCTestCase {
-    
-    func test_init_doesNotRequestDataFromURL() {
-        let (_, client) = makeSUT(url: anyURL())
+    func test_map_throwsErrorOnHTTPStatusCodeOtherThan200() throws {
+        let samples = [199, 201, 300, 400, 500]
         
-        XCTAssertEqual(client.requestedURLs, [])
+        try samples.forEach { statusCode in
+            XCTAssertThrowsError(
+                try FeedImageDataMapper.map(
+                    anydata(),
+                    from: HTTPURLResponse(url: anyURL(), statusCode: statusCode)
+                )
+            )
+        }
     }
     
-    func test_loadImageData_requestsDataFromURL() {
-        let expectedURL = anyURL()
-        let (sut, client) = makeSUT()
-    
-        _ = sut.loadImageData(from: expectedURL) { _ in }
-        XCTAssertEqual(client.requestedURLs, [expectedURL])
-        
-        _ = sut.loadImageData(from: expectedURL) { _ in }
-        _ = sut.loadImageData(from: expectedURL) { _ in }
-        XCTAssertEqual(client.requestedURLs, [expectedURL, expectedURL, expectedURL])
-    }
-    
-    func test_loadImageData_deliversErrorOnEmptyData() {
-        let (sut, client) = makeSUT()
+    func test_map_deliversInvalidDataOn200HTTPResponseWithEmptyData() throws {
         let emptyData = Data()
         
-        expect(sut, toCompleteWith: .failure(RemoteFeedImageDataLoader.Error.invalidData)) {
-            client.complete(withStatusCode: 200, data: emptyData)
-        }
+        XCTAssertThrowsError(
+            try FeedImageDataMapper.map(
+                emptyData,
+                from: HTTPURLResponse(url: anyURL(), statusCode: 200)
+            )
+        )
     }
     
-    func test_loadImageData_deliversConnectivityErrorOnClientError() {
-        let (sut, client) = makeSUT()
+    func test_map_deliversReceivedDataOn200HTTPResponseWithNonEmptyData() throws {
+        let sampleData = anydata()
         
-        expect(sut, toCompleteWith: .failure(RemoteFeedImageDataLoader.Error.connectivity)) {
-            client.complete(withError: anyNSError())
-        }
-    }
-    
-    func test_loadImageData_returnsDataOnSuccess() {
-        let (sut, client) = makeSUT()
-        let expectedData = anydata()
+        let mappedData = try FeedImageDataMapper.map(
+            sampleData,
+            from: HTTPURLResponse(url: anyURL(), statusCode: 200)
+        )
         
-        expect(sut, toCompleteWith: .success(expectedData)) {
-            client.complete(withStatusCode: 200, data: expectedData)
-        }
-    }
-    
-    func test_loadImageData_returnsErrorOnHTTPStatusCodeOtherThan200() {
-        let (sut, client) = makeSUT()
-        
-        let samples = [199, 201, 300, 400, 500]
-        samples.enumerated().forEach { index, statusCode in
-            expect(sut, toCompleteWith: .failure(RemoteFeedImageDataLoader.Error.invalidData)) {
-                client.complete(withStatusCode: 404, at: index)
-            }
-        }
-    }
-    
-    func test_loadImageData_doesNotDeliverDataAfterInstanceDeallocated() {
-        let client = HTTPClientSpy()
-        var sut: RemoteFeedImageDataLoader? = .init(client: client)
-        var result: FeedImageDataLoader.Result?
-        
-        _ = sut?.loadImageData(from: anyURL(), completion: { result = $0 })
-        sut = nil
-        client.complete(withStatusCode: 200)
-        
-        XCTAssertNil(result)
-    }
-    
-    func test_cancelLoadImageData_cancelsPendingRequest() {
-        let (sut, client) = makeSUT()
-        let url = anyURL()
-        
-        let task = sut.loadImageData(from: url, completion: { _ in })
-        XCTAssertTrue(client.cancelledImageURLs.isEmpty, "make sure loading image is not being cancelled until ")
-        
-        task.cancel()
-        XCTAssertEqual(client.cancelledImageURLs , [url], "Expect the URL to be cancelled")
-    }
-    
-    func test_loadImageDataFromURL_doesNotDeliverResultAfterCancellingTask() {
-        let (sut, client) = makeSUT()
-        let nonEmptyData = Data("non-empty data".utf8)
-        
-        var receivedResult: FeedImageDataLoader.Result?
-        let task = sut.loadImageData(from: anyURL()) { receivedResult = $0 }
-        task.cancel()
-        
-        client.complete(withStatusCode: 200, data: nonEmptyData)
-        client.complete(withStatusCode: 404, data: anydata())
-        client.complete(withError: anyNSError())
-        
-        XCTAssertNil(receivedResult)
+        XCTAssertEqual(mappedData, sampleData)
     }
     
     // MARK: - Helpers
