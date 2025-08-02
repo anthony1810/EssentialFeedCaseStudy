@@ -302,7 +302,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         sut.simulateAppearance()
         loader.completeFeedLoadingWithError(at: 0)
         
-        XCTAssertEqual(sut.errorMessage, localized("FEED_VIEW_CONNECTION_ERROR"), "Expect error message to be nil initially")
+        XCTAssertEqual(sut.errorMessage, localized("GENERIC_CONNECTION_ERROR"), "Expect error message to be nil initially")
         XCTAssertEqual(sut.isErrorViewVisible, true, "Expect error view to be shown initially")
         
         sut.simulateUserInitiatedFeedReload()
@@ -315,7 +315,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         sut.simulateAppearance()
         
         loader.completeFeedLoadingWithError(at: 0)
-        XCTAssertEqual(sut.errorMessage, localized("FEED_VIEW_CONNECTION_ERROR"), "Expect error message to be nil initially")
+        XCTAssertEqual(sut.errorMessage, localized("GENERIC_CONNECTION_ERROR"), "Expect error message to be nil initially")
         
         sut.simulateErrorViewTap()
         XCTAssertNil(sut.errorMessage, "Expect error message to be nil when tapped")

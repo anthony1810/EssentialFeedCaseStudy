@@ -22,7 +22,7 @@ public final class LoadResourcePresenter<Resource, View: ResourceView> {
     
     public static var loadError: String {
         NSLocalizedString(
-            "FEED_VIEW_CONNECTION_ERROR",
+            "GENERIC_CONNECTION_ERROR",
             tableName: "Feed",
             bundle: Bundle(for: FeedPresenter.self),
             comment: "Load error for the feed view"
