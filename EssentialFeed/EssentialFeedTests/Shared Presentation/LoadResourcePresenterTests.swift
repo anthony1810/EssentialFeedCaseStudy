@@ -11,10 +11,6 @@ import XCTest
 
 final class LoadResourcePresenterTests: XCTestCase {
     
-    func test_title_isLocalized() {
-        XCTAssertEqual(FeedPresenter.title, localized("FEED_VIEW_TITLE"))
-    }
-    
     func test_init_doesNotSendMessageToView() {
         let (_, viewSpy) = makeSUT()
         XCTAssertTrue(viewSpy.receivedMessages.isEmpty, "Expect no view messages yet.")
