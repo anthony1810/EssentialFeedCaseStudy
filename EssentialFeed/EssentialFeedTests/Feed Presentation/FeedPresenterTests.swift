@@ -61,6 +61,10 @@ final class FeedPresenterTests: XCTestCase {
         ])
     }
     
+    func test_map_createsViewModel() {
+        
+    }
+    
     // MARK: - Helpers
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: FeedPresenter, view: ViewSpy) {
         let viewSpy = ViewSpy()
@@ -83,7 +87,7 @@ final class FeedPresenterTests: XCTestCase {
         return value
     }
     
-    private class ViewSpy: FeedErrorView, ResourceLoadingView, FeedView {
+    private class ViewSpy: ResourceErrorView, ResourceLoadingView, FeedView {
         
         enum Message: Hashable {
             case display(errorMessage: String?)
@@ -92,7 +96,7 @@ final class FeedPresenterTests: XCTestCase {
         }
         var receivedMessages = Set<Message>()
         
-        func display(_ viewModel: FeedErrorViewModel) {
+        func display(_ viewModel: ResourceErrorViewModel) {
             receivedMessages.insert(.display(errorMessage: viewModel.message))
         }
         

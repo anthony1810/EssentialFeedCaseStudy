@@ -59,7 +59,7 @@ final class FeedSnapshotTests: XCTestCase {
         []
     }
     
-    private func errorOccured(_ message: String) -> FeedErrorViewModel {
+    private func errorOccured(_ message: String) -> ResourceErrorViewModel {
         .error(message: message)
     }
     
