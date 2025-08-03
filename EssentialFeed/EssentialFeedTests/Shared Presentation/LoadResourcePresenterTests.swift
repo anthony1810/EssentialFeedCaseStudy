@@ -44,6 +44,23 @@ final class LoadResourcePresenterTests: XCTestCase {
         )
     }
     
+    func test_didFinishLoadingWithMapperError_displayLoadErrorAndHideLoading() {
+        let (sut, viewSpy) = makeSUT(mapper: { resource in
+            throw anyNSError()
+        })
+        
+        let resource = "any"
+        sut.display(resource: resource)
+        
+        XCTAssertEqual(
+            viewSpy.receivedMessages,
+            [
+                .display(errorMessage: localized("GENERIC_CONNECTION_ERROR")),
+                .display(isLoading: false)
+            ]
+        )
+    }
+    
     func test_didFinishLoadingResource_displaysResourceAndStopLoading() {
         let (sut, viewSpy) = makeSUT(mapper: { resource in
             resource + " view model"
@@ -54,7 +71,6 @@ final class LoadResourcePresenterTests: XCTestCase {
         
         XCTAssertEqual(viewSpy.receivedMessages, [
             .display(isLoading: false),
-            .display(errorMessage: .none),
             .display(resourceViewModel: "any view model")
         ])
     }
@@ -63,7 +79,7 @@ final class LoadResourcePresenterTests: XCTestCase {
     private typealias SUT = LoadResourcePresenter<String, ViewSpy>
     
     private func makeSUT(
-        mapper: @escaping (String) -> String = { _ in "any" },
+        mapper: @escaping (String) throws -> String = { _ in "any" },
         file: StaticString = #filePath,
         line: UInt = #line
     ) -> (sut: SUT, view: ViewSpy) {
