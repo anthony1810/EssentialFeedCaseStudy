@@ -12,7 +12,7 @@ import Combine
 class FeedLoaderPresenterAdapter: FeedViewControllerDelegate {
     private let feedLoaderPublisher: () -> AnyPublisher<[FeedImage], Error>
     private var cancellable: Cancellable?
-    var presenter: FeedPresenter?
+    var presenter: LoadResourcePresenter<[FeedImage], FeedViewAdapter>?
     
     init(feedLoaderPublisher: @escaping () -> AnyPublisher<[FeedImage], Error>) {
         self.feedLoaderPublisher = feedLoaderPublisher
@@ -26,7 +26,7 @@ class FeedLoaderPresenterAdapter: FeedViewControllerDelegate {
                     self?.presenter?.didFinishLoading(with: error)
                 }
             }, receiveValue: { [weak self] feed in
-                self?.presenter?.display(feeds: feed)
+                self?.presenter?.display(resource: feed)
             })
     }
 }
