@@ -7,7 +7,7 @@
 import Foundation
 
 public final class FeedPresenter {
-    private let loadingView: FeedLoadingView
+    private let loadingView: ResourceLoadingView
     private let feedView: FeedView
     private let errorView: FeedErrorView
     
@@ -29,7 +29,7 @@ public final class FeedPresenter {
         )
     }
     
-    public init(loadingView: FeedLoadingView, feedView: FeedView, errorView: FeedErrorView) {
+    public init(loadingView: ResourceLoadingView, feedView: FeedView, errorView: FeedErrorView) {
         self.loadingView = loadingView
         self.feedView = feedView
         self.errorView = errorView
@@ -37,17 +37,17 @@ public final class FeedPresenter {
     
     public func didStartLoading() {
         self.errorView.display(.noError)
-        self.loadingView.display(viewModel: LoadingViewModel(isLoading: true))
+        self.loadingView.display(viewModel: ResourceLoadingViewModel(isLoading: true))
     }
     
     public func didFinishLoading(with error: Error) {
         self.errorView.display(.error(message: FeedPresenter.loadError))
-        self.loadingView.display(viewModel: LoadingViewModel(isLoading: false))
+        self.loadingView.display(viewModel: ResourceLoadingViewModel(isLoading: false))
     }
     
     public func display(feeds: [FeedImage]) {
         self.feedView.display(viewModel: FeedViewModel(feeds: feeds))
-        self.loadingView.display(viewModel: LoadingViewModel(isLoading: false))
+        self.loadingView.display(viewModel: ResourceLoadingViewModel(isLoading: false))
         self.errorView.display(.noError)
     }
 }

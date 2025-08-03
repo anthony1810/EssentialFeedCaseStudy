@@ -7,10 +7,10 @@
 
 import Foundation
 
-public struct LoadingViewModel {
+public struct ResourceLoadingViewModel {
     public var isLoading: Bool
 }
 
-public protocol FeedLoadingView {
-    func display(viewModel: LoadingViewModel)
+public protocol ResourceLoadingView {
+    func display(viewModel: ResourceLoadingViewModel)
 }
