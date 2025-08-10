@@ -10,6 +10,7 @@ import UIKit
 
 class FeedViewAdapter: ResourceView {
     typealias ResourceViewModel = FeedViewModel
+    typealias ImageDataPresentationAdapter = LoadResourcePresentationAdapter<Data, WeakRefVirtualProxy<FeedImageCellController>>
     
     private weak var controller: FeedViewController?
     private let loader: (URL) -> FeedImageDataLoader.Publisher
@@ -25,7 +26,7 @@ class FeedViewAdapter: ResourceView {
     func display(_ viewModel: FeedViewModel) {
         controller?.display(viewModel.feeds.map { model in
             
-            let adapter = LoadResourcePresentationAdapter<Data, WeakRefVirtualProxy<FeedImageCellController>>(loaderPublisher: { [loader] in
+            let adapter = ImageDataPresentationAdapter(loaderPublisher: { [loader] in
                 loader(model.url)
             })
             

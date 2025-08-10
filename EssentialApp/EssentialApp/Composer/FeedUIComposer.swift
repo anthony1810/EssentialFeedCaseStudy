@@ -4,6 +4,7 @@ import UIKit
 import Combine
 
 public final class FeedUIComposer {
+    typealias FeedImagePresentationAdapter = LoadResourcePresentationAdapter<[FeedImage], FeedViewAdapter>
     private init() {}
     
     public static func feedComposedWith(
@@ -11,7 +12,7 @@ public final class FeedUIComposer {
         imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher
     ) -> FeedViewController {
         
-        let feedLoaderPresenterAdapter = LoadResourcePresentationAdapter<[FeedImage], FeedViewAdapter>(loaderPublisher: {
+        let feedLoaderPresenterAdapter = FeedImagePresentationAdapter(loaderPublisher: {
             feedLoaderPublisher().dispatchOnMainQueueIfNeeded()
         })
         
