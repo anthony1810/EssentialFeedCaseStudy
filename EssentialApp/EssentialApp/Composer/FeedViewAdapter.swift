@@ -12,11 +12,11 @@ class FeedViewAdapter: ResourceView {
     typealias ResourceViewModel = FeedViewModel
     typealias ImageDataPresentationAdapter = LoadResourcePresentationAdapter<Data, WeakRefVirtualProxy<FeedImageCellController>>
     
-    private weak var controller: FeedViewController?
+    private weak var controller: ListViewController?
     private let loader: (URL) -> FeedImageDataLoader.Publisher
     
     init(
-        controller: FeedViewController? = nil,
+        controller: ListViewController? = nil,
         loader: @escaping (URL) -> FeedImageDataLoader.Publisher
     ) {
         self.controller = controller

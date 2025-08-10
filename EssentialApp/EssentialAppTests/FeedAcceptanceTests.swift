@@ -64,7 +64,7 @@ final class FeedAcceptanceTests: XCTestCase {
     private func launch(
         httpClient: HTTPClientStub = .offline,
         store: InMemoryStore = .empty
-    ) -> FeedViewController {
+    ) -> ListViewController {
         let sut = SceneDelegate(httpClient: httpClient, store: store)
         sut.window = UIWindow()
         sut.configureWindow()
@@ -72,7 +72,7 @@ final class FeedAcceptanceTests: XCTestCase {
         guard let nav = sut.window?.rootViewController as? UINavigationController else {
             fatalError("Root view is not a UINavigationController")
         }
-        guard let vc = nav.topViewController as? FeedViewController else {
+        guard let vc = nav.topViewController as? ListViewController else {
             fatalError("Top view controller is not a FeedViewController")
         }
         

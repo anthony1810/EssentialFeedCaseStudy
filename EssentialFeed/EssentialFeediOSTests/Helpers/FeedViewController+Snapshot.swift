@@ -7,7 +7,7 @@
 import EssentialFeed
 import EssentialFeediOS
 
-extension FeedViewController {
+extension ListViewController {
     func display(_ stubs: [ImageStub]) {
         self.display(
             stubs.map { stub in

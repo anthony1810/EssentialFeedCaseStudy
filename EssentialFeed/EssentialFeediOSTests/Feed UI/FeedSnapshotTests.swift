@@ -47,10 +47,10 @@ final class FeedSnapshotTests: XCTestCase {
     }
     
     // MARK: - Helpers
-    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> FeedViewController {
-        let bundle = Bundle(for: FeedViewController.self)
+    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> ListViewController {
+        let bundle = Bundle(for: ListViewController.self)
         let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
-        let controller = storyboard.instantiateInitialViewController() as! FeedViewController
+        let controller = storyboard.instantiateInitialViewController() as! ListViewController
         controller.loadViewIfNeeded()
         return controller
     }
