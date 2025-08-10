@@ -84,6 +84,10 @@ extension Date {
     func adding(seconds: TimeInterval) -> Date {
         self + seconds
     }
+    
+    func adding(minutes: Int) -> Date {
+        NSCalendar(identifier: .gregorian)!.date(byAdding: .minute, value: minutes, to: self)!
+    }
 }
 
 extension HTTPURLResponse {
