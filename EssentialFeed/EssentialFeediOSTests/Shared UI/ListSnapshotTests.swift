@@ -11,7 +11,7 @@ import XCTest
 import EssentialFeediOS
 
 final class ListSnapshotTests: XCTestCase {
-    func test_renderFeed_whenEmpty() throws {
+    func test_render_whenEmpty() throws {
         let sut = makeSUT()
         
         sut.display(emptyFeed())
@@ -20,7 +20,7 @@ final class ListSnapshotTests: XCTestCase {
         assert(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "EMPTY_LIST_DARK")
     }
     
-    func test_renderFeed_whenThereIsError() throws {
+    func test_render_whenThereIsError() throws {
         let sut = makeSUT()
         
         sut.display(errorOccured("There is an error \n please try again later"))
