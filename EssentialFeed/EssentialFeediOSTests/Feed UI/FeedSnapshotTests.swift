@@ -10,31 +10,13 @@ import XCTest
 import EssentialFeediOS
 
 final class FeedSnapshotTests: XCTestCase {
-    func test_renderFeed_whenEmpty() throws {
-        let sut = makeSUT()
-        
-        sut.display(emptyFeed())
-        
-        record(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "EMPTY_FEED")
-        record(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "EMPTY_FEED_DARK")
-    }
-    
     func test_renderFeed_whenNotEmpty() throws {
         let sut = makeSUT()
         
         sut.display(nonEmptyFeed())
         
-        record(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "NOT_EMPTY_FEED")
-        record(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "NOT_EMPTY_FEED_DARK")
-    }
-    
-    func test_renderFeed_whenThereIsError() throws {
-        let sut = makeSUT()
-        
-        sut.display(errorOccured("There is an error \n please try again later"))
-        
-        record(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "ERROR_OCCURED")
-        record(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "ERROR_OCCURED_DARK")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "NOT_EMPTY_FEED")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "NOT_EMPTY_FEED_DARK")
     }
     
     func test_renderFeed_whenImageFailedToLoad() throws {
@@ -42,8 +24,8 @@ final class FeedSnapshotTests: XCTestCase {
         
         sut.display(feedWithFailedImageLoading())
         
-        record(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "IMAGE_FAILED_TO_LOAD")
-        record(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "IMAGE_FAILED_TO_LOAD_DARK")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "IMAGE_FAILED_TO_LOAD")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "IMAGE_FAILED_TO_LOAD_DARK")
     }
     
     // MARK: - Helpers

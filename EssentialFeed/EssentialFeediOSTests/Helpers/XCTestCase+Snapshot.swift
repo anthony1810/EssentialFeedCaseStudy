@@ -25,6 +25,7 @@ extension XCTestCase {
             )
             
             try snapshotData?.write(to: snapshotURL)
+            XCTFail("Record Success, use `assert` to check snapshot`", file: file, line: line)
         } catch {
             XCTFail("Failed to record snapshot with error: \(error)", file: file, line: line)
         }
@@ -36,9 +37,9 @@ extension XCTestCase {
         file: StaticString = #file,
         line: UInt = #line
     ) {
-        let snapshotData = makeSnapshotData(image: snapshot)
-        let snapshotURL = makeSnapshotURL(named: named)
-        let storedSnapshotData = loadSnapshot(from: snapshotURL)
+        let snapshotData = makeSnapshotData(image: snapshot, file: file, line: line)
+        let snapshotURL = makeSnapshotURL(named: named, file: file, line: line)
+        let storedSnapshotData = loadSnapshot(from: snapshotURL, file: file, line: line)
         
         if snapshotData != storedSnapshotData {
             let tempPath = URL(filePath: NSTemporaryDirectory())
