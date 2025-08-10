@@ -593,7 +593,6 @@
 			isa = PBXGroup;
 			children = (
 				928E35E52D7C42550031A0BE /* FeedImageCellController.swift */,
-				928E35E72D7C42550031A0BE /* ListViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -601,11 +600,7 @@
 		928E35F02D7C42550031A0BE /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				929F38982D958DA600F8417C /* ErrorView.swift */,
-				927524102D8FC8500059D2C5 /* UIImageView+Extensions.swift */,
-				9275240D2D8FC7040059D2C5 /* UITableView+Extensions.swift */,
 				928E35EE2D7C42550031A0BE /* FeedImageCell.swift */,
-				928E35EF2D7C42550031A0BE /* UIView+Shimmering.swift */,
 				92E523292D8E5DBC0060CB7D /* Feed.storyboard */,
 			);
 			path = Views;
@@ -807,9 +802,46 @@
 			path = "Feed UI";
 			sourceTree = "<group>";
 		};
+		92EC26C72E48874300A41FA6 /* Shared UI */ = {
+			isa = PBXGroup;
+			children = (
+				92EC26CA2E48877F00A41FA6 /* Helpers */,
+				92EC26C92E48876000A41FA6 /* Views */,
+				92EC26C82E48875800A41FA6 /* Controllers */,
+			);
+			path = "Shared UI";
+			sourceTree = "<group>";
+		};
+		92EC26C82E48875800A41FA6 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				928E35E72D7C42550031A0BE /* ListViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		92EC26C92E48876000A41FA6 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				929F38982D958DA600F8417C /* ErrorView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		92EC26CA2E48877F00A41FA6 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				927524102D8FC8500059D2C5 /* UIImageView+Extensions.swift */,
+				9275240D2D8FC7040059D2C5 /* UITableView+Extensions.swift */,
+				928E35EF2D7C42550031A0BE /* UIView+Shimmering.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		92FDC2442D64CD9F00FE3709 /* EssentialFeediOS */ = {
 			isa = PBXGroup;
 			children = (
+				92EC26C72E48874300A41FA6 /* Shared UI */,
 				928E35F12D7C42550031A0BE /* Feed UI */,
 				92FDC2432D64CD9F00FE3709 /* EssentialFeediOS.h */,
 			);
