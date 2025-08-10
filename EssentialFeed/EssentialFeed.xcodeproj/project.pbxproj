@@ -397,12 +397,12 @@
 				925F9BDD2E3858E1008BBEF5 /* Shared API */,
 				925F9BDC2E385896008BBEF5 /* Shared API Infra */,
 				080EDF1021B6DFA200813479 /* Feed Feature */,
-				925F9BE02E385B84008BBEF5 /* Image Comment API */,
 				926EBFB52D489A7C004B4082 /* Feed Cache */,
 				923AB6462D4321DF0063C051 /* Feed API */,
 				92B496222D97EDEC0082550E /* Feed Presentation */,
 				92EC26BE2E483B7C00A41FA6 /* Image Comment Feature */,
 				92EC26BD2E483B5500A41FA6 /* Image Comment Presentation */,
+				925F9BE02E385B84008BBEF5 /* Image Comment API */,
 			);
 			path = EssentialFeed;
 			sourceTree = "<group>";
@@ -437,9 +437,8 @@
 			isa = PBXGroup;
 			children = (
 				92E677392E34CFC400F0DCA8 /* Helpers */,
-				92E677292E348D1C00F0DCA8 /* snapshots */,
 				9210CF192E34823500B1FEA5 /* UIImage+TestHelpers.swift */,
-				9210CF172E3474B700B1FEA5 /* FeedSnapshotTests.swift */,
+				92EC26C62E48844E00A41FA6 /* Feed UI */,
 			);
 			path = EssentialFeediOSTests;
 			sourceTree = "<group>";
@@ -797,6 +796,15 @@
 				925F9BDA2E37B6CB008BBEF5 /* ImageComment.swift */,
 			);
 			path = "Image Comment Feature";
+			sourceTree = "<group>";
+		};
+		92EC26C62E48844E00A41FA6 /* Feed UI */ = {
+			isa = PBXGroup;
+			children = (
+				92E677292E348D1C00F0DCA8 /* snapshots */,
+				9210CF172E3474B700B1FEA5 /* FeedSnapshotTests.swift */,
+			);
+			path = "Feed UI";
 			sourceTree = "<group>";
 		};
 		92FDC2442D64CD9F00FE3709 /* EssentialFeediOS */ = {
