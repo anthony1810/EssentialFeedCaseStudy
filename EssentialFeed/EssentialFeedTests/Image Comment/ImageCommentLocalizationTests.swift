@@ -10,7 +10,7 @@ import XCTest
 
 final class ImageCommentLocalizationTests: XCTestCase {
     func test_localizedStrings_haveKeysAndValuesForAllSupportedLocalizations() {
-        let table = "Feed"
+        let table = "ImageComment"
         let presentationBundle = Bundle(for: ImageCommentPresenter.self)
         
         assertLocalizedKeyAndValueExist(in: presentationBundle, table)

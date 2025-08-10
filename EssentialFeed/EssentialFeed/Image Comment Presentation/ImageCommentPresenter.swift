@@ -8,6 +8,15 @@
 import Foundation
 
 public final class ImageCommentPresenter {
+    public static var title: String {
+        NSLocalizedString(
+            "IMAGE_COMMENTS_VIEW_TITLE",
+            tableName: "ImageComment",
+            bundle: Bundle(for: Self.self),
+            comment: "Title for ImageCommentView"
+        )
+    }
+    
     public static func map(_ feed: FeedImage) -> FeedImageViewModel {
         FeedImageViewModel(
             location: feed.location,
