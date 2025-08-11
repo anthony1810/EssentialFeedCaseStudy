@@ -28,14 +28,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         return store
     }()
     
-    private lazy var localFeedLoader: LocalFeedLoader = {
-        LocalFeedLoader(store: store, currentDate: Date.init)
+    private lazy var remoteURL: URL = {
+        let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
+        return url
     }()
     
-    private lazy var remoteFeedLoader: RemoteFeedLoader = {
-        let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
-        let remoteFeedLoader = RemoteFeedLoader(url: url, client: httpClient)
-        return remoteFeedLoader
+    private lazy var localFeedLoader: LocalFeedLoader = {
+        LocalFeedLoader(store: store, currentDate: Date.init)
     }()
     
     convenience init(httpClient: HTTPClient, store: FeedStore & FeedImageDataStore) {
@@ -70,23 +69,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     private func makeRemoteFeedLoaderWithLocalFallback() -> AnyPublisher<[FeedImage], Error> {
-        remoteFeedLoader
-            .loadPublisher()
+        httpClient
+            .getPublisher(for: remoteURL)
+            .tryMap(FeedMapper.map)
             .caching(to: localFeedLoader)
             .fallback(to: localFeedLoader.loadPublisher)
     }
     
-    private func makeRemoteFeedImageDataLoaderWithLocalFallback(url: URL) -> RemoteFeedImageDataLoader.Publisher {
-        let remoteFeedImageLoader = RemoteFeedImageDataLoader(client: httpClient)
+    private func makeRemoteFeedImageDataLoaderWithLocalFallback(url: URL) -> AnyPublisher<Data, Error> {
         let localFeedImageLoader = LocalFeedImageDataLoader(store: store)
         
         return localFeedImageLoader
             .loadPublisher(from: url)
-            .fallback {
-                remoteFeedImageLoader.loadPublisher(from: url)
+            .fallback { [httpClient] in
+                httpClient
+                    .getPublisher(for: url)
+                    .tryMap(FeedImageDataMapper.map)
                     .caching(to: localFeedImageLoader, using: url)
             }
     }
 }
-
 

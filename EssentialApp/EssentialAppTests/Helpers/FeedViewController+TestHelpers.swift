@@ -2,7 +2,7 @@ import UIKit
 import EssentialFeed
 import EssentialFeediOS
 
-extension FeedViewController {
+extension ListViewController {
     var isShowingLoadingIndicator: Bool {
         return refreshControl?.isRefreshing == true
     }

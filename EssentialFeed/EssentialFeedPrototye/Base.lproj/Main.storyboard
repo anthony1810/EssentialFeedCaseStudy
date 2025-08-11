@@ -10,7 +10,7 @@
         <!--My Feed-->
         <scene sceneID="msG-bS-htx">
             <objects>
-                <tableViewController title="My Feed" id="3BC-Sp-Wzs" customClass="FeedViewController" customModule="EssentialFeedPrototye" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController title="My Feed" id="3BC-Sp-Wzs" customClass="ListViewController" customModule="EssentialFeedPrototye" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="RrM-PD-Bil">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -118,6 +118,7 @@ Location</string>
                     </tableView>
                     <navigationItem key="navigationItem" id="B8v-01-Hk6"/>
                     <refreshControl key="refreshControl" opaque="NO" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="Trb-WQ-kI9">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <connections>
                             <action selector="refresh" destination="3BC-Sp-Wzs" eventType="valueChanged" id="XPD-JV-OPI"/>

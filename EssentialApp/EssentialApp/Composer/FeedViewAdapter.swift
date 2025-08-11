@@ -8,26 +8,51 @@ import EssentialFeed
 import EssentialFeediOS
 import UIKit
 
-class FeedViewAdapter: FeedView {
-    private weak var controller: FeedViewController?
+class FeedViewAdapter: ResourceView {
+    typealias ResourceViewModel = FeedViewModel
+    typealias ImageDataPresentationAdapter = LoadResourcePresentationAdapter<Data, WeakRefVirtualProxy<FeedImageCellController>>
+    
+    private weak var controller: ListViewController?
     private let loader: (URL) -> FeedImageDataLoader.Publisher
     
     init(
-        controller: FeedViewController? = nil,
+        controller: ListViewController? = nil,
         loader: @escaping (URL) -> FeedImageDataLoader.Publisher
     ) {
         self.controller = controller
         self.loader = loader
     }
     
-    func display(viewModel: FeedViewModel) {
+    func display(_ viewModel: FeedViewModel) {
         controller?.display(viewModel.feeds.map { model in
-            let adapter = FeedImageDataLoaderPresentationAdapter<WeakRefVirtualProxy<FeedImageCellController>, UIImage>(model: model, imageLoader: loader)
             
-            let view = FeedImageCellController(delegate: adapter)
+            let adapter = ImageDataPresentationAdapter(loaderPublisher: { [loader] in
+                loader(model.url)
+            })
             
-            adapter.presenter = FeedImagePresenter(view: WeakRefVirtualProxy(object: view), imageTransformer: UIImage.init)
+            let view = FeedImageCellController(
+                delegate: adapter,
+                viewModel: FeedImagePresenter.map(model)
+            )
+            
+            adapter.presenter = LoadResourcePresenter(
+                loadingView: WeakRefVirtualProxy(object: view),
+                resourceView: WeakRefVirtualProxy(object: view),
+                errorView: WeakRefVirtualProxy(object: view),
+                mapper: UIImage.tryMake
+            )
+            
             return view
         })
+    }
+}
+
+struct InvalidImageError: Error {}
+extension UIImage {
+    static func tryMake(from data: Data) throws -> UIImage {
+        guard let image = UIImage(data: data) else {
+            throw InvalidImageError()
+        }
+        return image
     }
 }

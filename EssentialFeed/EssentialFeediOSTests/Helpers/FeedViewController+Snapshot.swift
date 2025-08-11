@@ -7,11 +7,11 @@
 import EssentialFeed
 import EssentialFeediOS
 
-extension FeedViewController {
+extension ListViewController {
     func display(_ stubs: [ImageStub]) {
         self.display(
             stubs.map { stub in
-                let controller = FeedImageCellController(delegate: stub)
+                let controller = FeedImageCellController(delegate: stub, viewModel: stub.viewModel)
                 stub.controller = controller
                 return controller
             }
