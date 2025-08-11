@@ -16,8 +16,8 @@ final class ImageCommentSnapshotTests: XCTestCase {
         
         sut.display(comments())
         
-        assert(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "NOT_EMPTY_COMMENT_LIST")
-        assert(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "NOT_EMPTY_COMMENT_LIST_DARK")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "COMMENT_LIST")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "COMMENT_LIST_DARK")
     }
     
     // MARK: - Helpers
