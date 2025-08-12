@@ -15,33 +15,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <view key="tableHeaderView" hidden="YES" contentMode="scaleToFill" id="Lcd-Hc-4Ou" customClass="ErrorView" customModule="EssentialFeediOS" customModuleProvider="target">
-                            <rect key="frame" x="0.0" y="0.0" width="393" height="44"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hp2-nO-EIS">
-                                    <rect key="frame" x="20" y="15" width="353" height="14"/>
-                                    <state key="normal" title="Button"/>
-                                    <buttonConfiguration key="configuration" style="plain"/>
-                                    <connections>
-                                        <action selector="didTapButton" destination="Lcd-Hc-4Ou" eventType="touchUpInside" id="0LJ-Es-bGj"/>
-                                    </connections>
-                                </button>
-                            </subviews>
-                            <color key="backgroundColor" red="1" green="0.41568627450980389" blue="0.41568627450980389" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <constraints>
-                                <constraint firstItem="Hp2-nO-EIS" firstAttribute="leading" secondItem="Lcd-Hc-4Ou" secondAttribute="leading" constant="20" id="Aov-JM-Thu"/>
-                                <constraint firstAttribute="trailing" secondItem="Hp2-nO-EIS" secondAttribute="trailing" constant="20" id="Otw-7X-ESB"/>
-                                <constraint firstItem="Hp2-nO-EIS" firstAttribute="centerY" secondItem="Lcd-Hc-4Ou" secondAttribute="centerY" id="Xip-Bc-1X8"/>
-                                <constraint firstItem="Hp2-nO-EIS" firstAttribute="centerX" secondItem="Lcd-Hc-4Ou" secondAttribute="centerX" id="grt-XR-9Vp"/>
-                            </constraints>
-                            <connections>
-                                <outlet property="button" destination="Hp2-nO-EIS" id="jWV-Jh-B8A"/>
-                            </connections>
-                        </view>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="FeedImageCell" rowHeight="580" id="Txt-LL-RvC" customClass="FeedImageCell" customModule="EssentialFeediOS" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="94" width="393" height="580"/>
+                                <rect key="frame" x="0.0" y="50" width="393" height="580"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Txt-LL-RvC" id="6bF-Nq-DuT">
                                     <rect key="frame" x="0.0" y="0.0" width="393" height="580"/>
@@ -166,9 +142,6 @@ Location</string>
                             <action selector="refresh" destination="msa-ck-oOR" eventType="valueChanged" id="zEC-mw-enL"/>
                         </connections>
                     </refreshControl>
-                    <connections>
-                        <outlet property="errorView" destination="Lcd-Hc-4Ou" id="CM2-5g-tPn"/>
-                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xVO-Si-3Yn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
