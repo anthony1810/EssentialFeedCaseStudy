@@ -1,24 +1,6 @@
 import UIKit
 import EssentialFeed
 
-public struct CellController {
-    let ds: UITableViewDataSource
-    let dl: UITableViewDelegate?
-    let dsPrefetching: UITableViewDataSourcePrefetching?
-    
-    public init(ds: UITableViewDataSource, dl: UITableViewDelegate?, dsPrefetching: UITableViewDataSourcePrefetching?) {
-        self.ds = ds
-        self.dl = dl
-        self.dsPrefetching = dsPrefetching
-    }
-    
-    public init(ds: UITableViewDataSource) {
-        self.ds = ds
-        self.dl = nil
-        self.dsPrefetching = nil
-    }
-}
-
 public final class ListViewController: UITableViewController, UITableViewDataSourcePrefetching, ResourceLoadingView, ResourceErrorView {
    
     public var didRequestFeedRefresh: (() -> Void)?
