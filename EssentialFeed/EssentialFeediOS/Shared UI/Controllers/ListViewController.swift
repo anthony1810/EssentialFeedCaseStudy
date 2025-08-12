@@ -7,6 +7,8 @@ public final class ListViewController: UITableViewController, UITableViewDataSou
     @IBOutlet public private(set) var errorView: ErrorView!
     
     private var onViewIsAppearing: ((ListViewController) -> Void)?
+    private var loadingControllers = [IndexPath: CellController]()
+    
     var tableModel = [CellController]() {
         didSet { tableView.reloadData() }
     }
@@ -26,6 +28,7 @@ public final class ListViewController: UITableViewController, UITableViewDataSou
     }
     
     public func display(_ tableModel: [CellController]) {
+        loadingControllers = [:]
         self.tableModel = tableModel
     }
     
@@ -56,7 +59,7 @@ public final class ListViewController: UITableViewController, UITableViewDataSou
     
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let cellController = removeCellControllerLoad(forRowAt: indexPath)
-        cellController.dl?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+        cellController?.dl?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
     }
     
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
@@ -69,17 +72,19 @@ public final class ListViewController: UITableViewController, UITableViewDataSou
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
             let cellController = self.removeCellControllerLoad(forRowAt: indexPath)
-            cellController.dsPrefetching?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
+            cellController?.dsPrefetching?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
         }
     }
     
     private func cellController(forRowAt indexPath: IndexPath) -> CellController {
-        return tableModel[indexPath.row]
+        let cell = tableModel[indexPath.row]
+        loadingControllers[indexPath] = cell
+        return cell
     }
     
-    private func removeCellControllerLoad(forRowAt indexPath: IndexPath) -> CellController {
-        let cellController = tableModel[indexPath.row]
-        tableModel.remove(at: indexPath.row)
+    private func removeCellControllerLoad(forRowAt indexPath: IndexPath) -> CellController? {
+        let cellController = loadingControllers[indexPath]
+        loadingControllers[indexPath] = nil
         return cellController
     }
 }
