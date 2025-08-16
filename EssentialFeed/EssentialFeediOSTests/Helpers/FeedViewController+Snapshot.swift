@@ -13,7 +13,7 @@ extension ListViewController {
             stubs.map { stub in
                 let controller = FeedImageCellController(delegate: stub, viewModel: stub.viewModel)
                 stub.controller = controller
-                return CellController(ds: controller)
+                return CellController(id: UUID(), ds: controller)
             }
         )
     }

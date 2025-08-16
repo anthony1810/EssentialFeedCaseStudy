@@ -62,7 +62,7 @@ final class ImageCommentSnapshotTests: XCTestCase {
             )
         ]
         .map {
-            CellController(ds: $0)
+            CellController(id: UUID(), ds: $0)
         }
     }
 }

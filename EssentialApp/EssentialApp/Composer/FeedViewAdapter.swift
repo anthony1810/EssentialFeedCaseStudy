@@ -42,7 +42,7 @@ class FeedViewAdapter: ResourceView {
                 mapper: UIImage.tryMake
             )
             
-            return CellController(ds: view, dl: view, dsPrefetching: view)
+            return CellController(id: model.id, ds: view, dl: view, dsPrefetching: view)
         })
     }
 }

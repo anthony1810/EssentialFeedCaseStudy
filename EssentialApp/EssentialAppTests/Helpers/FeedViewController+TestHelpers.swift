@@ -42,7 +42,7 @@ extension ListViewController {
     }
     
     func numberOfRenderedFeedImageViews() -> Int {
-        return tableView.numberOfRows(inSection: feedImageSection)
+        tableView.numberOfSections == 0 ? 0 : tableView.numberOfRows(inSection: feedImageSection)
     }
     
     private var feedImageSection: Int {
@@ -68,6 +68,7 @@ extension ListViewController {
             loadViewIfNeeded()
             prepareForFirstAppearance()
         }
+        tableView.frame = CGRect(x: 0, y: 0, width: 1, height: 1)
         
         beginAppearanceTransition(true, animated: false)
         endAppearanceTransition()
