@@ -26,7 +26,10 @@ final class ListSnapshotTests: XCTestCase {
         sut.display(errorOccured("There is an error \n please try again later"))
         
         assert(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "ERROR_OCCURED")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .light, contentSize: .extraExtraExtraLarge)), named: "ERROR_OCCURED_LIGHT_extraExtraExtraLarge")
+        
         assert(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "ERROR_OCCURED_DARK")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .dark, contentSize: .extraExtraExtraLarge)), named: "ERROR_OCCURED_DARK_extraExtraExtraLarge")
     }
     
     // MARK: - Helpers

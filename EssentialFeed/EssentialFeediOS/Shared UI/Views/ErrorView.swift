@@ -14,6 +14,8 @@ public final class ErrorView: UIButton {
     
     public var onHide: (() -> Void)?
     
+    private let backgroundView = UIView()
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -21,21 +23,45 @@ public final class ErrorView: UIButton {
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        configure()
     }
         
     private func configure() {
-        backgroundColor = .errorBackgroundColor
-
+        setupBackgroundView()
         addTarget(self, action: #selector(hideMessageAnimated), for: .touchUpInside)
         configureLabel()
         hideMessage()
     }
     
+    private func setupBackgroundView() {
+        backgroundView.backgroundColor = .errorBackgroundColor
+        backgroundView.layer.cornerRadius = 0
+        backgroundView.isUserInteractionEnabled = false
+        
+        addSubview(backgroundView)
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            backgroundView.topAnchor.constraint(equalTo: topAnchor),
+            backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            backgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            backgroundView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+    }
+    
     private func configureLabel() {
-        setTitleColor(.secondaryLabel, for: .normal)
-        titleLabel?.textAlignment = .center
+        // Clear button's default styling
+        backgroundColor = .clear
+        
+        // Configure title label directly
         titleLabel?.numberOfLines = 0
-        titleLabel?.font = .systemFont(ofSize: 17)
+        titleLabel?.font = .preferredFont(forTextStyle: .body)
+        titleLabel?.adjustsFontForContentSizeCategory = true
+        titleLabel?.textAlignment = .center
+        titleLabel?.lineBreakMode = .byWordWrapping
+        
+        // Set title color
+        setTitleColor(.secondaryLabel, for: .normal)
+        setTitleColor(.secondaryLabel, for: .highlighted)
     }
         
     private var isVisible: Bool {
