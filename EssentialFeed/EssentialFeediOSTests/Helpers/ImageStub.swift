@@ -18,6 +18,7 @@ class ImageStub: FeedImageCellControllerDelegate {
             location: location,
             description: description
         )
+        self.image = image
     }
     
     func didRequestImage() {

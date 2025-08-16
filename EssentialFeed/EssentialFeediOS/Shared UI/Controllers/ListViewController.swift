@@ -14,6 +14,12 @@ public final class ListViewController: UITableViewController, UITableViewDataSou
         }
     }()
     
+    public override func traitCollectionDidChange(_ previous: UITraitCollection?) {
+        if previous?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            tableView.reloadData()
+        }
+    }
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -59,6 +65,7 @@ public final class ListViewController: UITableViewController, UITableViewDataSou
     
     public func display(_ viewModel: ResourceErrorViewModel) {
         errorView.message = viewModel.message
+        self.tableView.sizeTableHeaderToFit()
     }
     
     @IBAction private func refresh() {

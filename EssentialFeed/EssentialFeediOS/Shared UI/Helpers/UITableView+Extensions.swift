@@ -20,9 +20,11 @@ extension UITableView {
         print("-> tableHeaderView?.frame.size \(header.frame.size)")
         print("-> size \(size)")
         let needsFrameUpdate = header.frame.size != size
+        tableHeaderView?.backgroundColor = .red
         if needsFrameUpdate {
             header.frame.size = size
             tableHeaderView = header
+            
         }
     }
 }

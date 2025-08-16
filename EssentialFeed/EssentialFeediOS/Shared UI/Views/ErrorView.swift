@@ -8,13 +8,11 @@ import UIKit
 
 public final class ErrorView: UIButton {
     public var message: String? {
-        get { return isVisible ? title(for: .normal) : nil }
+        get { return isVisible ? configuration?.title : nil }
         set { setMessageAnimated(newValue) }
     }
     
     public var onHide: (() -> Void)?
-    
-    private let backgroundView = UIView()
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,45 +21,29 @@ public final class ErrorView: UIButton {
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        configure()
+    }
+    
+    private var titleAttributes: AttributeContainer {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = NSTextAlignment.center
+        
+        var attributes = AttributeContainer()
+        attributes.merge(.init([.paragraphStyle: paragraphStyle]))
+        attributes.font = UIFont.preferredFont(forTextStyle: .body)
+        return attributes
     }
         
     private func configure() {
-        setupBackgroundView()
+        var configuration = Configuration.plain()
+        configuration.titlePadding = 0
+        configuration.baseForegroundColor = .white
+        configuration.background.backgroundColor = .errorBackgroundColor
+        configuration.background.cornerRadius = 0
+        self.configuration = configuration
+        
         addTarget(self, action: #selector(hideMessageAnimated), for: .touchUpInside)
-        configureLabel()
+        
         hideMessage()
-    }
-    
-    private func setupBackgroundView() {
-        backgroundView.backgroundColor = .errorBackgroundColor
-        backgroundView.layer.cornerRadius = 0
-        backgroundView.isUserInteractionEnabled = false
-        
-        addSubview(backgroundView)
-        backgroundView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            backgroundView.topAnchor.constraint(equalTo: topAnchor),
-            backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            backgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            backgroundView.bottomAnchor.constraint(equalTo: bottomAnchor)
-        ])
-    }
-    
-    private func configureLabel() {
-        // Clear button's default styling
-        backgroundColor = .clear
-        
-        // Configure title label directly
-        titleLabel?.numberOfLines = 0
-        titleLabel?.font = .preferredFont(forTextStyle: .body)
-        titleLabel?.adjustsFontForContentSizeCategory = true
-        titleLabel?.textAlignment = .center
-        titleLabel?.lineBreakMode = .byWordWrapping
-        
-        // Set title color
-        setTitleColor(.secondaryLabel, for: .normal)
-        setTitleColor(.secondaryLabel, for: .highlighted)
     }
         
     private var isVisible: Bool {
@@ -77,8 +59,8 @@ public final class ErrorView: UIButton {
     }
 
     private func showAnimated(_ message: String) {
-        setTitle(message, for: .normal)
-        contentEdgeInsets = .init(top: 8, left: 8, bottom: 8, right: 8)
+        configuration?.attributedTitle = AttributedString(message, attributes: titleAttributes)
+        configuration?.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
 
         UIView.animate(withDuration: 0.25) {
             self.alpha = 1
@@ -95,9 +77,9 @@ public final class ErrorView: UIButton {
     }
     
     private func hideMessage() {
-        setTitle(nil, for: .normal)
         alpha = 0
-        contentEdgeInsets = .init(top: -2.5, left: 0, bottom: -2.5, right: 0)
+        configuration?.attributedTitle = nil
+        configuration?.contentInsets = .zero
         onHide?()
     }
 }

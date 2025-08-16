@@ -69,7 +69,7 @@ Location</string>
                                                                 </userDefinedRuntimeAttribute>
                                                             </userDefinedRuntimeAttributes>
                                                         </imageView>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iXU-wo-D6X">
+                                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iXU-wo-D6X">
                                                             <rect key="frame" x="136.33333333333334" y="146.66666666666669" width="80.333333333333343" height="60"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" secondItem="iXU-wo-D6X" secondAttribute="height" multiplier="47:35" id="cSx-lh-VMu"/>
