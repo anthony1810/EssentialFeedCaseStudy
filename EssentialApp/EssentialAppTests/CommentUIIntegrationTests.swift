@@ -10,6 +10,7 @@ import UIKit
 import EssentialFeed
 import EssentialFeediOS
 import EssentialApp
+import Combine
 
 final class CommentUIIntegrationTests: FeedUIIntegrationTests {
     
@@ -21,24 +22,24 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         XCTAssertEqual(sut.title, commentTitle)
     }
     
-    override func test_loadFeedActions_requestFeedFromLoader() {
+    func test_loadCommentsActions_requestCommentsFromLoader() {
         let (sut, loader) = makeSUT()
         
-        XCTAssertEqual(loader.loadFeedCallCount, 0, "Expected no loading requests before view is loaded.")
+        XCTAssertEqual(loader.loadCommentCallCount, 0, "Expected no loading requests before view is loaded.")
         
         sut.simulateAppearance()
         
-        XCTAssertEqual(loader.loadFeedCallCount, 1, "Expected a loading request once view is loaded.")
+        XCTAssertEqual(loader.loadCommentCallCount, 1, "Expected a loading request once view is loaded.")
         
         sut.simulateAppearance()
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         
-        XCTAssertEqual(loader.loadFeedCallCount, 2,"Expected another loading requests once user initiates a load.")
+        XCTAssertEqual(loader.loadCommentCallCount, 2,"Expected another loading requests once user initiates a load.")
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         
-        XCTAssertEqual(loader.loadFeedCallCount, 3, "Expected a third loading requests once a user initiates another load.")
+        XCTAssertEqual(loader.loadCommentCallCount, 3, "Expected a third loading requests once a user initiates another load.")
     }
     
     override func test_loadingFeedIndicator_isVisibleWhileLoadingFeed() {
@@ -50,7 +51,7 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         loader.completeFeedLoading(at: 0)
         XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once loading completes successfully.")
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once user initiates a reload.")
         
         loader.completeFeedLoadingWithError(at: 1)
@@ -73,7 +74,7 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         let _ = sut.feedImageView(at: 0) as? FeedImageCell
         assertThat(sut, isRendering: [image0])
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         loader.completeFeedLoading(with: [image0, image1, image2, image3], at: 1)
         assertThat(sut, isRendering: [image0, image1, image2, image3])
     }
@@ -86,7 +87,7 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         loader.completeFeedLoading(with: [image0], at: 0)
         assertThat(sut, isRendering: [image0])
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         loader.completeFeedLoadingWithError(at: 1)
         assertThat(sut, isRendering: [image0])
     }
@@ -319,7 +320,7 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         XCTAssertEqual(sut.errorMessage, loadError, "Expect error message to be nil initially")
         XCTAssertEqual(sut.isErrorViewVisible, true, "Expect error view to be shown initially")
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         XCTAssertNil(sut.errorMessage, "Expect error message to be nil when reload")
     }
     
@@ -370,5 +371,60 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
     
     var commentTitle: String {
         ImageCommentPresenter.title
+    }
+    
+    class LoaderSpy: FeedImageDataLoader {
+        private var commentsRequests = [PassthroughSubject<[FeedImage], Error>]()
+        
+        var loadCommentCallCount: Int {
+            commentsRequests.count
+        }
+        
+        func loadPublisher() -> AnyPublisher<[FeedImage], Error> {
+            let publisher = PassthroughSubject<[FeedImage], Error>()
+            commentsRequests.append(publisher)
+            return publisher.eraseToAnyPublisher()
+        }
+        
+        func completeFeedLoading(with feedModel: [FeedImage] = [], at index: Int = 0) {
+            commentsRequests[index].send(feedModel)
+        }
+        
+        func completeFeedLoadingWithError(at index: Int) {
+            let error = NSError(domain: "an error", code: 0)
+            commentsRequests[index].send(completion: .failure(error))
+        }
+        
+        // MARK: - FeedImageDataLoader
+        private struct TaskSpy: FeedImageDataLoaderTask {
+            let cancelCallback: () -> Void
+            
+            func cancel() {
+                cancelCallback()
+            }
+        }
+        
+        private var imageRequests = [(url: URL, completion: (FeedImageDataLoader.Result) -> Void)]()
+        
+        var loadedImageURLs: [URL] {
+            return imageRequests.map{ $0.url }
+        }
+        
+        private(set) var cancelledImageURLs = [URL]()
+        
+        func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
+            imageRequests.append((url, completion))
+            return TaskSpy{ [weak self] in
+                self?.cancelledImageURLs.append(url)
+            }
+        }
+        
+        func completeImageLoading(with imageData: Data = Data(), at index: Int) {
+            imageRequests[index].completion(.success(imageData))
+        }
+        
+        func completeImageLoadingWithError(at index: Int) {
+            imageRequests[index].completion(.failure(anyNSError()))
+        }
     }
 }
