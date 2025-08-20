@@ -32,7 +32,7 @@
 		924B269C2E2C9D0A00908320 /* XCTestCase+Any.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924B26952E2C9D0A00908320 /* XCTestCase+Any.swift */; };
 		924B26A52E2CDA4900908320 /* ImageLoaderSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924B26A42E2CDA4900908320 /* ImageLoaderSpy.swift */; };
 		924B26A72E2CDA9100908320 /* XCTestCase+FeedImageDataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924B26A62E2CDA8900908320 /* XCTestCase+FeedImageDataLoader.swift */; };
-		92A40E262E51899C003BCE52 /* CommentUIIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A40E252E518995003BCE52 /* CommentUIIntegrationTests.swift */; };
+		925ED4C92E55C3D5005FD693 /* CommentUIIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A40E252E518995003BCE52 /* CommentUIIntegrationTests.swift */; };
 		92A40E282E518AEF003BCE52 /* CommentUIComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A40E272E518ADC003BCE52 /* CommentUIComposer.swift */; };
 		92B14FE52E1AAE9E00154CA0 /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92B14FE32E1AAE9E00154CA0 /* EssentialFeed.framework */; };
 		92B14FE62E1AAE9E00154CA0 /* EssentialFeed.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 92B14FE32E1AAE9E00154CA0 /* EssentialFeed.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -397,7 +397,7 @@
 				9210CEDC2E31CBB000B1FEA5 /* UIButton+TestHelper.swift in Sources */,
 				9210CEDD2E31CBB000B1FEA5 /* UIRefreshControl+TestHelper.swift in Sources */,
 				9210CEE22E31D1A100B1FEA5 /* FeedAcceptanceTests.swift in Sources */,
-				92A40E262E51899C003BCE52 /* CommentUIIntegrationTests.swift in Sources */,
+				925ED4C92E55C3D5005FD693 /* CommentUIIntegrationTests.swift in Sources */,
 				92288F282E30DF38005170EF /* SceneDelegateTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

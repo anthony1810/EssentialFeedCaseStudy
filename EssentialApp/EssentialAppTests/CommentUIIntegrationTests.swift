@@ -13,6 +13,14 @@ import EssentialApp
 
 final class CommentUIIntegrationTests: FeedUIIntegrationTests {
     
+    func test_commentsView_hasTitle() {
+        let (sut, _) = makeSUT()
+        
+        sut.simulateAppearance()
+        
+        XCTAssertEqual(sut.title, commentTitle)
+    }
+    
     override func test_loadFeedActions_requestFeedFromLoader() {
         let (sut, loader) = makeSUT()
         
@@ -358,5 +366,9 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
     
     override var feedTitle: String {
         FeedPresenter.title
+    }
+    
+    var commentTitle: String {
+        ImageCommentPresenter.title
     }
 }
