@@ -42,19 +42,19 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         XCTAssertEqual(loader.loadCommentCallCount, 3, "Expected a third loading requests once a user initiates another load.")
     }
     
-    override func test_loadingFeedIndicator_isVisibleWhileLoadingFeed() {
+    func test_loadingCommentIndicator_isVisibleWhileLoadingComments() {
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
         XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once view is loaded.")
         
-        loader.completeFeedLoading(at: 0)
+        loader.completeCommentsLoading(at: 0)
         XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once loading completes successfully.")
         
         sut.simulateUserInitiatedReload()
         XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once user initiates a reload.")
         
-        loader.completeFeedLoadingWithError(at: 1)
+        loader.completeCommentLoadingWithError(at: 1)
         XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once user initiated loading completes with error.")
     }
     
@@ -68,14 +68,14 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         sut.simulateAppearance()
         assertThat(sut, isRendering: [])
         
-        loader.completeFeedLoading(with: [image0], at: 0)
+        loader.completeCommentsLoading(with: [image0], at: 0)
         XCTAssertEqual(sut.numberOfRenderedFeedImageViews(), 1)
         
         let _ = sut.feedImageView(at: 0) as? FeedImageCell
         assertThat(sut, isRendering: [image0])
         
         sut.simulateUserInitiatedReload()
-        loader.completeFeedLoading(with: [image0, image1, image2, image3], at: 1)
+        loader.completeCommentsLoading(with: [image0, image1, image2, image3], at: 1)
         assertThat(sut, isRendering: [image0, image1, image2, image3])
     }
     
@@ -84,11 +84,11 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
-        loader.completeFeedLoading(with: [image0], at: 0)
+        loader.completeCommentsLoading(with: [image0], at: 0)
         assertThat(sut, isRendering: [image0])
         
         sut.simulateUserInitiatedReload()
-        loader.completeFeedLoadingWithError(at: 1)
+        loader.completeCommentLoadingWithError(at: 1)
         assertThat(sut, isRendering: [image0])
     }
     
@@ -315,7 +315,7 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
-        loader.completeFeedLoadingWithError(at: 0)
+        loader.completeCommentLoadingWithError(at: 0)
         
         XCTAssertEqual(sut.errorMessage, loadError, "Expect error message to be nil initially")
         XCTAssertEqual(sut.isErrorViewVisible, true, "Expect error view to be shown initially")
@@ -329,7 +329,7 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         
         sut.simulateAppearance()
         
-        loader.completeFeedLoadingWithError(at: 0)
+        loader.completeCommentLoadingWithError(at: 0)
         XCTAssertEqual(sut.errorMessage, loadError, "Expect error message to be nil initially")
         
         sut.simulateErrorViewTap()
@@ -386,11 +386,11 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
             return publisher.eraseToAnyPublisher()
         }
         
-        func completeFeedLoading(with feedModel: [FeedImage] = [], at index: Int = 0) {
+        func completeCommentsLoading(with feedModel: [FeedImage] = [], at index: Int = 0) {
             commentsRequests[index].send(feedModel)
         }
         
-        func completeFeedLoadingWithError(at index: Int) {
+        func completeCommentLoadingWithError(at index: Int) {
             let error = NSError(domain: "an error", code: 0)
             commentsRequests[index].send(completion: .failure(error))
         }
