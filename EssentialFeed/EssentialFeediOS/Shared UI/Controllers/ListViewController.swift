@@ -61,6 +61,7 @@ public final class ListViewController: UITableViewController, UITableViewDataSou
         } else {
             refreshControl?.endRefreshing()
         }
+        print("-> refreshControl (\(refreshControl.debugDescription) \(String(describing: refreshControl?.isRefreshing))")
     }
     
     public func display(_ viewModel: ResourceErrorViewModel) {

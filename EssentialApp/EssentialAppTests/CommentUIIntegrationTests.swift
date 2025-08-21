@@ -58,29 +58,28 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once user initiated loading completes with error.")
     }
     
-    override func test_loadFeedCompletion_rendersSuccessfullyLoadedFeed() {
-        let image0 = makeImage(description: "a description", location: "a location")
-        let image1 = makeImage(description: nil, location: "another location")
-        let image2 = makeImage(description: "another description", location: nil)
-        let image3 = makeImage(description: nil, location: nil)
+    func test_loadCommentsCompletion_rendersSuccessfullyLoadedComment() {
+        let comment0 = makeComment(message: "a message", createdAt: Date(), username: "a username")
+        let comment1 = makeComment(message: "another message", createdAt: Date(), username: "another username")
+       
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
-        assertThat(sut, isRendering: [])
+        assertThat(sut, isRendering: [ImageComment]())
         
-        loader.completeCommentsLoading(with: [image0], at: 0)
-        XCTAssertEqual(sut.numberOfRenderedFeedImageViews(), 1)
+        loader.completeCommentsLoading(with: [comment0], at: 0)
+        XCTAssertEqual(sut.numberOfRenderedCommentsViews(), 1)
         
-        let _ = sut.feedImageView(at: 0) as? FeedImageCell
-        assertThat(sut, isRendering: [image0])
+        let _ = sut.commentView(at: 0)
+        assertThat(sut, isRendering: [comment0])
         
         sut.simulateUserInitiatedReload()
-        loader.completeCommentsLoading(with: [image0, image1, image2, image3], at: 1)
-        assertThat(sut, isRendering: [image0, image1, image2, image3])
+        loader.completeCommentsLoading(with: [comment0, comment1], at: 1)
+        assertThat(sut, isRendering: [comment0, comment1])
     }
     
-    override func test_loadedFeedCompletion_doesNotAlterCurrentRenderingStateOnError() {
-        let image0 = makeImage()
+    func test_loadedCommentCompletion_doesNotAlterCurrentRenderingStateOnError() {
+        let image0 = makeComment(message: "a message", createdAt: Date(), username: "any username")
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
@@ -91,217 +90,6 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         loader.completeCommentLoadingWithError(at: 1)
         assertThat(sut, isRendering: [image0])
     }
-    
-//    override func test_feedImageView_loadsImageURLWhenVisible() {
-//        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
-//        let image1 = makeImage(url: URL(string: "http://url-0.com")!)
-//        let (sut, loader) = makeSUT()
-//        
-//        sut.simulateAppearance()
-//        loader.completeFeedLoading(with: [image0, image1])
-//        
-//        XCTAssertEqual(loader.loadedImageURLs, [], "Expected no image URL requests until views become visible.")
-//        
-//        sut.simulateFeedImageViewVisible(at: 0)
-//        XCTAssertEqual(loader.loadedImageURLs, [image0.url],"Expected first image URL request once first view becomes visible.")
-//        
-//        sut.simulateFeedImageViewVisible(at: 1)
-//        XCTAssertEqual(loader.loadedImageURLs, [image0.url, image1.url],"Expected second image URL request once second view becomes visible.")
-//    }
-//    
-//    override func test_feedImageView_cancelsImageLoadingWhenNotVisibleAnymore() {
-//        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
-//        let image1 = makeImage(url: URL(string: "http://url-0.com")!)
-//        let (sut, loader) = makeSUT()
-//        
-//        sut.simulateAppearance()
-//        loader.completeFeedLoading(with: [image0, image1])
-//        
-//        XCTAssertEqual(loader.cancelledImageURLs, [], "Expected no cancelled image URL requests until image become visible.")
-//        
-//        sut.simulateFeedImageViewNotVisible(at: 0)
-//        XCTAssertEqual(loader.cancelledImageURLs, [image0.url],"Expected one cancelled image URL request once first image is not visible anymore.")
-//        
-//        sut.simulateFeedImageViewNotVisible(at: 1)
-//        XCTAssertEqual(loader.cancelledImageURLs, [image0.url, image1.url],"Expected two cancelled image URL requests once second image is also not visible anymore.")
-//    }
-//    
-//    override func test_feedImageViewLoadingIndicator_isVisibleWhileLoadingImage() {
-//        let (sut, loader) = makeSUT()
-//        
-//        sut.simulateAppearance()
-//        loader.completeFeedLoading(with: [makeImage(), makeImage()])
-//        
-//        let view0 = sut.simulateFeedImageViewVisible(at: 0)
-//        let view1 = sut.simulateFeedImageViewVisible(at: 1)
-//        
-//        XCTAssertEqual(view0?.isShowingImageLoadingIndicator, true, "Expected Loading indicator for first view while loading first image.")
-//        XCTAssertEqual(view1?.isShowingImageLoadingIndicator, true, "Expected Loading indicator for second view while loading second image.")
-//        
-//        loader.completeImageLoading(at: 0)
-//        XCTAssertEqual(view0?.isShowingImageLoadingIndicator, false, "Expected no loading indicator for first view once first image loading completes successfully.")
-//        XCTAssertEqual(view1?.isShowingImageLoadingIndicator, true, "Expected no loading indicator state change for second view once first image loading completes successfully.")
-//        
-//        loader.completeImageLoadingWithError(at: 1)
-//        XCTAssertEqual(view0?.isShowingImageLoadingIndicator, false, "Expected no loading indicator state change for first view once second image loading completes with error.")
-//        XCTAssertEqual(view1?.isShowingImageLoadingIndicator, false, "Expected no loading indicator for second view once second image loading completes with error.")
-//    }
-//    
-//    override func test_feedImageView_rendersImageLoadedFromURL() {
-//        let (sut, loader) = makeSUT()
-//        
-//        sut.simulateAppearance()
-//        loader.completeFeedLoading(with: [makeImage(), makeImage()])
-//        
-//        let view0 = sut.simulateFeedImageViewVisible(at: 0)
-//        let view1 = sut.simulateFeedImageViewVisible(at: 1)
-//        XCTAssertEqual(view0?.renderedImage, .none, "Expected no image for first view while loading first image")
-//        XCTAssertEqual(view1?.renderedImage, .none, "Expected no image for second view while loading second image")
-//        
-//        let imageData0 = UIImage.make(withColor: .red).pngData()!
-//        loader.completeImageLoading(with: imageData0, at: 0)
-//        XCTAssertEqual(view0?.renderedImage, imageData0, "Expected image for first view once first image loading completes successfully")
-//        XCTAssertEqual(view1?.renderedImage, .none, "Expected no image state change for second view once first image loading completes successfully")
-//        
-//        let imageData1 = UIImage.make(withColor: .blue).pngData()!
-//        loader.completeImageLoading(with: imageData1, at: 1)
-//        XCTAssertEqual(view0?.renderedImage, imageData0, "Expected no image state change for first view once second image loading completes successfully")
-//        XCTAssertEqual(view1?.renderedImage, imageData1, "Expected image for second view once second image loading completes successfully")
-//    }
-//    
-//    override func test_feedImageViewRetryButton_isVisibleOnImageURLLoadError() {
-//        let (sut, loader) = makeSUT()
-//        
-//        sut.simulateAppearance()
-//        loader.completeFeedLoading(with: [makeImage(), makeImage()])
-//        
-//        let view0 = sut.simulateFeedImageViewVisible(at: 0)
-//        let view1 = sut.simulateFeedImageViewVisible(at: 1)
-//        XCTAssertEqual(view0?.isShowingRetryAction, false, "Expected no retry action for first view while loading first image")
-//        XCTAssertEqual(view1?.isShowingRetryAction, false, "Expected no retry action for second view while loading second image")
-//        
-//        let imageData = UIImage.make(withColor: .red).pngData()!
-//        loader.completeImageLoading(with: imageData, at: 0)
-//        XCTAssertEqual(view0?.isShowingRetryAction, false, "Expected no retry action for first view once first image loading completes successfully")
-//        XCTAssertEqual(view1?.isShowingRetryAction, false, "Expected no retry action state change for second view once first image loading completes successfully")
-//        
-//        loader.completeImageLoadingWithError(at: 1)
-//        XCTAssertEqual(view0?.isShowingRetryAction, false, "Expected no retry action state change for first view once second image loading completes with error")
-//        XCTAssertEqual(view1?.isShowingRetryAction, true, "Expected retry action for second view once second image loading completes with error")
-//    }
-//    
-//    override func test_feedImageViewRetryButton_isVisibleOnInvalidImageData() {
-//        let (sut, loader) = makeSUT()
-//        
-//        sut.simulateAppearance()
-//        loader.completeFeedLoading(with: [makeImage()])
-//        
-//        let view = sut.simulateFeedImageViewVisible(at: 0)
-//        XCTAssertEqual(view?.isShowingRetryAction, false, "Expected no retry action while loading image")
-//        
-//        let invalidImageData = Data("invalid image data".utf8)
-//        loader.completeImageLoading(with: invalidImageData, at: 0)
-//        XCTAssertEqual(view?.isShowingRetryAction, true, "Expected retry action once image loading completes with invalid image data")
-//    }
-//    
-//    override func test_feedImageViewRetryAction_retriesImageLoad() {
-//        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
-//        let image1 = makeImage(url: URL(string: "http://url-1.com")!)
-//        let (sut, loader) = makeSUT()
-//        
-//        sut.simulateAppearance()
-//        loader.completeFeedLoading(with: [image0, image1])
-//        
-//        let view0 = sut.simulateFeedImageViewVisible(at: 0)
-//        let view1 = sut.simulateFeedImageViewVisible(at: 1)
-//        XCTAssertEqual(loader.loadedImageURLs, [image0.url, image1.url], "Expected two image URL request for the two visible views")
-//        
-//        loader.completeImageLoadingWithError(at: 0)
-//        loader.completeImageLoadingWithError(at: 1)
-//        XCTAssertEqual(loader.loadedImageURLs, [image0.url, image1.url], "Expected only two image URL requests before retry action")
-//        
-//        view0?.simulateRetryAction()
-//        XCTAssertEqual(loader.loadedImageURLs, [image0.url, image1.url, image0.url], "Expected third imageURL request after first view retry action")
-//        
-//        view1?.simulateRetryAction()
-//        XCTAssertEqual(loader.loadedImageURLs, [image0.url, image1.url, image0.url, image1.url], "Expected fourth imageURL request after second view retry action")
-//    }
-//    
-//    override func test_feedImageView_preloadsImageURLWhenNearVisible() {
-//        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
-//        let image1 = makeImage(url: URL(string: "http://url-1.com")!)
-//        let (sut, loader) = makeSUT()
-//        
-//        sut.simulateAppearance()
-//        loader.completeFeedLoading(with: [image0, image1])
-//        XCTAssertEqual(loader.loadedImageURLs, [], "Expected no image URL requests until image is near visible")
-//        
-//        sut.simulateFeedImageViewNearVisible(at: 0)
-//        XCTAssertEqual(loader.loadedImageURLs, [image0.url], "Expected first image URL request once first image is near visible")
-//        
-//        sut.simulateFeedImageViewNearVisible(at: 1)
-//        XCTAssertEqual(loader.loadedImageURLs, [image0.url, image1.url], "Expected second image URL request once second image is near visible")
-//    }
-//    
-//    override func test_feedImageView_cancelsImageURLPreloadingWhenNotNearVisibleAnymore() {
-//        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
-//        let image1 = makeImage(url: URL(string: "http://url-1.com")!)
-//        let (sut, loader) = makeSUT()
-//        
-//        sut.simulateAppearance()
-//        loader.completeFeedLoading(with: [image0, image1])
-//        XCTAssertEqual(loader.cancelledImageURLs, [], "Expected no cancelled image URL requests until image is not near visible")
-//        
-//        sut.simulateFeedImageViewNotNearVisible(at: 0)
-//        XCTAssertEqual(loader.cancelledImageURLs, [image0.url], "Expected first cancelled image URL request once first image is not near visible anymore")
-//        
-//        sut.simulateFeedImageViewNotNearVisible(at: 1)
-//        XCTAssertEqual(loader.cancelledImageURLs, [image0.url, image1.url], "Expected second cancelled image URL request once second image is not near visible anymore")
-//    }
-//    
-//    override func test_feedImageView_doesNotPreloadImageURLWhenNotVisibleAtAll() {
-//        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
-//        let (sut, loader) = makeSUT()
-//        
-//        sut.simulateAppearance()
-//        loader.completeFeedLoading(with: [image0])
-//        
-//        let view = sut.simulateFeedImageViewNotVisible(at: 0)
-//        loader.completeImageLoading(with: anyImageData(), at: 0)
-//        
-//        XCTAssertNil(view?.renderedImage, "Expected image view to not display image until it becomes visible again")
-//    }
-    
-//    override func test_feedImageView_dispatchesFromBackgroundToMainThread() {
-//        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
-//        let (sut, loader) = makeSUT()
-//        sut.simulateAppearance()
-//       
-//        let expectation = self.expectation(description: "Expected image view to dispatch image loading from background to main thread")
-//        DispatchQueue.global().async {
-//            loader.completeFeedLoading(with: [image0])
-//            expectation.fulfill()
-//        }
-//        
-//        wait(for: [expectation], timeout: 1.0)
-//    }
-    
-//    override func test_loadImageCompletion_dispatchesFromBackgroundToMainThread() {
-//        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
-//        let (sut, loader) = makeSUT()
-//        
-//        sut.simulateAppearance()
-//        loader.completeFeedLoading(with: [image0])
-//        
-//        sut.simulateFeedImageViewVisible(at: 0)
-//        let expectation = self.expectation(description: "Expected image view to dispatch image loading from background to main thread")
-//        DispatchQueue.global().async {
-//            loader.completeImageLoading(with: self.anyImageData(), at: 0)
-//            expectation.fulfill()
-//        }
-//        
-//        wait(for: [expectation], timeout: 1.0)
-//    }
     
     override func test_errorView_doesNotRenderErrorOnLoad() {
         let (sut, _) = makeSUT()
@@ -348,8 +136,47 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         return (sut, loader)
     }
     
-    private func makeImage(description: String? = nil, location: String? = nil, url: URL = URL(string: "https://any-url.com")!) -> FeedImage {
-        return FeedImage(id: UUID(), description: description, location: location, imageURL: url)
+    private func makeComment(message: String, createdAt: Date, username: String ) -> ImageComment {
+        ImageComment(id: UUID(), message: message, createdAt: createdAt, username: username)
+    }
+    
+    func assertThat(_ sut: ListViewController, isRendering comments: [ImageComment], file: StaticString = #file, line: UInt = #line) {
+        guard sut.numberOfRenderedCommentsViews() == comments.count else {
+            return XCTFail("Expected \(comments.count) comments, got \(sut.numberOfRenderedCommentsViews()) instead.", file: file, line: line)
+        }
+        let commentsViewModel = ImageCommentPresenter.map(comments)
+        commentsViewModel.comments.enumerated().forEach { index, image in
+            assertThat(sut, hasViewConfiguredFor: image, at: index, file: file, line: line)
+        }
+    }
+    
+    func assertThat(_ sut: ListViewController, hasViewConfiguredFor comment: ImageCommentViewModel, at index: Int, file: StaticString = #file, line: UInt = #line) {
+        let commentMessage = sut.commentMessage(at: index)
+        let commentAuthor = sut.commentAuthor(at: index)
+        let commentDate = sut.commentDate(at: index)
+        
+        
+        XCTAssertEqual(
+            commentMessage,
+            comment.message,
+            "Expected \(comment.message) but got \(String(describing: commentMessage))",
+            file: file,
+            line: line
+        )
+        XCTAssertEqual(
+            commentAuthor,
+            comment.username,
+            "Expected \(comment.username) but got \(String(describing: commentAuthor))",
+            file: file,
+            line: line
+        )
+        XCTAssertEqual(
+            commentDate,
+            comment.date,
+            "Expected \(comment.date) but got \(String(describing: commentDate))",
+            file: file,
+            line: line
+        )
     }
     
     private func anyImageData() -> Data {
@@ -365,66 +192,30 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         LoadResourcePresenter<Any, DummyResourceView>.loadError
     }
     
-    override var feedTitle: String {
-        FeedPresenter.title
-    }
-    
     var commentTitle: String {
         ImageCommentPresenter.title
     }
     
-    class LoaderSpy: FeedImageDataLoader {
-        private var commentsRequests = [PassthroughSubject<[FeedImage], Error>]()
+    class LoaderSpy {
+        private var commentsRequests = [PassthroughSubject<[ImageComment], Error>]()
         
         var loadCommentCallCount: Int {
             commentsRequests.count
         }
         
-        func loadPublisher() -> AnyPublisher<[FeedImage], Error> {
-            let publisher = PassthroughSubject<[FeedImage], Error>()
+        func loadPublisher() -> AnyPublisher<[ImageComment], Error> {
+            let publisher = PassthroughSubject<[ImageComment], Error>()
             commentsRequests.append(publisher)
             return publisher.eraseToAnyPublisher()
         }
         
-        func completeCommentsLoading(with feedModel: [FeedImage] = [], at index: Int = 0) {
-            commentsRequests[index].send(feedModel)
+        func completeCommentsLoading(with comments: [ImageComment] = [], at index: Int = 0) {
+            commentsRequests[index].send(comments)
         }
         
         func completeCommentLoadingWithError(at index: Int) {
             let error = NSError(domain: "an error", code: 0)
             commentsRequests[index].send(completion: .failure(error))
-        }
-        
-        // MARK: - FeedImageDataLoader
-        private struct TaskSpy: FeedImageDataLoaderTask {
-            let cancelCallback: () -> Void
-            
-            func cancel() {
-                cancelCallback()
-            }
-        }
-        
-        private var imageRequests = [(url: URL, completion: (FeedImageDataLoader.Result) -> Void)]()
-        
-        var loadedImageURLs: [URL] {
-            return imageRequests.map{ $0.url }
-        }
-        
-        private(set) var cancelledImageURLs = [URL]()
-        
-        func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
-            imageRequests.append((url, completion))
-            return TaskSpy{ [weak self] in
-                self?.cancelledImageURLs.append(url)
-            }
-        }
-        
-        func completeImageLoading(with imageData: Data = Data(), at index: Int) {
-            imageRequests[index].completion(.success(imageData))
-        }
-        
-        func completeImageLoadingWithError(at index: Int) {
-            imageRequests[index].completion(.failure(anyNSError()))
         }
     }
 }

@@ -11,36 +11,36 @@ import UIKit
 import Combine
 
 public final class CommentUIComposer {
-    typealias FeedImagePresentationAdapter = LoadResourcePresentationAdapter<[FeedImage], FeedViewAdapter>
+    typealias ImageCommentPresentationAdapter = LoadResourcePresentationAdapter<[ImageComment], CommentsViewAdapter>
     private init() {}
     
     public static func commentsComposedWith(
-        commentLoaderPublisher: @escaping () -> AnyPublisher<[FeedImage], Error>
+        commentLoaderPublisher: @escaping () -> AnyPublisher<[ImageComment], Error>
     ) -> ListViewController {
         
-        let feedLoaderPresenterAdapter = FeedImagePresentationAdapter(loaderPublisher: {
+        let commentLoaderPresenterAdapter = ImageCommentPresentationAdapter(loaderPublisher: {
             commentLoaderPublisher().dispatchOnMainQueueIfNeeded()
         })
         
-        let feedController = makeFeedViewController(title: ImageCommentPresenter.title)
-        feedController.didRequestFeedRefresh = feedLoaderPresenterAdapter.load
+        let commentController = makeCommentViewController(title: ImageCommentPresenter.title)
+        commentController.didRequestFeedRefresh = commentLoaderPresenterAdapter.load
         
-        let loadResourcePresenter = LoadResourcePresenter<[FeedImage], FeedViewAdapter>(
-            loadingView: WeakRefVirtualProxy(object: feedController),
-            resourceView: FeedViewAdapter(controller: feedController, loader: { _ in
-                Empty<Data, Error>().eraseToAnyPublisher()
-            }),
-            errorView: WeakRefVirtualProxy(object: feedController),
-            mapper: FeedPresenter.map
+        let loadResourcePresenter = LoadResourcePresenter<[ImageComment], CommentsViewAdapter>(
+            loadingView: WeakRefVirtualProxy(object: commentController),
+            resourceView: CommentsViewAdapter(controller: commentController),
+            errorView: WeakRefVirtualProxy(object: commentController),
+            mapper: { comments in
+                ImageCommentPresenter.map(comments)
+            }
         )
-        feedLoaderPresenterAdapter.presenter = loadResourcePresenter
+        commentLoaderPresenterAdapter.presenter = loadResourcePresenter
         
-        return feedController
+        return commentController
     }
     
-    private static func makeFeedViewController(title: String) -> ListViewController {
+    private static func makeCommentViewController(title: String) -> ListViewController {
         let bundle = Bundle(for: ListViewController.self)
-        let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
+        let storyboard = UIStoryboard(name: "ImageComment", bundle: bundle)
         let feedController = storyboard.instantiateInitialViewController() as! ListViewController
         feedController.title = title
         return feedController

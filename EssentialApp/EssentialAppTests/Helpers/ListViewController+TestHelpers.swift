@@ -4,6 +4,7 @@ import EssentialFeediOS
 
 extension ListViewController {
     var isShowingLoadingIndicator: Bool {
+        print("-> refreshControl (\(refreshControl.debugDescription) \(String(describing: refreshControl?.isRefreshing))")
         return refreshControl?.isRefreshing == true
     }
     
@@ -108,3 +109,39 @@ extension ListViewController {
     }
 }
 
+extension ListViewController {
+    private var commentSection: Int {
+        return 0
+    }
+    
+    func numberOfRenderedCommentsViews() -> Int {
+        tableView.numberOfSections == 0 ? 0 : tableView.numberOfRows(inSection: commentSection)
+    }
+    
+    func commentView(at row: Int) -> ImageCommentCell? {
+        guard numberOfRenderedCommentsViews() > row else {
+            return nil
+        }
+        
+        let ds = tableView.dataSource
+        let index = IndexPath(row: row, section: commentSection)
+        let cell = ds?.tableView(tableView, cellForRowAt: index)
+        
+        return cell as? ImageCommentCell
+    }
+    
+    func commentAuthor(at row: Int) -> String? {
+        let view = commentView(at: row)
+        return view?.authorLabel.text
+    }
+    
+    func commentMessage(at row: Int) -> String? {
+        let view = commentView(at: row)
+        return view?.commentLabel.text
+    }
+    
+    func commentDate(at row: Int) -> String? {
+        let view = commentView(at: row)
+        return view?.dateLabel.text
+    }
+}

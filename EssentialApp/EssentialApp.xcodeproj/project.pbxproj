@@ -33,6 +33,7 @@
 		924B26A52E2CDA4900908320 /* ImageLoaderSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924B26A42E2CDA4900908320 /* ImageLoaderSpy.swift */; };
 		924B26A72E2CDA9100908320 /* XCTestCase+FeedImageDataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924B26A62E2CDA8900908320 /* XCTestCase+FeedImageDataLoader.swift */; };
 		925ED4C92E55C3D5005FD693 /* CommentUIIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A40E252E518995003BCE52 /* CommentUIIntegrationTests.swift */; };
+		925ED4CB2E56109C005FD693 /* CommensViewAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925ED4CA2E561097005FD693 /* CommensViewAdapter.swift */; };
 		92A40E282E518AEF003BCE52 /* CommentUIComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A40E272E518ADC003BCE52 /* CommentUIComposer.swift */; };
 		92B14FE52E1AAE9E00154CA0 /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92B14FE32E1AAE9E00154CA0 /* EssentialFeed.framework */; };
 		92B14FE62E1AAE9E00154CA0 /* EssentialFeed.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 92B14FE32E1AAE9E00154CA0 /* EssentialFeed.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -101,6 +102,7 @@
 		924B26952E2C9D0A00908320 /* XCTestCase+Any.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Any.swift"; sourceTree = "<group>"; };
 		924B26A42E2CDA4900908320 /* ImageLoaderSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoaderSpy.swift; sourceTree = "<group>"; };
 		924B26A62E2CDA8900908320 /* XCTestCase+FeedImageDataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+FeedImageDataLoader.swift"; sourceTree = "<group>"; };
+		925ED4CA2E561097005FD693 /* CommensViewAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommensViewAdapter.swift; sourceTree = "<group>"; };
 		92A40E252E518995003BCE52 /* CommentUIIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentUIIntegrationTests.swift; sourceTree = "<group>"; };
 		92A40E272E518ADC003BCE52 /* CommentUIComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentUIComposer.swift; sourceTree = "<group>"; };
 		92B14F402E1A98AB00154CA0 /* EssentialApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EssentialApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -141,12 +143,13 @@
 		9210CEC42E31CB9D00B1FEA5 /* Composer */ = {
 			isa = PBXGroup;
 			children = (
-				92A40E272E518ADC003BCE52 /* CommentUIComposer.swift */,
 				92D661392E3651A300EBF461 /* CombineHelpers.swift */,
-				9210CEBF2E31CB9D00B1FEA5 /* FeedViewAdapter.swift */,
 				9210CEC02E31CB9D00B1FEA5 /* WeakRefVirtualProxy.swift */,
 				9210CEC12E31CB9D00B1FEA5 /* LoadResourcePresentationAdapter.swift */,
 				9210CEC32E31CB9D00B1FEA5 /* FeedUIComposer.swift */,
+				9210CEBF2E31CB9D00B1FEA5 /* FeedViewAdapter.swift */,
+				92A40E272E518ADC003BCE52 /* CommentUIComposer.swift */,
+				925ED4CA2E561097005FD693 /* CommensViewAdapter.swift */,
 			);
 			path = Composer;
 			sourceTree = "<group>";
@@ -369,6 +372,7 @@
 				924B26892E2C9D0300908320 /* AppDelegate.swift in Sources */,
 				924B268C2E2C9D0300908320 /* SceneDelegate.swift in Sources */,
 				9210CEC52E31CB9D00B1FEA5 /* FeedUIComposer.swift in Sources */,
+				925ED4CB2E56109C005FD693 /* CommensViewAdapter.swift in Sources */,
 				92A40E282E518AEF003BCE52 /* CommentUIComposer.swift in Sources */,
 				92D6613B2E36520000EBF461 /* CombineHelpers.swift in Sources */,
 				9210CEC72E31CB9D00B1FEA5 /* WeakRefVirtualProxy.swift in Sources */,

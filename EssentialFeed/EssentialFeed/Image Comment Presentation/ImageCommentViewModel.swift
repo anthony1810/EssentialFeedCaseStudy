@@ -16,3 +16,11 @@ public struct ImageCommentViewModel: Equatable {
         self.username = username
     }
 }
+
+extension ImageCommentViewModel: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(message)
+        hasher.combine(date)
+        hasher.combine(username)
+    }
+}
