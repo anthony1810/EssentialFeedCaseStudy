@@ -25,6 +25,7 @@
 		9210CEFB2E33892F00B1FEA5 /* HTTPClientStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9210CEFA2E33892F00B1FEA5 /* HTTPClientStub.swift */; };
 		9210CEFD2E33898200B1FEA5 /* InMemoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9210CEFC2E33898200B1FEA5 /* InMemoryStore.swift */; };
 		92288F282E30DF38005170EF /* SceneDelegateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92288F272E30DF31005170EF /* SceneDelegateTests.swift */; };
+		923E03292E575E3D00C357CA /* SharedTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E03282E575E3800C357CA /* SharedTestHelpers.swift */; };
 		924B26892E2C9D0300908320 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924B267E2E2C9D0300908320 /* AppDelegate.swift */; };
 		924B268C2E2C9D0300908320 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924B26872E2C9D0300908320 /* SceneDelegate.swift */; };
 		924B268D2E2C9D0300908320 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 924B267F2E2C9D0300908320 /* Assets.xcassets */; };
@@ -94,6 +95,7 @@
 		9210CEFA2E33892F00B1FEA5 /* HTTPClientStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClientStub.swift; sourceTree = "<group>"; };
 		9210CEFC2E33898200B1FEA5 /* InMemoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryStore.swift; sourceTree = "<group>"; };
 		92288F272E30DF31005170EF /* SceneDelegateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegateTests.swift; sourceTree = "<group>"; };
+		923E03282E575E3800C357CA /* SharedTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedTestHelpers.swift; sourceTree = "<group>"; };
 		924B267E2E2C9D0300908320 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		924B267F2E2C9D0300908320 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		924B26822E2C9D0300908320 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 		9210CED42E31CBB000B1FEA5 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				923E03282E575E3800C357CA /* SharedTestHelpers.swift */,
 				9210CEFC2E33898200B1FEA5 /* InMemoryStore.swift */,
 				9210CEFA2E33892F00B1FEA5 /* HTTPClientStub.swift */,
 				924B26A42E2CDA4900908320 /* ImageLoaderSpy.swift */,
@@ -399,6 +402,7 @@
 				9210CEDA2E31CBB000B1FEA5 /* FeedViewControllerTests+Assertions.swift in Sources */,
 				9210CEDB2E31CBB000B1FEA5 /* UIRefreshControl+Fake.swift in Sources */,
 				9210CEDC2E31CBB000B1FEA5 /* UIButton+TestHelper.swift in Sources */,
+				923E03292E575E3D00C357CA /* SharedTestHelpers.swift in Sources */,
 				9210CEDD2E31CBB000B1FEA5 /* UIRefreshControl+TestHelper.swift in Sources */,
 				9210CEE22E31D1A100B1FEA5 /* FeedAcceptanceTests.swift in Sources */,
 				925ED4C92E55C3D5005FD693 /* CommentUIIntegrationTests.swift in Sources */,

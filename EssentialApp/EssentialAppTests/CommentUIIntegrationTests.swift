@@ -190,23 +190,6 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         )
     }
     
-    private func anyImageData() -> Data {
-        UIImage.make(withColor: .red).pngData()!
-    }
-    
-    private class DummyResourceView: ResourceView {
-        typealias ResourceViewModel = Any
-        func display(_ viewModel: ResourceViewModel) {}
-    }
-    
-    override var loadError: String {
-        LoadResourcePresenter<Any, DummyResourceView>.loadError
-    }
-    
-    var commentTitle: String {
-        ImageCommentPresenter.title
-    }
-    
     class LoaderSpy {
         private var commentsRequests = [PassthroughSubject<[ImageComment], Error>]()
         
