@@ -4,7 +4,6 @@ import EssentialFeediOS
 
 extension ListViewController {
     var isShowingLoadingIndicator: Bool {
-        print("-> refreshControl (\(refreshControl.debugDescription) \(String(describing: refreshControl?.isRefreshing))")
         return refreshControl?.isRefreshing == true
     }
     

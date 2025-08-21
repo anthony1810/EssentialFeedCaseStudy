@@ -17,8 +17,7 @@ extension UITableView {
         guard let header = tableHeaderView else { return }
         
         let size = header.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
-        print("-> tableHeaderView?.frame.size \(header.frame.size)")
-        print("-> size \(size)")
+
         let needsFrameUpdate = header.frame.size != size
         tableHeaderView?.backgroundColor = .red
         if needsFrameUpdate {

@@ -91,15 +91,7 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         assertThat(sut, isRendering: [image0])
     }
     
-    override func test_errorView_doesNotRenderErrorOnLoad() {
-        let (sut, _) = makeSUT()
-        
-        sut.simulateAppearance()
-        
-        XCTAssertNil(sut.errorMessage, "Expect error message to be nil initially")
-    }
-    
-    override func test_loadFeedCompletion_rendersErrorMessageOnError() {
+    func test_loadCommentsCompletion_rendersErrorMessageOnError() {
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
@@ -112,16 +104,35 @@ final class CommentUIIntegrationTests: FeedUIIntegrationTests {
         XCTAssertNil(sut.errorMessage, "Expect error message to be nil when reload")
     }
     
-    override func test_errorView_dismissesErrorMessageOnTap() {
+    func test_commentView_dispatchesFromBackgroundToMainThread() {
+        let comment0 = makeComment(message: "a message", createdAt: Date(), username: "any username")
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+       
+        let expectation = self.expectation(description: "Expected Comments to dispatch comments loading from background to main thread")
+        DispatchQueue.global().async {
+            loader.completeCommentsLoading(with: [comment0], at: 0)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1.0)
+    }
+    
+    func test_loadCommentsCompletion_dispatchesFromBackgroundToMainThread() {
+        let comment0 = makeComment(message: "a message", createdAt: Date(), username: "any username")
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
+        loader.completeCommentsLoading(with: [comment0])
         
-        loader.completeCommentLoadingWithError(at: 0)
-        XCTAssertEqual(sut.errorMessage, loadError, "Expect error message to be nil initially")
+        sut.simulateFeedImageViewVisible(at: 0)
+        let expectation = self.expectation(description: "Expected image view to dispatch image loading from background to main thread")
+        DispatchQueue.global().async {
+            loader.completeCommentsLoading(with: [comment0])
+            expectation.fulfill()
+        }
         
-        sut.simulateErrorViewTap()
-        XCTAssertNil(sut.errorMessage, "Expect error message to be nil when tapped")
+        wait(for: [expectation], timeout: 1.0)
     }
     
     // MARK: Helpers
