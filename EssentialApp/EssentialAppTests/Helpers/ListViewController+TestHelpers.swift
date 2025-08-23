@@ -41,6 +41,12 @@ extension ListViewController {
         ds?.tableView?(tableView, cancelPrefetchingForRowsAt: [index])
     }
     
+    func simulateFeedImageTap(at index: Int) {
+        let dl = tableView.delegate
+        let indexPath = IndexPath(row: index, section: feedImageSection)
+        dl?.tableView?(tableView, didSelectRowAt: indexPath)
+    }
+    
     func numberOfRenderedFeedImageViews() -> Int {
         tableView.numberOfSections == 0 ? 0 : tableView.numberOfRows(inSection: feedImageSection)
     }

@@ -12,10 +12,16 @@ public final class FeedImageCellController: NSObject, ResourceView, ResourceLoad
     private let viewModel: FeedImageViewModel
     private let delegate: FeedImageCellControllerDelegate
     private var cell: FeedImageCell?
+    private let selectImageHandler: () -> Void
    
-    public init (delegate: FeedImageCellControllerDelegate, viewModel: FeedImageViewModel) {
+    public init (
+        delegate: FeedImageCellControllerDelegate,
+        viewModel: FeedImageViewModel,
+        selectImageHandler: @escaping () -> Void
+    ) {
         self.delegate = delegate
         self.viewModel = viewModel
+        self.selectImageHandler = selectImageHandler
     }
     
     public func display(_ viewModel: UIImage) {
@@ -65,6 +71,10 @@ extension FeedImageCellController: UITableViewDataSource, UITableViewDelegate, U
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
         cancelLoad()
+    }
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        selectImageHandler()
     }
     
     private func cancelLoad() {
