@@ -33,8 +33,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }()
     
     private lazy var remoteURL: URL = {
-        let url = Self.baseURL.appendingPathComponent("/v1/feed")
-        return url
+        FeedEndpoint.get.url(baseURL: Self.baseURL)
     }()
     
     private lazy var localFeedLoader: LocalFeedLoader = {
@@ -88,7 +87,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     private func showComments(for image: FeedImage) {
-        let remoteCommentsURL = Self.baseURL.appendingPathComponent("/v1/image/\(image.id)/comments")
+        let remoteCommentsURL = ImageCommentsEndpoint.get(image.id).url(baseURL: Self.baseURL)
         let commentsVC = CommentUIComposer.commentsComposedWith(
             commentLoaderPublisher: makeRemoteCommentLoader(url: remoteCommentsURL)
         )
