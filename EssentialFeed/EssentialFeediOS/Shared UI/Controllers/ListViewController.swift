@@ -3,7 +3,7 @@ import EssentialFeed
 
 public final class ListViewController: UITableViewController, UITableViewDataSourcePrefetching, ResourceLoadingView, ResourceErrorView {
    
-    public var didRequestFeedRefresh: (() -> Void)?
+    public var didRequestRefresh: (() -> Void)?
     public private(set) var errorView = ErrorView()
     
     private var onViewIsAppearing: ((ListViewController) -> Void)?
@@ -69,7 +69,12 @@ public final class ListViewController: UITableViewController, UITableViewDataSou
     }
     
     @IBAction private func refresh() {
-        didRequestFeedRefresh?()
+        didRequestRefresh?()
+    }
+    
+    public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let dl = cellController(forRowAt: indexPath)?.dl
+        dl?.tableView?(tableView, didSelectRowAt: indexPath)
     }
     
     
@@ -91,10 +96,6 @@ public final class ListViewController: UITableViewController, UITableViewDataSou
             let cellController = self.cellController(forRowAt: indexPath)
             cellController?.dsPrefetching?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
         }
-    }
-    
-    public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        cellController(forRowAt: indexPath)?.dl?.tableView?(tableView, didSelectRowAt: indexPath)
     }
     
     private func cellController(forRowAt indexPath: IndexPath) -> CellController? {

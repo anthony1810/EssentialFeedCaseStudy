@@ -23,7 +23,7 @@ public final class CommentUIComposer {
         })
         
         let commentController = makeCommentViewController(title: ImageCommentPresenter.title)
-        commentController.didRequestFeedRefresh = commentLoaderPresenterAdapter.load
+        commentController.didRequestRefresh = commentLoaderPresenterAdapter.load
         
         let loadResourcePresenter = LoadResourcePresenter<[ImageComment], CommentsViewAdapter>(
             loadingView: WeakRefVirtualProxy(object: commentController),
@@ -41,8 +41,8 @@ public final class CommentUIComposer {
     private static func makeCommentViewController(title: String) -> ListViewController {
         let bundle = Bundle(for: ListViewController.self)
         let storyboard = UIStoryboard(name: "ImageComment", bundle: bundle)
-        let feedController = storyboard.instantiateInitialViewController() as! ListViewController
-        feedController.title = title
-        return feedController
+        let commentController = storyboard.instantiateInitialViewController() as! ListViewController
+        commentController.title = title
+        return commentController
     }
 }

@@ -15,8 +15,8 @@ final class FeedAcceptanceTests: XCTestCase {
         sut.simulateAppearance()
         
         XCTAssertEqual(sut.numberOfRenderedFeedImageViews(), 2)
-        XCTAssertEqual(sut.renderedFeedImageData(at: 0), makeImageData())
-        XCTAssertEqual(sut.renderedFeedImageData(at: 1), makeImageData())
+        XCTAssertEqual(sut.renderedFeedImageData(at: 0), makeImageData01())
+        XCTAssertEqual(sut.renderedFeedImageData(at: 1), makeImageData02())
     }
     
     func test_onLauch_displaysLocalFeedWhenCustomerHasNoConnectivity() {
@@ -30,8 +30,8 @@ final class FeedAcceptanceTests: XCTestCase {
         offline.simulateAppearance()
         
         XCTAssertEqual(offline.numberOfRenderedFeedImageViews(), 2)
-        XCTAssertEqual(offline.renderedFeedImageData(at: 0), makeImageData())
-        XCTAssertEqual(offline.renderedFeedImageData(at: 1), makeImageData())
+        XCTAssertEqual(offline.renderedFeedImageData(at: 0), makeImageData01())
+        XCTAssertEqual(offline.renderedFeedImageData(at: 1), makeImageData02())
     }
     
     func test_onLauch_displayEmptyFeedWhenCustomerHasNoConnectivityAndNoLocalFeed() {
@@ -55,6 +55,13 @@ final class FeedAcceptanceTests: XCTestCase {
         XCTAssertTrue(store.cacheFeed != nil)
     }
     
+    func test_onFeedImageSelection_displayComments() {
+        let feed = showCommentsForFirstImage()
+        
+        XCTAssertEqual(feed.numberOfRenderedCommentsViews(), 1)
+        XCTAssertEqual(feed.commentMessage(at: 0), makeCommentMessage())
+    }
+    
     // MARK: - Helpers
     private func enteringBackground(with store: InMemoryStore) {
         let sut = SceneDelegate(httpClient: HTTPClientStub.offline, store: store)
@@ -76,6 +83,24 @@ final class FeedAcceptanceTests: XCTestCase {
             fatalError("Top view controller is not a FeedViewController")
         }
         
+        vc.simulateAppearance()
+        
+        return vc
+    }
+    
+    private func showCommentsForFirstImage() -> ListViewController {
+        let feed = launch(httpClient: .online(response))
+        feed.simulateAppearance()
+        
+        feed.simulateFeedImageTap(at: 0)
+        
+        RunLoop.current.run(until: Date())
+        
+        let nav = feed.navigationController
+        guard let vc = nav?.topViewController as? ListViewController else {
+            fatalError("Top view controller is not a FeedViewController")
+        }
+        vc.simulateAppearance()
         return vc
     }
     
@@ -89,9 +114,13 @@ final class FeedAcceptanceTests: XCTestCase {
     }
     
     private func makeData(for url: URL) -> Data {
-        switch url.absoluteString {
-        case "http://image.com":
-            return makeImageData()
+        switch url.path {
+        case "/image-1":
+            return makeImageData01()
+        case "/image-2":
+            return makeImageData02()
+        case "/essential-feed/v1/image/\(makeFirstImageID())/comments":
+            return makeCommentsData()
         default:
             return makeFeedData()
         }
@@ -100,13 +129,39 @@ final class FeedAcceptanceTests: XCTestCase {
     private func makeFeedData() -> Data {
         return try! JSONSerialization.data(withJSONObject: [
             "items" : [
-                ["id": UUID().uuidString, "image": "http://image.com"],
-                ["id": UUID().uuidString, "image": "http://image.com"]
+                ["id": makeFirstImageID(), "image": "http://image.com/image-1"],
+                ["id": UUID().uuidString, "image": "http://image.com/image-2"]
             ]
         ])
     }
     
-    private func makeImageData() -> Data {
+    private func makeCommentsData() -> Data {
+        return try! JSONSerialization.data(withJSONObject: [
+            "items" : [
+                [
+                    "id": UUID().uuidString,
+                    "message": makeCommentMessage(),
+                    "created_at": "2020-05-20T11:24:59+0000",
+                    "author": [
+                        "username": "a user name"
+                    ]
+                ]
+            ]
+        ])
+    }
+    
+    private func makeImageData01() -> Data {
         UIImage.make(withColor: .red).pngData()!
+    }
+    private func makeImageData02() -> Data {
+        UIImage.make(withColor: .red).pngData()!
+    }
+    
+    private func makeFirstImageID() -> String {
+        "A28F5FE3-27A7-44E9-8DF5-53742D0E4A5A"
+    }
+    
+    private func makeCommentMessage() -> String {
+        "any comment message"
     }
 }
