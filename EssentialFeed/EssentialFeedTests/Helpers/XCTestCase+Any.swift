@@ -77,11 +77,21 @@ extension Date {
         adding(days: -FeedCachePolicy.maxCacheDays)
     }
     
-    func adding(days: Int) -> Date {
-        NSCalendar(identifier: .gregorian)!.date(byAdding: .day, value: days, to: self)!
+    func adding(days: Int, calendar: Calendar = Calendar(identifier: .gregorian)) -> Date {
+        calendar.date(byAdding: .day, value: days, to: self)!
     }
 
     func adding(seconds: TimeInterval) -> Date {
         self + seconds
+    }
+    
+    func adding(minutes: Int, calendar: Calendar = Calendar(identifier: .gregorian)) -> Date {
+        calendar.date(byAdding: .minute, value: minutes, to: self)!
+    }
+}
+
+extension HTTPURLResponse {
+    convenience init(url: URL, statusCode: Int)  {
+        self.init(url: url, statusCode: statusCode, httpVersion: nil, headerFields: nil)!
     }
 }
