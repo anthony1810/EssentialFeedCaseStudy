@@ -3,6 +3,20 @@ import EssentialFeed
 import EssentialFeediOS
 
 extension ListViewController {
+    func cell(for row: Int, section: Int) -> UITableViewCell? {
+        let ds = tableView.dataSource
+        let index = IndexPath(row: row, section: section)
+        let cell = ds?.tableView(tableView, cellForRowAt: index)
+        
+        return cell
+    }
+    
+    func numberOfRows(in section: Int) -> Int {
+        tableView.numberOfSections == 0 ? 0 : tableView.numberOfRows(inSection: section)
+    }
+}
+
+extension ListViewController {
     var isShowingLoadingIndicator: Bool {
         return refreshControl?.isRefreshing == true
     }
@@ -48,7 +62,7 @@ extension ListViewController {
     }
     
     func numberOfRenderedFeedImageViews() -> Int {
-        tableView.numberOfSections == 0 ? 0 : tableView.numberOfRows(inSection: feedImageSection)
+        numberOfRows(in: feedImageSection)
     }
     
     private var feedImageSection: Int {
@@ -60,9 +74,7 @@ extension ListViewController {
             return nil
         }
         
-        let ds = tableView.dataSource
-        let index = IndexPath(row: row, section: feedImageSection)
-        return ds?.tableView(tableView, cellForRowAt: index)
+        return cell(for: row, section: feedImageSection)
     }
     
     func renderedFeedImageData(at index: Int) -> Data? {
@@ -120,7 +132,7 @@ extension ListViewController {
     }
     
     func numberOfRenderedCommentsViews() -> Int {
-        tableView.numberOfSections == 0 ? 0 : tableView.numberOfRows(inSection: commentSection)
+        numberOfRows(in: commentSection)
     }
     
     func commentView(at row: Int) -> ImageCommentCell? {
@@ -128,9 +140,7 @@ extension ListViewController {
             return nil
         }
         
-        let ds = tableView.dataSource
-        let index = IndexPath(row: row, section: commentSection)
-        let cell = ds?.tableView(tableView, cellForRowAt: index)
+        let cell = cell(for: row, section: commentSection)
         
         return cell as? ImageCommentCell
     }
