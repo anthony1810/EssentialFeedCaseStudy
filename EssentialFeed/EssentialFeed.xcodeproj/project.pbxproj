@@ -139,6 +139,9 @@
 		92F1BD3D2D450B640002ED52 /* FeedMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1BD3C2D450B640002ED52 /* FeedMapper.swift */; };
 		92F1BD3F2D45101D0002ED52 /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F1BD3E2D45101D0002ED52 /* HTTPClient.swift */; };
 		92FDC2452D64CD9F00FE3709 /* EssentialFeediOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 92FDC2432D64CD9F00FE3709 /* EssentialFeediOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		92FDECEF2E5DB60D0098B390 /* LoadMoreCellController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92FDECEE2E5DB6080098B390 /* LoadMoreCellController.swift */; };
+		92FDECF22E5DB7320098B390 /* FEED_WITH_LOAD_MORE_INDICATOR_dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FDECF02E5DB7320098B390 /* FEED_WITH_LOAD_MORE_INDICATOR_dark.png */; };
+		92FDECF32E5DB7320098B390 /* FEED_WITH_LOAD_MORE_INDICATOR_light.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FDECF12E5DB7320098B390 /* FEED_WITH_LOAD_MORE_INDICATOR_light.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -329,6 +332,9 @@
 		92F1BD3E2D45101D0002ED52 /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		92FDC22D2D64CD9400FE3709 /* EssentialFeediOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EssentialFeediOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		92FDC2432D64CD9F00FE3709 /* EssentialFeediOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EssentialFeediOS.h; sourceTree = "<group>"; };
+		92FDECEE2E5DB6080098B390 /* LoadMoreCellController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMoreCellController.swift; sourceTree = "<group>"; };
+		92FDECF02E5DB7320098B390 /* FEED_WITH_LOAD_MORE_INDICATOR_dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FEED_WITH_LOAD_MORE_INDICATOR_dark.png; sourceTree = "<group>"; };
+		92FDECF12E5DB7320098B390 /* FEED_WITH_LOAD_MORE_INDICATOR_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FEED_WITH_LOAD_MORE_INDICATOR_light.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -757,6 +763,8 @@
 		92E677292E348D1C00F0DCA8 /* snapshots */ = {
 			isa = PBXGroup;
 			children = (
+				92FDECF02E5DB7320098B390 /* FEED_WITH_LOAD_MORE_INDICATOR_dark.png */,
+				92FDECF12E5DB7320098B390 /* FEED_WITH_LOAD_MORE_INDICATOR_light.png */,
 				92E6772D2E348FA500F0DCA8 /* IMAGE_FAILED_TO_LOAD.png */,
 				92E677312E34CDC200F0DCA8 /* IMAGE_FAILED_TO_LOAD_DARK.png */,
 				92E677282E348D1C00F0DCA8 /* NOT_EMPTY_FEED.png */,
@@ -847,6 +855,7 @@
 		92EC26C82E48875800A41FA6 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				92FDECEE2E5DB6080098B390 /* LoadMoreCellController.swift */,
 				92EC26F92E4B404300A41FA6 /* CellController.swift */,
 				92EC26D72E488FC700A41FA6 /* ImageCommentCellController.swift */,
 				928E35E72D7C42550031A0BE /* ListViewController.swift */,
@@ -1174,6 +1183,8 @@
 				92A40E212E503304003BCE52 /* ERROR_OCCURED_LIGHT_extraExtraExtraLarge.png in Resources */,
 				92A40E222E503304003BCE52 /* ERROR_OCCURED_DARK_extraExtraExtraLarge.png in Resources */,
 				92E677352E34CDC200F0DCA8 /* NOT_EMPTY_FEED_DARK.png in Resources */,
+				92FDECF22E5DB7320098B390 /* FEED_WITH_LOAD_MORE_INDICATOR_dark.png in Resources */,
+				92FDECF32E5DB7320098B390 /* FEED_WITH_LOAD_MORE_INDICATOR_light.png in Resources */,
 				92EC26F52E4A2B3200A41FA6 /* COMMENT_LIST_DARK.png in Resources */,
 				92EC26F62E4A2B3200A41FA6 /* COMMENT_LIST.png in Resources */,
 				92EC26D12E48894E00A41FA6 /* EMPTY_LIST.png in Resources */,
@@ -1364,6 +1375,7 @@
 				92EC26D82E488FD100A41FA6 /* ImageCommentCellController.swift in Sources */,
 				928E35F42D7C42550031A0BE /* FeedImageCell.swift in Sources */,
 				928E35F72D7C42550031A0BE /* UIView+Shimmering.swift in Sources */,
+				92FDECEF2E5DB60D0098B390 /* LoadMoreCellController.swift in Sources */,
 				92EC26DA2E48912900A41FA6 /* ImageCommentCell.swift in Sources */,
 				9275240F2D8FC7410059D2C5 /* UITableView+Extensions.swift in Sources */,
 				928E35FA2D7C42550031A0BE /* ListViewController.swift in Sources */,
