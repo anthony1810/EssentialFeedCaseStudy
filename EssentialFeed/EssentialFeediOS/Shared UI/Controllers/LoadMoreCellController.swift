@@ -33,6 +33,29 @@ public final class LoadMoreCell: UITableViewCell {
             }
         }
     }
+    
+    private lazy var messageLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .tertiaryLabel
+        label.font = .preferredFont(forTextStyle: .footnote)
+        label.adjustsFontForContentSizeCategory = true
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        contentView.addSubview(label)
+        
+        label.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+            label.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 8),
+            label.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+        ])
+        
+        return label
+    }()
+    var message: String? {
+        get { messageLabel.text }
+        set { messageLabel.text = newValue }
+    }
 }
 
 public final class LoadMoreCellController: NSObject, UITableViewDataSource {
@@ -50,5 +73,11 @@ public final class LoadMoreCellController: NSObject, UITableViewDataSource {
 extension LoadMoreCellController: ResourceLoadingView {
     public func display(viewModel: EssentialFeed.ResourceLoadingViewModel) {
         cell.isLoading = viewModel.isLoading
+    }
+}
+
+extension LoadMoreCellController: ResourceErrorView {
+    public func display(_ viewModel: EssentialFeed.ResourceErrorViewModel) {
+        cell.message = viewModel.message
     }
 }

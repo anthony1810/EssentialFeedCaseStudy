@@ -30,10 +30,21 @@ final class FeedSnapshotTests: XCTestCase {
     
     func test_feedWithLoadMoreIndicator() {
         let sut = makeSUT()
+        
         sut.display(feedWithLoadMoreIndicator())
         
         assert(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "FEED_WITH_LOAD_MORE_INDICATOR_light")
         assert(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "FEED_WITH_LOAD_MORE_INDICATOR_dark")
+    }
+    
+    func test_feedWithLoadMoreError() {
+        let sut = makeSUT()
+        
+        sut.display(feedWithLoadMoreIndicatorError())
+        
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "FEED_WITH_LOAD_MORE_ERROR_light")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "FEED_WITH_LOAD_MORE_ERROR_dark")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .dark, contentSize: .extraExtraExtraLarge)), named: "FEED_WITH_LOAD_MORE_ERROR_extraExtraExtraLarge")
     }
     
     // MARK: - Helpers
@@ -75,6 +86,19 @@ final class FeedSnapshotTests: XCTestCase {
         
         let loadMoreController = LoadMoreCellController()
         loadMoreController.display(viewModel: ResourceLoadingViewModel(isLoading: true))
+        return [
+            CellController(id: UUID(), ds: cellController),
+            CellController(id: UUID(), ds: loadMoreController)
+        ]
+    }
+    
+    private func feedWithLoadMoreIndicatorError() -> [CellController] {
+        let stub = nonEmptyFeed().last!
+        let cellController = FeedImageCellController(delegate: stub, viewModel: stub.viewModel, selectImageHandler: {})
+        stub.controller = cellController
+        
+        let loadMoreController = LoadMoreCellController()
+        loadMoreController.display(ResourceErrorViewModel(message: "This is a\nmultiline error"))
         return [
             CellController(id: UUID(), ds: cellController),
             CellController(id: UUID(), ds: loadMoreController)
