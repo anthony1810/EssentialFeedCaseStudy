@@ -4,13 +4,13 @@ import UIKit
 import Combine
 
 public final class FeedUIComposer {
-    typealias FeedImagePresentationAdapter = LoadResourcePresentationAdapter<[FeedImage], FeedViewAdapter>
+    typealias FeedImagePresentationAdapter = LoadResourcePresentationAdapter<Paginated<FeedImage>, FeedViewAdapter>
     private init() {}
     
     public static func feedComposedWith(
-        feedLoaderPublisher: @escaping () -> AnyPublisher<[FeedImage], Error>,
+        feedLoaderPublisher: @escaping () -> AnyPublisher<Paginated<FeedImage>, Error>,
         imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher,
-        selectImageHandler: @escaping (FeedImage) -> Void = { _ in }
+        selectImageHandler: @escaping (FeedImage) -> Void
     ) -> ListViewController {
         
         let feedLoaderPresenterAdapter = FeedImagePresentationAdapter(loaderPublisher: {
@@ -20,7 +20,7 @@ public final class FeedUIComposer {
         let feedController = makeFeedViewController(title: FeedPresenter.title)
         feedController.didRequestRefresh = feedLoaderPresenterAdapter.load
         
-        let loadResourcePresenter = LoadResourcePresenter<[FeedImage], FeedViewAdapter>(
+        let loadResourcePresenter = LoadResourcePresenter<Paginated<FeedImage>, FeedViewAdapter>(
             loadingView: WeakRefVirtualProxy(object: feedController),
             resourceView: FeedViewAdapter(controller: feedController, loader: {
                 imageLoader($0).dispatchOnMainQueueIfNeeded()
@@ -28,7 +28,7 @@ public final class FeedUIComposer {
                 selectImageHandler(image)
             }),
             errorView: WeakRefVirtualProxy(object: feedController),
-            mapper: FeedPresenter.map
+            mapper: { $0 }
         )
         feedLoaderPresenterAdapter.presenter = loadResourcePresenter
         

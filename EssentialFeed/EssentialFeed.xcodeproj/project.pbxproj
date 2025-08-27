@@ -145,6 +145,7 @@
 		92FDECF72E5DBDEA0098B390 /* FEED_WITH_LOAD_MORE_ERROR_light.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FDECF62E5DBDEA0098B390 /* FEED_WITH_LOAD_MORE_ERROR_light.png */; };
 		92FDECF82E5DBDEA0098B390 /* FEED_WITH_LOAD_MORE_ERROR_dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FDECF42E5DBDEA0098B390 /* FEED_WITH_LOAD_MORE_ERROR_dark.png */; };
 		92FDECF92E5DBDEA0098B390 /* FEED_WITH_LOAD_MORE_ERROR_extraExtraExtraLarge.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FDECF52E5DBDEA0098B390 /* FEED_WITH_LOAD_MORE_ERROR_extraExtraExtraLarge.png */; };
+		92FDECFB2E5EB91C0098B390 /* Paginated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92FDECFA2E5EB9170098B390 /* Paginated.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -341,6 +342,7 @@
 		92FDECF42E5DBDEA0098B390 /* FEED_WITH_LOAD_MORE_ERROR_dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FEED_WITH_LOAD_MORE_ERROR_dark.png; sourceTree = "<group>"; };
 		92FDECF52E5DBDEA0098B390 /* FEED_WITH_LOAD_MORE_ERROR_extraExtraExtraLarge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FEED_WITH_LOAD_MORE_ERROR_extraExtraExtraLarge.png; sourceTree = "<group>"; };
 		92FDECF62E5DBDEA0098B390 /* FEED_WITH_LOAD_MORE_ERROR_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FEED_WITH_LOAD_MORE_ERROR_light.png; sourceTree = "<group>"; };
+		92FDECFA2E5EB9170098B390 /* Paginated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paginated.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -552,6 +554,7 @@
 		925F9BDD2E3858E1008BBEF5 /* Shared API */ = {
 			isa = PBXGroup;
 			children = (
+				92FDECFA2E5EB9170098B390 /* Paginated.swift */,
 				92F1BD3E2D45101D0002ED52 /* HTTPClient.swift */,
 			);
 			path = "Shared API";
@@ -1264,6 +1267,7 @@
 				92EC26C52E48429A00A41FA6 /* ImageCommentsViewModel.swift in Sources */,
 				92DA91202D56E58500B73F36 /* FeedStore.xcdatamodeld in Sources */,
 				92670B942D570D69009A434F /* CoreDataHelpers.swift in Sources */,
+				92FDECFB2E5EB91C0098B390 /* Paginated.swift in Sources */,
 				92A9CEB82DF71CEB0068FFB4 /* CoreDataFeedStore+FeedStore.swift in Sources */,
 				92D34D8A2DA1460C008F9989 /* FeedImageDataLoader.swift in Sources */,
 				926EBFBB2D48E692004B4082 /* LocalFeedItem.swift in Sources */,

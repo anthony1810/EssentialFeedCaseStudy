@@ -9,7 +9,7 @@ import EssentialFeediOS
 import UIKit
 
 final class FeedViewAdapter: ResourceView {
-    typealias ResourceViewModel = FeedViewModel
+    typealias ResourceViewModel = Paginated<FeedImage>
     typealias ImageDataPresentationAdapter = LoadResourcePresentationAdapter<Data, WeakRefVirtualProxy<FeedImageCellController>>
     
     private weak var controller: ListViewController?
@@ -26,8 +26,8 @@ final class FeedViewAdapter: ResourceView {
         self.selectImageHandler = selectImageHandler
     }
     
-    func display(_ viewModel: FeedViewModel) {
-        controller?.display(viewModel.feeds.map { model in
+    func display(_ viewModel: Paginated<FeedImage>) {
+        controller?.display(viewModel.items.map { model in
             
             let adapter = ImageDataPresentationAdapter(loaderPublisher: { [loader] in
                 loader(model.url)
