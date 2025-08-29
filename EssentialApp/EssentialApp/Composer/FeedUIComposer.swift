@@ -27,8 +27,7 @@ public final class FeedUIComposer {
             }, selectImageHandler: { image in
                 selectImageHandler(image)
             }),
-            errorView: WeakRefVirtualProxy(object: feedController),
-            mapper: { $0 }
+            errorView: WeakRefVirtualProxy(object: feedController)
         )
         feedLoaderPresenterAdapter.presenter = loadResourcePresenter
         
