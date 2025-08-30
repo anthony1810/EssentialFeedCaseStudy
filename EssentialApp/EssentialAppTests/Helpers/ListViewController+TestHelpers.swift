@@ -25,6 +25,13 @@ extension ListViewController {
         refreshControl?.simulatePullToRefresh()
     }
     
+    func simulateLoadMoreFeed() {
+        guard let view = cell(for: 0, section: loadMoreSection) else { return }
+        let delegate = tableView.delegate
+        let index = IndexPath(row: 0, section: loadMoreSection)
+        delegate?.tableView?(tableView, willDisplay: view, forRowAt: index)
+    }
+    
     @discardableResult
     func simulateFeedImageViewVisible(at index: Int) -> FeedImageCell? {
         return feedImageView(at: index) as? FeedImageCell
@@ -67,6 +74,10 @@ extension ListViewController {
     
     private var feedImageSection: Int {
         return 0
+    }
+    
+    private var loadMoreSection: Int {
+        return 1
     }
     
     func feedImageView(at row: Int) -> UITableViewCell? {

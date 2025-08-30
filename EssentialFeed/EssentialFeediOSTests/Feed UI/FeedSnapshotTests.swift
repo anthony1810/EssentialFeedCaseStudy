@@ -84,7 +84,7 @@ final class FeedSnapshotTests: XCTestCase {
         let cellController = FeedImageCellController(delegate: stub, viewModel: stub.viewModel, selectImageHandler: {})
         stub.controller = cellController
         
-        let loadMoreController = LoadMoreCellController()
+        let loadMoreController = LoadMoreCellController(willDisplayCallback: {})
         loadMoreController.display(viewModel: ResourceLoadingViewModel(isLoading: true))
         return [
             CellController(id: UUID(), ds: cellController),
@@ -97,7 +97,7 @@ final class FeedSnapshotTests: XCTestCase {
         let cellController = FeedImageCellController(delegate: stub, viewModel: stub.viewModel, selectImageHandler: {})
         stub.controller = cellController
         
-        let loadMoreController = LoadMoreCellController()
+        let loadMoreController = LoadMoreCellController(willDisplayCallback: {})
         loadMoreController.display(ResourceErrorViewModel(message: "This is a\nmultiline error"))
         return [
             CellController(id: UUID(), ds: cellController),

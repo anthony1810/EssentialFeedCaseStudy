@@ -6,6 +6,7 @@ import Combine
 extension FeedUIIntegrationTests {
     class LoaderSpy: FeedImageDataLoader {
         private var feedRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
+        private(set) var loadMoreFeedCallCount = 0
         
         var loadFeedCallCount: Int {
             feedRequests.count
@@ -18,7 +19,9 @@ extension FeedUIIntegrationTests {
         }
         
         func completeFeedLoading(with feedModel: [FeedImage] = [], at index: Int = 0) {
-            feedRequests[index].send(Paginated(items: feedModel))
+            feedRequests[index].send(Paginated(items: feedModel, loadMore: { [weak self] _ in
+                self?.loadMoreFeedCallCount += 1
+            }))
         }
         
         func completeFeedLoadingWithError(at index: Int) {

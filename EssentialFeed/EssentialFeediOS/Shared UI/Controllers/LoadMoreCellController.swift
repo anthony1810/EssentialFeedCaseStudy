@@ -58,8 +58,13 @@ public final class LoadMoreCell: UITableViewCell {
     }
 }
 
-public final class LoadMoreCellController: NSObject, UITableViewDataSource {
+public final class LoadMoreCellController: NSObject, UITableViewDataSource, UITableViewDelegate {
     private let cell: LoadMoreCell = .init()
+    private let willDisplayCallback: () -> Void
+    
+    public init(willDisplayCallback: @escaping () -> Void) {
+        self.willDisplayCallback = willDisplayCallback
+    }
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         1
@@ -67,6 +72,10 @@ public final class LoadMoreCellController: NSObject, UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         cell
+    }
+    
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        willDisplayCallback()
     }
 }
 

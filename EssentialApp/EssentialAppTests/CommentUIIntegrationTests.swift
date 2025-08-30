@@ -12,7 +12,7 @@ import EssentialFeediOS
 import EssentialApp
 import Combine
 
-final class CommentUIIntegrationTests: FeedUIIntegrationTests {
+final class CommentUIIntegrationTests: XCTestCase {
     
     func test_commentsView_hasTitle() {
         let (sut, _) = makeSUT()

@@ -3,7 +3,7 @@ import EssentialFeed
 
 public final class ListViewController: UITableViewController, UITableViewDataSourcePrefetching, ResourceLoadingView, ResourceErrorView {
    
-    public var didRequestRefresh: (() -> Void)?
+    public var onRefresh: (() -> Void)?
     public private(set) var errorView = ErrorView()
     
     private var onViewIsAppearing: ((ListViewController) -> Void)?
@@ -48,10 +48,12 @@ public final class ListViewController: UITableViewController, UITableViewDataSou
         }
     }
     
-    public func display(_ tableModel: [CellController]) {
+    public func display(_ tableModel: [CellController]...) {
         var snapshot = NSDiffableDataSourceSnapshot<Int, CellController>()
-        snapshot.appendSections([0])
-        snapshot.appendItems(tableModel, toSection: 0)
+        tableModel.enumerated().forEach { section, cellControllers in
+            snapshot.appendSections([section])
+            snapshot.appendItems(cellControllers, toSection: section)
+        }
         dataSource.applySnapshotUsingReloadData(snapshot)
     }
     
@@ -69,7 +71,7 @@ public final class ListViewController: UITableViewController, UITableViewDataSou
     }
     
     @IBAction private func refresh() {
-        didRequestRefresh?()
+        onRefresh?()
     }
     
     public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -96,6 +98,11 @@ public final class ListViewController: UITableViewController, UITableViewDataSou
             let cellController = self.cellController(forRowAt: indexPath)
             cellController?.dsPrefetching?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
         }
+    }
+    
+    public override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let cellController = self.cellController(forRowAt: indexPath)
+        cellController?.dl?.tableView?(tableView, willDisplay: cell, forRowAt: indexPath)
     }
     
     private func cellController(forRowAt indexPath: IndexPath) -> CellController? {

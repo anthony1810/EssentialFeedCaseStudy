@@ -344,6 +344,17 @@ class FeedUIIntegrationTests: XCTestCase {
         XCTAssertNil(sut.errorMessage, "Expect error message to be nil when tapped")
     }
     
+    func test_loadMoreFeedActions_requestMoreFeedFromLoader() {
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        loader.completeFeedLoading()
+        
+        XCTAssertEqual(loader.loadMoreFeedCallCount, 0, "Expected no loading more feed when view is first loaded.")
+        
+        sut.simulateLoadMoreFeed()
+        XCTAssertEqual(loader.loadMoreFeedCallCount, 1, "Expected a loading more feed once a user initiates load more feed.")
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(

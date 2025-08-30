@@ -8,10 +8,12 @@
 import Foundation
 
 public struct Paginated<Item> {
-    public let items: [Item]
-    public var loadMore: (() -> Result<Paginated<Item>, Error>)?
+    public typealias LoadMoreCompletion = (Result<Paginated<Item>, Error>) -> Void
     
-    public init(items: [Item], loadMore: (() -> Result<Paginated<Item>, Error>)? = nil) {
+    public let items: [Item]
+    public var loadMore: ((@escaping LoadMoreCompletion) -> Void)?
+    
+    public init(items: [Item], loadMore: ((@escaping LoadMoreCompletion) -> Void)? = nil) {
         self.items = items
         self.loadMore = loadMore
     }
