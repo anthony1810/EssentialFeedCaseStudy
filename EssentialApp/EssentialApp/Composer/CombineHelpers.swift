@@ -8,6 +8,15 @@ import Foundation
 import Combine
 import EssentialFeed
 
+public extension Paginated {
+    var loadMorePublisher: (() -> AnyPublisher<Self, Swift.Error>)? {
+        guard let loadMore else { return nil }
+        
+        return Deferred {
+            Future(loadMore)
+        }.eraseToAnyPublisher
+    }
+}
 public extension LocalFeedLoader {
     typealias Publisher = AnyPublisher<[FeedImage], Error>
     
