@@ -26,7 +26,10 @@ extension ListViewController {
     }
     
     func simulateLoadMoreFeed() {
-        guard let view = cell(for: 0, section: loadMoreSection)
+        // Check if load more section exists before trying to access it
+        guard tableView.numberOfSections > loadMoreSection,
+              tableView.numberOfRows(inSection: loadMoreSection) > 0,
+              let view = cell(for: 0, section: loadMoreSection)
         else { return }
         
         let delegate = tableView.delegate
