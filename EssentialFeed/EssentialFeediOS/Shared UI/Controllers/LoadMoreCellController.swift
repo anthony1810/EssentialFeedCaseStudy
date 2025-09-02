@@ -59,7 +59,7 @@ public final class LoadMoreCell: UITableViewCell {
 }
 
 public final class LoadMoreCellController: NSObject, UITableViewDataSource, UITableViewDelegate {
-    private let cell: LoadMoreCell = .init()
+    private let cell = LoadMoreCell()
     private let willDisplayCallback: () -> Void
     
     public init(willDisplayCallback: @escaping () -> Void) {

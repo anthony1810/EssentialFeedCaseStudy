@@ -356,6 +356,18 @@ class FeedUIIntegrationTests: XCTestCase {
         
         sut.simulateLoadMoreFeed()
         XCTAssertEqual(loader.loadMoreFeedCallCount, 1, "Expected no request while loading more.")
+        
+        loader.completeLoadMoreFeed(lastPage: false, at: 0)
+        sut.simulateLoadMoreFeed()
+        XCTAssertEqual(loader.loadMoreFeedCallCount, 2, "Expected more request when complete load more.")
+        
+        loader.completeLoadMoreFeedWithError(at: 1)
+        sut.simulateLoadMoreFeed()
+        XCTAssertEqual(loader.loadMoreFeedCallCount, 3, "Expected more request while loading more with error.")
+        
+//        loader.completeLoadMoreFeed(lastPage: true, at: 2)
+//        sut.simulateLoadMoreFeed()
+//        XCTAssertEqual(loader.loadMoreFeedCallCount, 3, "Expected no request while on last page.")
     }
     
     // MARK: Helpers

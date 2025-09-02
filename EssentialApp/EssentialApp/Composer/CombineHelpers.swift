@@ -9,6 +9,20 @@ import Combine
 import EssentialFeed
 
 public extension Paginated {
+    init(items: [Item], loadMorePublisher: (() -> AnyPublisher<Self, Error>)? = nil) {
+        self.init(items: items, loadMore: loadMorePublisher.map { publisher in
+            { loadMoreCompletion in
+                publisher().subscribe(Subscribers.Sink(receiveCompletion: { result in
+                    if case let .failure(error) = result {
+                        loadMoreCompletion(.failure(error))
+                    }
+                }, receiveValue: { value in
+                    loadMoreCompletion(.success(value))
+                }))
+            }
+        })
+    }
+    
     var loadMorePublisher: (() -> AnyPublisher<Self, Swift.Error>)? {
         guard let loadMore else { return nil }
         

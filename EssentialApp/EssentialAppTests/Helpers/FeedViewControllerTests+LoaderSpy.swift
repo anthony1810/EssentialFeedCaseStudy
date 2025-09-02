@@ -6,7 +6,11 @@ import Combine
 extension FeedUIIntegrationTests {
     class LoaderSpy: FeedImageDataLoader {
         private var feedRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
-        private(set) var loadMoreFeedCallCount = 0
+        private var loadMoreRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
+        
+        var loadMoreFeedCallCount: Int {
+            loadMoreRequests.count
+        }
         
         var loadFeedCallCount: Int {
             feedRequests.count
@@ -19,14 +23,34 @@ extension FeedUIIntegrationTests {
         }
         
         func completeFeedLoading(with feedModel: [FeedImage] = [], at index: Int = 0) {
-            feedRequests[index].send(Paginated(items: feedModel, loadMore: { [weak self] _ in
-                self?.loadMoreFeedCallCount += 1
+            feedRequests[index].send(Paginated(items: feedModel, loadMorePublisher: { [weak self] in
+                let publisher = PassthroughSubject<Paginated<FeedImage>, Error>()
+                self?.loadMoreRequests.append(publisher)
+                return publisher.eraseToAnyPublisher()
             }))
         }
         
         func completeFeedLoadingWithError(at index: Int) {
             let error = NSError(domain: "an error", code: 0)
             feedRequests[index].send(completion: .failure(error))
+        }
+        
+        func completeLoadMoreFeed(lastPage: Bool, feedModel: [FeedImage] = [], at index: Int = 0) {
+            loadMoreRequests[index].send(
+                Paginated(
+                    items: feedModel,
+                    loadMorePublisher: lastPage ? nil : { [weak self] in
+                        let publisher = PassthroughSubject<Paginated<FeedImage>, Error>()
+                        self?.loadMoreRequests.append(publisher)
+                        return publisher.eraseToAnyPublisher()
+                    }
+                )
+            )
+        }
+        
+        func completeLoadMoreFeedWithError(at index: Int) {
+            let error = NSError(domain: "an error", code: 0)
+            loadMoreRequests[index].send(completion: .failure(error))
         }
         
         // MARK: - FeedImageDataLoader

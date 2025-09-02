@@ -26,7 +26,9 @@ extension ListViewController {
     }
     
     func simulateLoadMoreFeed() {
-        guard let view = cell(for: 0, section: loadMoreSection) else { return }
+        guard let view = cell(for: 0, section: loadMoreSection)
+        else { return }
+        
         let delegate = tableView.delegate
         let index = IndexPath(row: 0, section: loadMoreSection)
         delegate?.tableView?(tableView, willDisplay: view, forRowAt: index)
