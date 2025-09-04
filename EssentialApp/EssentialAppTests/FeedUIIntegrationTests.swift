@@ -392,6 +392,48 @@ class FeedUIIntegrationTests: XCTestCase {
         XCTAssertEqual(sut.isShowingLoadMoreIndicator, false, "Expected no loading more indicator with error.")
     }
     
+    func test_loadMoreFeedCompletion_rendersSuccessfullyLoadedFeed() {
+        let image0 = makeImage(description: "a description", location: "a location")
+        let image1 = makeImage(description: nil, location: "another location")
+        let image2 = makeImage(description: "another description", location: nil)
+        let image3 = makeImage(description: nil, location: nil)
+        
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        
+        loader.completeFeedLoading(with: [image0], at: 0)
+        assertThat(sut, isRendering: [image0])
+        
+        sut.simulateLoadMoreFeed()
+        loader.completeLoadMoreFeed(lastPage: false, feedModel: [image0, image1, image2], at: 0)
+        assertThat(sut, isRendering: [image0, image1, image2])
+        
+        sut.simulateLoadMoreFeed()
+        loader.completeLoadMoreFeedWithError(at: 1)
+        assertThat(sut, isRendering: [image0, image1, image2])
+        
+        sut.simulateLoadMoreFeed()
+        loader.completeLoadMoreFeed(lastPage: true, feedModel: [image0, image1, image2, image3], at: 2)
+        assertThat(sut, isRendering: [image0, image1, image2, image3])
+    }
+    
+    func test_loadMoreCompletion_dispatchesFromBackgroundToMainThread() {
+        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeFeedLoading(with: [image0])
+        
+        sut.simulateLoadMoreFeed()
+        let expectation = self.expectation(description: "Expected image view to dispatch image loading from background to main thread")
+        DispatchQueue.global().async {
+            loader.completeLoadMoreFeed(lastPage: true, feedModel: [image0])
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1.0)
+    }
+    
     // MARK: Helpers
     
     private func makeSUT(
