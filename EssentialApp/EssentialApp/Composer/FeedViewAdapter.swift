@@ -10,7 +10,9 @@ import UIKit
 
 final class FeedViewAdapter: ResourceView {
     typealias ResourceViewModel = Paginated<FeedImage>
+    
     typealias ImageDataPresentationAdapter = LoadResourcePresentationAdapter<Data, WeakRefVirtualProxy<FeedImageCellController>>
+    
     typealias LoadMorePresentationAdapter = LoadResourcePresentationAdapter<Paginated<FeedImage>, FeedViewAdapter>
     
     private weak var controller: ListViewController?

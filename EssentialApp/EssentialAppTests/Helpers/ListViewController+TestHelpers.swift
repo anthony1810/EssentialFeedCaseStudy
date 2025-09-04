@@ -21,20 +21,32 @@ extension ListViewController {
         return refreshControl?.isRefreshing == true
     }
     
+    var isShowingLoadMoreIndicator: Bool {
+        guard let view = loadMoreCell() else { return false }
+        
+        return view.isLoading
+    }
+    
     func simulateUserInitiatedReload() {
         refreshControl?.simulatePullToRefresh()
     }
     
     func simulateLoadMoreFeed() {
         // Check if load more section exists before trying to access it
-        guard tableView.numberOfSections > loadMoreSection,
-              tableView.numberOfRows(inSection: loadMoreSection) > 0,
-              let view = cell(for: 0, section: loadMoreSection)
-        else { return }
+        guard let view = loadMoreCell() else { return }
         
         let delegate = tableView.delegate
         let index = IndexPath(row: 0, section: loadMoreSection)
         delegate?.tableView?(tableView, willDisplay: view, forRowAt: index)
+    }
+    
+    func loadMoreCell() -> LoadMoreCell? {
+        guard tableView.numberOfSections > loadMoreSection,
+              tableView.numberOfRows(inSection: loadMoreSection) > 0,
+              let view = cell(for: 0, section: loadMoreSection)
+        else { return nil }
+        
+        return view as? LoadMoreCell
     }
     
     @discardableResult

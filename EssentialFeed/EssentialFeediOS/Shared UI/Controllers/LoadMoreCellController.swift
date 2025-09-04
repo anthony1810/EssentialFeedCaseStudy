@@ -23,7 +23,7 @@ public final class LoadMoreCell: UITableViewCell {
         return spinner
     }()
     
-    var isLoading: Bool {
+    public var isLoading: Bool {
         get { spinner.isAnimating }
         set {
             if newValue {
