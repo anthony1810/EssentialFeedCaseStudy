@@ -124,12 +124,22 @@ extension ListViewController {
         errorView.message
     }
     
+    var loadMoreErrorMessage: String? {
+        loadMoreCell()?.message
+    }
+    
     var isErrorViewVisible: Bool {
         errorView.isHidden == false
     }
     
     func simulateErrorViewTap() {
         errorView.simulateTap()
+    }
+    
+    func simuateLoadMoreErrorViewTap() {
+        let delegate = tableView.delegate
+        let index = IndexPath(row: 0, section: loadMoreSection)
+        delegate?.tableView?(tableView, didSelectRowAt: index)
     }
     
     private func prepareForFirstAppearance() {

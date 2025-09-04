@@ -392,6 +392,30 @@ class FeedUIIntegrationTests: XCTestCase {
         XCTAssertEqual(sut.isShowingLoadMoreIndicator, false, "Expected no loading more indicator with error.")
     }
     
+    func test_loadMoreCompletion_rendersErrorMessageOnError() {
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        
+        loader.completeFeedLoading()
+        sut.simulateLoadMoreFeed()
+        loader.completeLoadMoreFeedWithError(at: 0)
+        
+        XCTAssertNotNil(sut.loadMoreErrorMessage)
+    }
+    
+    func test_tapOnLoadMoreErrorView_loadsMoreFeed() {
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        
+        loader.completeFeedLoading()
+        sut.simulateLoadMoreFeed()
+        XCTAssertEqual(loader.loadMoreFeedCallCount, 1)
+        
+        loader.completeLoadMoreFeedWithError(at: 0)
+        sut.simuateLoadMoreErrorViewTap()
+        XCTAssertEqual(loader.loadMoreFeedCallCount, 2)
+    }
+    
     func test_loadMoreFeedCompletion_rendersSuccessfullyLoadedFeed() {
         let image0 = makeImage(description: "a description", location: "a location")
         let image1 = makeImage(description: nil, location: "another location")

@@ -52,7 +52,8 @@ public final class LoadMoreCell: UITableViewCell {
         
         return label
     }()
-    var message: String? {
+    
+    public var message: String? {
         get { messageLabel.text }
         set { messageLabel.text = newValue }
     }
@@ -75,9 +76,11 @@ public final class LoadMoreCellController: NSObject, UITableViewDataSource, UITa
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard !self.cell.isLoading else { return }
-        
-        willDisplayCallback()
+        triggerLoadMoreCallback()
+    }
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        triggerLoadMoreCallback()
     }
 }
 
@@ -90,5 +93,13 @@ extension LoadMoreCellController: ResourceLoadingView {
 extension LoadMoreCellController: ResourceErrorView {
     public func display(_ viewModel: EssentialFeed.ResourceErrorViewModel) {
         cell.message = viewModel.message
+    }
+}
+
+private extension LoadMoreCellController {
+    func triggerLoadMoreCallback() {
+        guard !self.cell.isLoading else { return }
+        
+        willDisplayCallback()
     }
 }
