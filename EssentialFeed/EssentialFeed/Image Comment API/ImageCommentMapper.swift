@@ -45,7 +45,6 @@ public enum ImageCommentMapper {
             let root = try decoder.decode(Root.self, from: data)
             return root.comments
         } catch {
-            print(error)
             throw Error.invalidData
         }
     }

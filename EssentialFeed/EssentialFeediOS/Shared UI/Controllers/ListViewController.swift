@@ -81,7 +81,7 @@ public final class ListViewController: UITableViewController, UITableViewDataSou
     
     
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        print("forRowAt \(indexPath)")
+ 
         let cellController = cellController(forRowAt: indexPath)
         cellController?.dl?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
     }

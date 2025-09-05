@@ -135,7 +135,6 @@ final class FeedAcceptanceTests: XCTestCase {
     }
     
     private func makeData(for url: URL) -> Data {
-        print("URL = \(url.absoluteString)")
         switch url.path {
         case "/image-1":
             return makeImageData01()
