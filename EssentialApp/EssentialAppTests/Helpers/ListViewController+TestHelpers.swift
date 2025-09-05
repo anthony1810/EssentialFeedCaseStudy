@@ -17,6 +17,10 @@ extension ListViewController {
 }
 
 extension ListViewController {
+    var canLoadMore: Bool {
+        loadMoreCell() != nil
+    }
+    
     var isShowingLoadingIndicator: Bool {
         return refreshControl?.isRefreshing == true
     }

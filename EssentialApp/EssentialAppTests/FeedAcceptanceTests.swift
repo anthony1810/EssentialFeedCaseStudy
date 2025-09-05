@@ -17,6 +17,21 @@ final class FeedAcceptanceTests: XCTestCase {
         XCTAssertEqual(sut.numberOfRenderedFeedImageViews(), 2)
         XCTAssertEqual(sut.renderedFeedImageData(at: 0), makeImageData01())
         XCTAssertEqual(sut.renderedFeedImageData(at: 1), makeImageData02())
+        XCTAssertEqual(sut.canLoadMore, true, "Should be able to load more")
+        
+        sut.simulateLoadMoreFeed()
+        XCTAssertEqual(sut.numberOfRenderedFeedImageViews(), 3)
+        XCTAssertEqual(sut.renderedFeedImageData(at: 0), makeImageData01())
+        XCTAssertEqual(sut.renderedFeedImageData(at: 1), makeImageData02())
+        XCTAssertEqual(sut.renderedFeedImageData(at: 2), makeImageData03())
+        XCTAssertEqual(sut.canLoadMore, true, "Should be able to load more")
+        
+        sut.simulateLoadMoreFeed()
+        XCTAssertEqual(sut.numberOfRenderedFeedImageViews(), 3)
+        XCTAssertEqual(sut.renderedFeedImageData(at: 0), makeImageData01())
+        XCTAssertEqual(sut.renderedFeedImageData(at: 1), makeImageData02())
+        XCTAssertEqual(sut.renderedFeedImageData(at: 2), makeImageData03())
+        XCTAssertEqual(sut.canLoadMore, false, "Won't be able to load more")
     }
     
     func test_onLauch_displaysLocalFeedWhenCustomerHasNoConnectivity() {
@@ -114,24 +129,49 @@ final class FeedAcceptanceTests: XCTestCase {
     }
     
     private func makeData(for url: URL) -> Data {
+        print("URL = \(url.absoluteString)")
         switch url.path {
         case "/image-1":
             return makeImageData01()
         case "/image-2":
             return makeImageData02()
+        case "/image-3":
+            return makeImageData03()
         case "/essential-feed/v1/image/\(makeFirstImageID())/comments":
             return makeCommentsData()
+        case "/essential-feed/v1/feed":
+            if let query = url.query(),               query.contains("after_id=\(makeSecondImageID())") {
+                return makeSecondFeedPageData()
+            } else   if let query = url.query(),               query.contains("after_id=\(makeThirdImageID())") {
+                return makeLastFeedPageData()
+            }
         default:
-            return makeFeedData()
+            return makeFirstFeedPageData()
         }
+        
+        return makeFirstFeedPageData()
     }
     
-    private func makeFeedData() -> Data {
+    private func makeFirstFeedPageData() -> Data {
         return try! JSONSerialization.data(withJSONObject: [
             "items" : [
                 ["id": makeFirstImageID(), "image": "http://image.com/image-1"],
-                ["id": UUID().uuidString, "image": "http://image.com/image-2"]
+                ["id": makeSecondImageID(), "image": "http://image.com/image-2"]
             ]
+        ])
+    }
+    
+    private func makeSecondFeedPageData() -> Data {
+        return try! JSONSerialization.data(withJSONObject: [
+            "items" : [
+                ["id": makeThirdImageID(), "image": "http://image.com/image-3"]
+            ]
+        ])
+    }
+    
+    private func makeLastFeedPageData() -> Data {
+        return try! JSONSerialization.data(withJSONObject: [
+            "items" : []
         ])
     }
     
@@ -154,11 +194,23 @@ final class FeedAcceptanceTests: XCTestCase {
         UIImage.make(withColor: .red).pngData()!
     }
     private func makeImageData02() -> Data {
-        UIImage.make(withColor: .red).pngData()!
+        UIImage.make(withColor: .green).pngData()!
+    }
+    
+    private func makeImageData03() -> Data {
+        UIImage.make(withColor: .blue).pngData()!
     }
     
     private func makeFirstImageID() -> String {
         "A28F5FE3-27A7-44E9-8DF5-53742D0E4A5A"
+    }
+    
+    private func makeSecondImageID() -> String {
+        "A28F5FE3-27A7-44E9-8DF5-53742D0E4A5B"
+    }
+    
+    private func makeThirdImageID() -> String {
+        "A28F5FE3-27A7-44E9-8DF5-53742D0E4A5C"
     }
     
     private func makeCommentMessage() -> String {

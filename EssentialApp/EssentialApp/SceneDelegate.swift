@@ -12,7 +12,7 @@ import CoreData
 import Combine
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
+    
     var window: UIWindow?
     
     private lazy var httpClient: HTTPClient = {
@@ -58,8 +58,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.httpClient = httpClient
         self.store = store
     }
-
-
+    
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let scene = (scene as? UIWindowScene) else { return }
         
@@ -84,12 +84,34 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .tryMap(FeedMapper.map)
             .caching(to: localFeedLoader)
             .fallback(to: localFeedLoader.loadPublisher)
-            .map {
-                Paginated(items: $0, loadMore: nil)
+            .map { [weak self] items in
+                Paginated(items: items, loadMorePublisher: self?.makeRemoteLoadMoreLoader(oldItems: items, last: items.last))
             }
             .eraseToAnyPublisher()
     }
     
+    private func makeRemoteLoadMoreLoader(oldItems: [FeedImage], last: FeedImage?) -> (() -> AnyPublisher<Paginated<FeedImage>, any Error>)? {
+        last.map { lastItem in
+            let url = FeedEndpoint.get(after: lastItem.id).url(baseURL: Self.baseURL)
+            
+            return { [httpClient] in
+                httpClient
+                    .getPublisher(for: url)
+                    .tryMap(FeedMapper.map)
+                    .map { newItems in
+                        let allItems = oldItems + newItems
+                        return Paginated(
+                            items: allItems,
+                            loadMorePublisher: self.makeRemoteLoadMoreLoader(
+                                oldItems: allItems,
+                                last: newItems.last
+                            )
+                        )
+                    }
+                    .eraseToAnyPublisher()
+            }
+        }
+    }
     private func showComments(for image: FeedImage) {
         let remoteCommentsURL = ImageCommentsEndpoint.get(image.id).url(baseURL: Self.baseURL)
         let commentsVC = CommentUIComposer.commentsComposedWith(
