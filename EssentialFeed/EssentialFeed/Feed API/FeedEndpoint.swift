@@ -20,11 +20,16 @@ public enum FeedEndpoint {
             guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
                 fatalError("Unable to create URLComponents from URL: \(url)")
             }
-            
             components.queryItems = [
-                URLQueryItem(name: "limit", value: "10"),
-                URLQueryItem(name: "after_id", value: afterImageId?.uuidString)
+                URLQueryItem(name: "limit", value: "10")
             ]
+            
+            if let afterImageId {
+                components.queryItems?.append(
+                    URLQueryItem(name: "after_id", value: afterImageId.uuidString)
+                )
+            }
+            
             return components.url!
         }
     }
