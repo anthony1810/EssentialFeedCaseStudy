@@ -11,28 +11,30 @@ import EssentialFeed
 
 final class FeedEndpointTests: XCTestCase {
     func test_feed_endpointURL() {
-        let baseURL = URL(string: "https://base-url.com")!
+        let sut = makeSUT()
         
-        let actual = FeedEndpoint.get().url(baseURL: baseURL)
-        
-        XCTAssertEqual(actual.scheme, "https")
-        XCTAssertEqual(actual.host, "base-url.com")
-        XCTAssertEqual(actual.path, "/v1/feed")
+        XCTAssertEqual(sut.scheme, "https")
+        XCTAssertEqual(sut.host, "base-url.com")
+        XCTAssertEqual(sut.path, "/v1/feed")
     }
     
     func test_feed_endpointURLLimitTo10() {
-        let baseURL = URL(string: "https://base-url.com")!
-        let afterGivenImageURL = FeedEndpoint.get().url(baseURL: baseURL)
+        let sut = makeSUT()
         
-        XCTAssertEqual(afterGivenImageURL.query?.contains("limit=10"), true)
+        XCTAssertEqual(sut.query?.contains("limit=10"), true)
     }
     
     func test_feed_endpointURLAfterGivenImage() {
         let image = uniqueFeed().model
         
-        let baseURL = URL(string: "https://base-url.com")!
-        let afterGivenImageURL = FeedEndpoint.get(after: image.id).url(baseURL: baseURL)
+        let sut = makeSUT(afterImage: image)
         
-        XCTAssertEqual(afterGivenImageURL.query?.contains("after_id=\(image.id)"), true)
+        XCTAssertEqual(sut.query?.contains("after_id=\(image.id)"), true)
+    }
+    
+    // MARK: - Helpers
+    func makeSUT(afterImage: FeedImage? = nil) -> URL {
+        let baseURL = URL(string: "https://base-url.com")!
+        return FeedEndpoint.get(after: afterImage?.id).url(baseURL: baseURL)
     }
 }
