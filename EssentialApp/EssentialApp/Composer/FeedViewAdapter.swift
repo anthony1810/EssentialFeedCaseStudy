@@ -51,7 +51,7 @@ final class FeedViewAdapter: ResourceView {
                 mapper: UIImage.tryMake
             )
             
-            return CellController(id: model.id, ds: view, dl: view, dsPrefetching: view)
+            return CellController(id: model.id, ds: view)
         }
         
         guard let loadMorePublisher = viewModel.loadMorePublisher else {
@@ -72,7 +72,7 @@ final class FeedViewAdapter: ResourceView {
             errorView: WeakRefVirtualProxy(object: loadMoreCellController)
         )
         
-        let loadMoreSection = [CellController(id: UUID(), ds: loadMoreCellController, dl: loadMoreCellController, dsPrefetching: nil)]
+        let loadMoreSection = [CellController(id: UUID(), ds: loadMoreCellController)]
         
         controller?.display(feed, loadMoreSection)
     }
