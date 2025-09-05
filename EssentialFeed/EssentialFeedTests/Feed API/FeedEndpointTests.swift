@@ -32,6 +32,12 @@ final class FeedEndpointTests: XCTestCase {
         XCTAssertEqual(sut.query?.contains("after_id=\(image.id)"), true)
     }
     
+    func test_feed_endpointURLWithoutAfterImage() {
+        let sut = makeSUT()
+        
+        XCTAssertEqual(sut.query?.contains("after_id"), false, "Do not include after_id param if there is no afterImage")
+    }
+    
     // MARK: - Helpers
     func makeSUT(afterImage: FeedImage? = nil) -> URL {
         let baseURL = URL(string: "https://base-url.com")!
