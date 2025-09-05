@@ -62,6 +62,7 @@ public final class LoadMoreCell: UITableViewCell {
 public final class LoadMoreCellController: NSObject, UITableViewDataSource, UITableViewDelegate {
     private let cell = LoadMoreCell()
     private let willDisplayCallback: () -> Void
+    private var offsetObserver: NSKeyValueObservation?
     
     public init(willDisplayCallback: @escaping () -> Void) {
         self.willDisplayCallback = willDisplayCallback
@@ -77,7 +78,15 @@ public final class LoadMoreCellController: NSObject, UITableViewDataSource, UITa
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        triggerLoadMoreCallback()
+        offsetObserver = tableView.observe(\.contentOffset) { [weak self] tableView, _ in
+            guard tableView.isDragging else { return }
+            
+            self?.triggerLoadMoreCallback()
+        }
+    }
+    
+    public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        offsetObserver = nil
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
