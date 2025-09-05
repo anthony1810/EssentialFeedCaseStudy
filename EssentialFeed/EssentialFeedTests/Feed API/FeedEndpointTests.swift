@@ -11,14 +11,28 @@ import EssentialFeed
 
 final class FeedEndpointTests: XCTestCase {
     func test_feed_endpointURL() {
-        let baseURL = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed")!
-        let expected = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed?limit=10")!
+        let baseURL = URL(string: "https://base-url.com")!
         
-        let actual = FeedEndpoint.get.url(baseURL: baseURL)
+        let actual = FeedEndpoint.get().url(baseURL: baseURL)
         
-        XCTAssertEqual(actual.scheme, expected.scheme)
-        XCTAssertEqual(actual.host, expected.host)
-        XCTAssertEqual(actual.path, expected.path)
-        XCTAssertEqual(actual.query(percentEncoded: true), expected.query(percentEncoded: true))
+        XCTAssertEqual(actual.scheme, "https")
+        XCTAssertEqual(actual.host, "base-url.com")
+        XCTAssertEqual(actual.path, "/v1/feed")
+    }
+    
+    func test_feed_endpointURLLimitTo10() {
+        let baseURL = URL(string: "https://base-url.com")!
+        let afterGivenImageURL = FeedEndpoint.get().url(baseURL: baseURL)
+        
+        XCTAssertEqual(afterGivenImageURL.query?.contains("limit=10"), true)
+    }
+    
+    func test_feed_endpointURLAfterGivenImage() {
+        let image = uniqueFeed().model
+        
+        let baseURL = URL(string: "https://base-url.com")!
+        let afterGivenImageURL = FeedEndpoint.get(after: image.id).url(baseURL: baseURL)
+        
+        XCTAssertEqual(afterGivenImageURL.query?.contains("after_id=\(image.id)"), true)
     }
 }

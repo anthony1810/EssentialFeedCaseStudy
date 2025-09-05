@@ -8,19 +8,24 @@
 import Foundation
 
 public enum FeedEndpoint {
-    case get
+    case get(after: UUID? = nil)
     
     public func url(baseURL: URL) -> URL {
         switch self {
-        case .get:
-            var component = URLComponents()
-            component.scheme = baseURL.scheme
-            component.host = baseURL.host
-            component.path = baseURL.path() + "/v1/feed"
-            component.queryItems = [
-                URLQueryItem(name: "limit", value: "10")
+        case let .get(afterImageId):
+            let url = baseURL
+                .appendingPathComponent("v1")
+                .appendingPathComponent("feed")
+            
+            guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+                fatalError("Unable to create URLComponents from URL: \(url)")
+            }
+            
+            components.queryItems = [
+                URLQueryItem(name: "limit", value: "10"),
+                URLQueryItem(name: "after_id", value: afterImageId?.uuidString)
             ]
-            return component.url!
+            return components.url!
         }
     }
 }

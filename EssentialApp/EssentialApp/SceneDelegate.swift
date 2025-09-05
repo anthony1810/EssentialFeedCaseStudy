@@ -33,7 +33,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }()
     
     private lazy var remoteURL: URL = {
-        FeedEndpoint.get.url(baseURL: Self.baseURL)
+        FeedEndpoint.get().url(baseURL: Self.baseURL)
     }()
     
     private lazy var localFeedLoader: LocalFeedLoader = {
