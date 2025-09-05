@@ -94,7 +94,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         last.map { lastItem in
             let url = FeedEndpoint.get(after: lastItem.id).url(baseURL: Self.baseURL)
             
-            return { [httpClient] in
+            return { [httpClient, localFeedLoader] in
                 httpClient
                     .getPublisher(for: url)
                     .tryMap(FeedMapper.map)
@@ -108,7 +108,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                             )
                         )
                     }
-                    .eraseToAnyPublisher()
+                    .caching(to: localFeedLoader)
             }
         }
     }

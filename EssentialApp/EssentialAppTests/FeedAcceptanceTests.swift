@@ -41,12 +41,18 @@ final class FeedAcceptanceTests: XCTestCase {
         online.simulateFeedImageViewVisible(at: 0)
         online.simulateFeedImageViewVisible(at: 1)
         
+        online.simulateLoadMoreFeed()
+        online.simulateFeedImageViewVisible(at: 0)
+        online.simulateFeedImageViewVisible(at: 1)
+        online.simulateFeedImageViewVisible(at: 2)
+        
         let offline = launch(httpClient: .offline, store: sharedStore)
         offline.simulateAppearance()
         
-        XCTAssertEqual(offline.numberOfRenderedFeedImageViews(), 2)
+        XCTAssertEqual(offline.numberOfRenderedFeedImageViews(), 3)
         XCTAssertEqual(offline.renderedFeedImageData(at: 0), makeImageData01())
         XCTAssertEqual(offline.renderedFeedImageData(at: 1), makeImageData02())
+        XCTAssertEqual(offline.renderedFeedImageData(at: 2), makeImageData03())
     }
     
     func test_onLauch_displayEmptyFeedWhenCustomerHasNoConnectivityAndNoLocalFeed() {
