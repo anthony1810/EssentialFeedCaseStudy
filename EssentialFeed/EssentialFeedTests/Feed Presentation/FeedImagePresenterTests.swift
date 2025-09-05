@@ -9,12 +9,14 @@ import Foundation
 import EssentialFeed
 import XCTest
 
-final class FeedImagePresenterTests: XCTestCase {func test_mapFeedImage_createsFeedImageViewModel() {
+final class FeedImagePresenterTests: XCTestCase {
+    func test_mapFeedImage_createsFeedImageViewModel() {
         let feed = uniqueFeed().model
         
         let viewModel = FeedImagePresenter.map(feed)
         
         XCTAssertEqual(viewModel.location, feed.location)
         XCTAssertEqual(viewModel.description, feed.description)
+        XCTAssertEqual(viewModel.hasLocation, feed.location != nil)
     }
 }
