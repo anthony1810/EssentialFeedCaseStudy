@@ -5,13 +5,10 @@ import Combine
 
 extension FeedUIIntegrationTests {
     class LoaderSpy: FeedImageDataLoader {
+        
+        // MARK: - Feed Loader
         private var feedRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
-        private var loadMoreRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
-        
-        var loadMoreFeedCallCount: Int {
-            loadMoreRequests.count
-        }
-        
+       
         var loadFeedCallCount: Int {
             feedRequests.count
         }
@@ -33,6 +30,13 @@ extension FeedUIIntegrationTests {
         func completeFeedLoadingWithError(at index: Int) {
             let error = NSError(domain: "an error", code: 0)
             feedRequests[index].send(completion: .failure(error))
+        }
+        
+        // MARK: - LoadMoreFeedLoader
+        private var loadMoreRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
+        
+        var loadMoreFeedCallCount: Int {
+            loadMoreRequests.count
         }
         
         func completeLoadMoreFeed(lastPage: Bool, feedModel: [FeedImage] = [], at index: Int = 0) {

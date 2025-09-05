@@ -5,29 +5,13 @@ import EssentialFeediOS
 import EssentialApp
 
 class FeedUIIntegrationTests: XCTestCase {
-    
+    // MARK: - Feed
     func test_feedView_hasTitle() {
         let (sut, _) = makeSUT()
         
         sut.simulateAppearance()
         
         XCTAssertEqual(sut.title, feedTitle)
-    }
-    
-    func test_imageSelection_notifiesSelectionHandler() {
-        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
-        let image1 = makeImage(url: URL(string: "http://url-0.com")!)
-        var selectImages: [FeedImage] = []
-        
-        let (sut, loader) = makeSUT(selectImageHandler: { selectImages.append($0) })
-        
-        sut.simulateAppearance()
-        loader.completeFeedLoading(with: [image0, image1])
-        
-        sut.simulateFeedImageTap(at: 0)
-        sut.simulateFeedImageTap(at: 1)
-        
-        XCTAssertEqual(selectImages, [image0, image1])
     }
     
     func test_loadFeedActions_requestFeedFromLoader() {
@@ -100,6 +84,57 @@ class FeedUIIntegrationTests: XCTestCase {
         assertThat(sut, isRendering: [image0])
     }
     
+    func test_errorView_doesNotRenderErrorOnLoad() {
+        let (sut, _) = makeSUT()
+        
+        sut.simulateAppearance()
+        
+        XCTAssertNil(sut.errorMessage, "Expect error message to be nil initially")
+    }
+    
+    func test_loadFeedCompletion_rendersErrorMessageOnError() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeFeedLoadingWithError(at: 0)
+        
+        XCTAssertEqual(sut.errorMessage, loadError, "Expect error message to be nil initially")
+        XCTAssertEqual(sut.isErrorViewVisible, true, "Expect error view to be shown initially")
+        
+        sut.simulateUserInitiatedReload()
+        XCTAssertNil(sut.errorMessage, "Expect error message to be nil when reload")
+    }
+    
+    func test_errorView_dismissesErrorMessageOnTap() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        
+        loader.completeFeedLoadingWithError(at: 0)
+        XCTAssertEqual(sut.errorMessage, loadError, "Expect error message to be nil initially")
+        
+        sut.simulateErrorViewTap()
+        XCTAssertNil(sut.errorMessage, "Expect error message to be nil when tapped")
+    }
+    
+    // MARK: - Feed Image
+    
+    func test_imageSelection_notifiesSelectionHandler() {
+        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
+        let image1 = makeImage(url: URL(string: "http://url-0.com")!)
+        var selectImages: [FeedImage] = []
+        
+        let (sut, loader) = makeSUT(selectImageHandler: { selectImages.append($0) })
+        
+        sut.simulateAppearance()
+        loader.completeFeedLoading(with: [image0, image1])
+        
+        sut.simulateFeedImageTap(at: 0)
+        sut.simulateFeedImageTap(at: 1)
+        
+        XCTAssertEqual(selectImages, [image0, image1])
+    }
+   
     func test_feedImageView_loadsImageURLWhenVisible() {
         let image0 = makeImage(url: URL(string: "http://url-0.com")!)
         let image1 = makeImage(url: URL(string: "http://url-0.com")!)
@@ -311,39 +346,7 @@ class FeedUIIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
     
-    func test_errorView_doesNotRenderErrorOnLoad() {
-        let (sut, _) = makeSUT()
-        
-        sut.simulateAppearance()
-        
-        XCTAssertNil(sut.errorMessage, "Expect error message to be nil initially")
-    }
-    
-    func test_loadFeedCompletion_rendersErrorMessageOnError() {
-        let (sut, loader) = makeSUT()
-        
-        sut.simulateAppearance()
-        loader.completeFeedLoadingWithError(at: 0)
-        
-        XCTAssertEqual(sut.errorMessage, loadError, "Expect error message to be nil initially")
-        XCTAssertEqual(sut.isErrorViewVisible, true, "Expect error view to be shown initially")
-        
-        sut.simulateUserInitiatedReload()
-        XCTAssertNil(sut.errorMessage, "Expect error message to be nil when reload")
-    }
-    
-    func test_errorView_dismissesErrorMessageOnTap() {
-        let (sut, loader) = makeSUT()
-        
-        sut.simulateAppearance()
-        
-        loader.completeFeedLoadingWithError(at: 0)
-        XCTAssertEqual(sut.errorMessage, loadError, "Expect error message to be nil initially")
-        
-        sut.simulateErrorViewTap()
-        XCTAssertNil(sut.errorMessage, "Expect error message to be nil when tapped")
-    }
-    
+    // MARK: - Load More Feed
     func test_loadMoreFeedActions_requestMoreFeedFromLoader() {
         let (sut, loader) = makeSUT()
         sut.simulateAppearance()

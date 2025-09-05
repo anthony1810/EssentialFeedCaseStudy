@@ -43,6 +43,7 @@ extension ListViewController {
         let index = IndexPath(row: 0, section: loadMoreSection)
         delegate?.tableView?(tableView, willDisplay: view, forRowAt: index)
     }
+
     
     func loadMoreCell() -> LoadMoreCell? {
         guard tableView.numberOfSections > loadMoreSection,
