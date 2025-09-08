@@ -26,6 +26,9 @@ jobs:
     timeout-minutes: 8
 
     steps:
+      - name: Show available simulators
+        run: xcrun simctl list devices
+
       - uses: actions/checkout@v4
 
       - name: Select Xcode
