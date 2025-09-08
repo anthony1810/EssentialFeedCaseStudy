@@ -21,6 +21,11 @@ class ManagedFeedImage: NSManagedObject {
 }
 
 extension ManagedFeedImage {
+    
+    static func data(with url: URL, in context: NSManagedObjectContext) throws -> Data? {
+        try first(with: url, in: context)?.data
+    }
+    
     static func images(from localFeeds: [LocalFeedImage], in context: NSManagedObjectContext) -> NSOrderedSet {
         NSOrderedSet(array: localFeeds.map { localFeedImage in
             let managedFeedImage = ManagedFeedImage(context: context)
