@@ -152,6 +152,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         return localFeedImageLoader
             .loadPublisher(from: url)
+            .logCacheMisses(url: url, logger: logger)
             .fallback { [httpClient] in
                 httpClient
                     .getPublisher(for: url)

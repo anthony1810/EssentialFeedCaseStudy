@@ -26,6 +26,17 @@ public extension Publisher {
         )
         .eraseToAnyPublisher()
     }
+    
+    func logCacheMisses(url: URL, logger: Logger) -> AnyPublisher<Output, Failure> {
+        return handleEvents(
+            receiveCompletion: { completion in
+                if case .failure = completion {
+                    logger.trace("Missed Cache for \(url)")
+                }
+            }
+        )
+        .eraseToAnyPublisher()
+    }
 }
 
 public extension Paginated {
