@@ -33,12 +33,7 @@ jobs:
 
       - name: Select Xcode
         run: sudo xcode-select -switch /Applications/Xcode_16.2.app
-
-      - name: Boot simulator
-        run: |
-        xcrun simctl boot "0E573B10-C4F3-40D6-A8CB-08B18F25CE08" || true
-        xcrun simctl bootstatus "0E573B10-C4F3-40D6-A8CB-08B18F25CE08" -b
-
+        
       - name: Xcode version
         run: /usr/bin/xcodebuild -version
 
