@@ -22,10 +22,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }()
     
     private lazy var store: FeedStore & FeedImageDataStore = {
-        let storeURL = NSPersistentContainer.defaultDirectoryURL().appendingPathComponent("EssentialFeed.sqlite")
-        let store = try! CoreDataFeedStore(storeURL: storeURL)
-        
-        return store
+        do {
+            let storeURL = NSPersistentContainer.defaultDirectoryURL().appendingPathComponent("EssentialFeed.sqlite")
+            
+            return try CoreDataFeedStore(storeURL: storeURL)
+        } catch {
+            return NullStore()
+        }
     }()
     
     private static var baseURL: URL = {
