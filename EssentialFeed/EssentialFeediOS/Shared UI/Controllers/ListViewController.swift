@@ -41,11 +41,12 @@ public final class ListViewController: UITableViewController, UITableViewDataSou
     private func configureErrorView() {
         tableView.tableHeaderView = errorView.makeContainer()
         
-        errorView.onHide = { [weak self] in
-            self?.tableView.beginUpdates()
-            self?.tableView.sizeTableHeaderToFit()
-            self?.tableView.endUpdates()
-        }
+        //TODO: comment out due to autolayout issue with xcode 16.4
+//        errorView.onHide = { [weak self] in
+//            self?.tableView.beginUpdates()
+//            self?.tableView.sizeTableHeaderToFit()
+//            self?.tableView.endUpdates()
+//        }
     }
     
     public func display(_ tableModel: [CellController]...) {
