@@ -1,0 +1,122 @@
+//
+//  FeedSnapshotTests.swift
+//  EssentialFeed
+//
+//  Created by Anthony on 26/7/25.
+//
+import Foundation
+import XCTest
+@testable import EssentialFeed
+import EssentialFeediOS
+
+final class FeedSnapshotTests: XCTestCase {
+    func test_renderFeed_whenNotEmpty() throws {
+        let sut = makeSUT()
+        
+        sut.display(nonEmptyFeed())
+        
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "NOT_EMPTY_FEED")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "NOT_EMPTY_FEED_DARK")
+    }
+    
+    func test_renderFeed_whenImageFailedToLoad() throws {
+        let sut = makeSUT()
+        
+        sut.display(feedWithFailedImageLoading())
+        
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "IMAGE_FAILED_TO_LOAD")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "IMAGE_FAILED_TO_LOAD_DARK")
+    }
+    
+    func test_feedWithLoadMoreIndicator() {
+        let sut = makeSUT()
+        
+        sut.display(feedWithLoadMoreIndicator())
+        
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "FEED_WITH_LOAD_MORE_INDICATOR_light")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "FEED_WITH_LOAD_MORE_INDICATOR_dark")
+    }
+    
+    func test_feedWithLoadMoreError() {
+        let sut = makeSUT()
+        
+        sut.display(feedWithLoadMoreIndicatorError())
+        
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .light)), named: "FEED_WITH_LOAD_MORE_ERROR_light")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .dark)), named: "FEED_WITH_LOAD_MORE_ERROR_dark")
+        assert(snapshot: sut.snapshot(for: .iphone8(style: .dark, contentSize: .extraExtraExtraLarge)), named: "FEED_WITH_LOAD_MORE_ERROR_extraExtraExtraLarge")
+    }
+    
+    // MARK: - Helpers
+    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> ListViewController {
+        let bundle = Bundle(for: ListViewController.self)
+        let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
+        let controller = storyboard.instantiateInitialViewController() as! ListViewController
+        controller.loadViewIfNeeded()
+        return controller
+    }
+    
+    private func emptyFeed() -> [FeedImageCellController] {
+        []
+    }
+    
+    private func errorOccured(_ message: String) -> ResourceErrorViewModel {
+        .error(message: message)
+    }
+    
+    private func nonEmptyFeed() -> [ImageStub] {
+        [
+            ImageStub(
+                description: "The East Side Gallery is an open-air gallery in Berlin. It consists of a series of murals painted directly on a 1,316 m long remnant of the Berlin Wall, located near the centre of Berlin, on Mühlenstraße in Friedrichshain-Kreuzberg. The gallery has official status as a Denkmal, or heritage-protected landmark.",
+                location: "East Side Gallery\nMemorial in Berlin, Germany",
+                image: UIImage.make(withColor: .systemPink)
+            ),
+            ImageStub(
+                description: "Garth Pier is a Grade II listed structure in Bangor, Gwynedd, North Wales.",
+                location: "Garth Pier",
+                image: UIImage.make(withColor: .cyan)
+            )
+        ]
+    }
+    
+    private func feedWithLoadMoreIndicator() -> [CellController] {
+        let stub = nonEmptyFeed().last!
+        let cellController = FeedImageCellController(delegate: stub, viewModel: stub.viewModel, selectImageHandler: {})
+        stub.controller = cellController
+        
+        let loadMoreController = LoadMoreCellController(willDisplayCallback: {})
+        loadMoreController.display(viewModel: ResourceLoadingViewModel(isLoading: true))
+        return [
+            CellController(id: UUID(), ds: cellController),
+            CellController(id: UUID(), ds: loadMoreController)
+        ]
+    }
+    
+    private func feedWithLoadMoreIndicatorError() -> [CellController] {
+        let stub = nonEmptyFeed().last!
+        let cellController = FeedImageCellController(delegate: stub, viewModel: stub.viewModel, selectImageHandler: {})
+        stub.controller = cellController
+        
+        let loadMoreController = LoadMoreCellController(willDisplayCallback: {})
+        loadMoreController.display(ResourceErrorViewModel(message: "This is a\nmultiline error"))
+        return [
+            CellController(id: UUID(), ds: cellController),
+            CellController(id: UUID(), ds: loadMoreController)
+        ]
+    }
+    
+    private func feedWithFailedImageLoading() -> [ImageStub] {
+        [
+            ImageStub(
+                description: nil,
+                location: "East Side Gallery\nMemorial in Berlin, Germany",
+                image: nil
+            ),
+            ImageStub(
+                description: "Garth Pier is a Grade II listed structure in Bangor, Gwynedd, North Wales.",
+                location: "Garth Pier",
+                image: nil
+            )
+        ]
+    }
+}

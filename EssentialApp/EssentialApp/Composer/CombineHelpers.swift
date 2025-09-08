@@ -8,7 +8,30 @@ import Foundation
 import Combine
 import EssentialFeed
 
-public extension FeedLoader {
+public extension Paginated {
+    init(items: [Item], loadMorePublisher: (() -> AnyPublisher<Self, Error>)? = nil) {
+        self.init(items: items, loadMore: loadMorePublisher.map { publisher in
+            { loadMoreCompletion in
+                publisher().subscribe(Subscribers.Sink(receiveCompletion: { result in
+                    if case let .failure(error) = result {
+                        loadMoreCompletion(.failure(error))
+                    }
+                }, receiveValue: { value in
+                    loadMoreCompletion(.success(value))
+                }))
+            }
+        })
+    }
+    
+    var loadMorePublisher: (() -> AnyPublisher<Self, Swift.Error>)? {
+        guard let loadMore else { return nil }
+        
+        return Deferred {
+            Future(loadMore)
+        }.eraseToAnyPublisher
+    }
+}
+public extension LocalFeedLoader {
     typealias Publisher = AnyPublisher<[FeedImage], Error>
     
     func loadPublisher() -> Publisher {
@@ -33,10 +56,17 @@ public extension FeedImageDataLoader {
     }
 }
 
-extension Publisher where Output == [FeedImage] {
-    func caching(to cache: FeedCache) -> AnyPublisher<Output, Failure> {
+extension Publisher {
+    func caching(to cache: FeedCache) -> AnyPublisher<Output, Failure> where Output == [FeedImage] {
         handleEvents(receiveOutput: {
             feed in cache.saveIgnoringCompletion(feed: feed) }
+        )
+        .eraseToAnyPublisher()
+    }
+    
+    func caching(to cache: FeedCache) -> AnyPublisher<Output, Failure> where Output == Paginated<FeedImage> {
+        handleEvents(receiveOutput: {
+            page in cache.saveIgnoringCompletion(feed: page.items) }
         )
         .eraseToAnyPublisher()
     }
@@ -109,5 +139,23 @@ extension DispatchQueue {
         func schedule(after date: Self.SchedulerTimeType, interval: Self.SchedulerTimeType.Stride, tolerance: Self.SchedulerTimeType.Stride, options: Self.SchedulerOptions?, _ action: @escaping () -> Void) -> any Cancellable {
             DispatchQueue.main.schedule(after: date, interval: interval, tolerance: tolerance, options: options, action)
         }
+    }
+}
+
+public extension HTTPClient {
+    typealias Publisher = AnyPublisher<(Data, HTTPURLResponse), Error>
+    
+    func getPublisher(for url: URL) -> Publisher {
+        var task: HTTPClientTask?
+        
+        return Deferred {
+            Future { completion in
+                task = self.get(from: url, completion: completion)
+            }
+        }
+        .handleEvents(receiveCancel: {
+            task?.cancel()
+        })
+        .eraseToAnyPublisher()
     }
 }

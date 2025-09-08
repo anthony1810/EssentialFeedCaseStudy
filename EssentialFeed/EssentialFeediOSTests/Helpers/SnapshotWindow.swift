@@ -33,6 +33,7 @@ final class SnapshotWindow: UIWindow {
             mutableTraits.displayScale = configuration.traitCollection.displayScale
             mutableTraits.displayGamut = configuration.traitCollection.displayGamut
             mutableTraits.userInterfaceStyle = configuration.traitCollection.userInterfaceStyle
+            mutableTraits.preferredContentSizeCategory = configuration.traitCollection.preferredContentSizeCategory
         }
     }
     

@@ -6,11 +6,11 @@
 //
 import Foundation
 
-public final class LocalFeedLoader: FeedLoader {
+public final class LocalFeedLoader {
     let store: FeedStore
     let currentDate: () -> Date
     
-    public typealias LoadResult = FeedLoader.Result
+    public typealias LoadResult = Swift.Result<[FeedImage], Error>
     public typealias ValidationResult = Swift.Result<Void, Error>
     
     public init(store: FeedStore, currentDate: @escaping () -> Date) {

@@ -4,7 +4,15 @@ import EssentialFeed
 import EssentialFeediOS
 import EssentialApp
 
-final class FeedUIIntegrationTests: XCTestCase {
+class FeedUIIntegrationTests: XCTestCase {
+    // MARK: - Feed
+    func test_feedView_hasTitle() {
+        let (sut, _) = makeSUT()
+        
+        sut.simulateAppearance()
+        
+        XCTAssertEqual(sut.title, feedTitle)
+    }
     
     func test_loadFeedActions_requestFeedFromLoader() {
         let (sut, loader) = makeSUT()
@@ -17,11 +25,11 @@ final class FeedUIIntegrationTests: XCTestCase {
         
         sut.simulateAppearance()
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         
         XCTAssertEqual(loader.loadFeedCallCount, 2,"Expected another loading requests once user initiates a load.")
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         
         XCTAssertEqual(loader.loadFeedCallCount, 3, "Expected a third loading requests once a user initiates another load.")
     }
@@ -35,7 +43,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         loader.completeFeedLoading(at: 0)
         XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once loading completes successfully.")
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once user initiates a reload.")
         
         loader.completeFeedLoadingWithError(at: 1)
@@ -58,7 +66,7 @@ final class FeedUIIntegrationTests: XCTestCase {
         let _ = sut.feedImageView(at: 0) as? FeedImageCell
         assertThat(sut, isRendering: [image0])
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         loader.completeFeedLoading(with: [image0, image1, image2, image3], at: 1)
         assertThat(sut, isRendering: [image0, image1, image2, image3])
     }
@@ -71,11 +79,62 @@ final class FeedUIIntegrationTests: XCTestCase {
         loader.completeFeedLoading(with: [image0], at: 0)
         assertThat(sut, isRendering: [image0])
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         loader.completeFeedLoadingWithError(at: 1)
         assertThat(sut, isRendering: [image0])
     }
     
+    func test_errorView_doesNotRenderErrorOnLoad() {
+        let (sut, _) = makeSUT()
+        
+        sut.simulateAppearance()
+        
+        XCTAssertNil(sut.errorMessage, "Expect error message to be nil initially")
+    }
+    
+    func test_loadFeedCompletion_rendersErrorMessageOnError() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeFeedLoadingWithError(at: 0)
+        
+        XCTAssertEqual(sut.errorMessage, loadError, "Expect error message to be nil initially")
+        XCTAssertEqual(sut.isErrorViewVisible, true, "Expect error view to be shown initially")
+        
+        sut.simulateUserInitiatedReload()
+        XCTAssertNil(sut.errorMessage, "Expect error message to be nil when reload")
+    }
+    
+    func test_errorView_dismissesErrorMessageOnTap() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        
+        loader.completeFeedLoadingWithError(at: 0)
+        XCTAssertEqual(sut.errorMessage, loadError, "Expect error message to be nil initially")
+        
+        sut.simulateErrorViewTap()
+        XCTAssertNil(sut.errorMessage, "Expect error message to be nil when tapped")
+    }
+    
+    // MARK: - Feed Image
+    
+    func test_imageSelection_notifiesSelectionHandler() {
+        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
+        let image1 = makeImage(url: URL(string: "http://url-0.com")!)
+        var selectImages: [FeedImage] = []
+        
+        let (sut, loader) = makeSUT(selectImageHandler: { selectImages.append($0) })
+        
+        sut.simulateAppearance()
+        loader.completeFeedLoading(with: [image0, image1])
+        
+        sut.simulateFeedImageTap(at: 0)
+        sut.simulateFeedImageTap(at: 1)
+        
+        XCTAssertEqual(selectImages, [image0, image1])
+    }
+   
     func test_feedImageView_loadsImageURLWhenVisible() {
         let image0 = makeImage(url: URL(string: "http://url-0.com")!)
         let image1 = makeImage(url: URL(string: "http://url-0.com")!)
@@ -287,45 +346,134 @@ final class FeedUIIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
     
-    func test_errorView_doesNotRenderErrorOnLoad() {
-        let (sut, _) = makeSUT()
-        
+    // MARK: - Load More Feed
+    func test_loadMoreFeedActions_requestMoreFeedFromLoader() {
+        let (sut, loader) = makeSUT()
         sut.simulateAppearance()
+        loader.completeFeedLoading()
         
-        XCTAssertEqual(sut.isErrorViewVisible, false, "Expect error view to be hidden initially")
-        XCTAssertNil(sut.errorMessage, "Expect error message to be nil initially")
+        XCTAssertEqual(loader.loadMoreFeedCallCount, 0, "Expected no loading more feed when view is first loaded.")
+        
+        sut.simulateLoadMoreFeed()
+        XCTAssertEqual(loader.loadMoreFeedCallCount, 1, "Expected a loading more feed once a user initiates load more feed.")
+        
+        sut.simulateLoadMoreFeed()
+        XCTAssertEqual(loader.loadMoreFeedCallCount, 1, "Expected no request while loading more.")
+        
+        loader.completeLoadMoreFeed(lastPage: false, at: 0)
+        sut.simulateLoadMoreFeed()
+        XCTAssertEqual(loader.loadMoreFeedCallCount, 2, "Expected more request when complete load more.")
+        
+        loader.completeLoadMoreFeedWithError(at: 1)
+        sut.simulateLoadMoreFeed()
+        XCTAssertEqual(loader.loadMoreFeedCallCount, 3, "Expected more request while loading more with error.")
+        
+        loader.completeLoadMoreFeed(lastPage: true, at: 2)
+        sut.simulateLoadMoreFeed()
+        XCTAssertEqual(loader.loadMoreFeedCallCount, 3, "Expected no request while on last page.")
     }
     
-    func test_loadFeedCompletion_rendersErrorMessageOnError() {
+    func test_loadMoreIndicator_isVisibleWhileLoadingMore() {
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        
+        XCTAssertFalse(sut.isShowingLoadMoreIndicator, "Expect loading indicator to be hidden initially")
+        
+        loader.completeFeedLoading()
+        XCTAssertFalse(sut.isShowingLoadMoreIndicator, "Expect loading indicator to be hidden when loading feed complete")
+        
+        sut.simulateLoadMoreFeed()
+        XCTAssertEqual(sut.isShowingLoadMoreIndicator, true, "Expected a loading more feed once a user initiates load more feed.")
+        
+        loader.completeLoadMoreFeed(lastPage: false)
+        XCTAssertEqual(sut.isShowingLoadMoreIndicator, false, "Expected no more loading indicator when complete load more.")
+        
+        sut.simulateLoadMoreFeed()
+        XCTAssertEqual(sut.isShowingLoadMoreIndicator, true, "Expected a loading more indicator once a user initiates load more feed again.")
+        
+        loader.completeLoadMoreFeedWithError(at: 1)
+        XCTAssertEqual(sut.isShowingLoadMoreIndicator, false, "Expected no loading more indicator with error.")
+    }
+    
+    func test_loadMoreCompletion_rendersErrorMessageOnError() {
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        
+        loader.completeFeedLoading()
+        sut.simulateLoadMoreFeed()
+        loader.completeLoadMoreFeedWithError(at: 0)
+        
+        XCTAssertNotNil(sut.loadMoreErrorMessage)
+    }
+    
+    func test_tapOnLoadMoreErrorView_loadsMoreFeed() {
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        
+        loader.completeFeedLoading()
+        sut.simulateLoadMoreFeed()
+        XCTAssertEqual(loader.loadMoreFeedCallCount, 1)
+        
+        loader.completeLoadMoreFeedWithError(at: 0)
+        sut.simuateLoadMoreErrorViewTap()
+        XCTAssertEqual(loader.loadMoreFeedCallCount, 2)
+    }
+    
+    func test_loadMoreFeedCompletion_rendersSuccessfullyLoadedFeed() {
+        let image0 = makeImage(description: "a description", location: "a location")
+        let image1 = makeImage(description: nil, location: "another location")
+        let image2 = makeImage(description: "another description", location: nil)
+        let image3 = makeImage(description: nil, location: nil)
+        
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        
+        loader.completeFeedLoading(with: [image0], at: 0)
+        assertThat(sut, isRendering: [image0])
+        
+        sut.simulateLoadMoreFeed()
+        loader.completeLoadMoreFeed(lastPage: false, feedModel: [image0, image1, image2], at: 0)
+        assertThat(sut, isRendering: [image0, image1, image2])
+        
+        sut.simulateLoadMoreFeed()
+        loader.completeLoadMoreFeedWithError(at: 1)
+        assertThat(sut, isRendering: [image0, image1, image2])
+        
+        sut.simulateLoadMoreFeed()
+        loader.completeLoadMoreFeed(lastPage: true, feedModel: [image0, image1, image2, image3], at: 2)
+        assertThat(sut, isRendering: [image0, image1, image2, image3])
+    }
+    
+    func test_loadMoreCompletion_dispatchesFromBackgroundToMainThread() {
+        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
-        loader.completeFeedLoadingWithError(at: 0)
+        loader.completeFeedLoading(with: [image0])
         
-        XCTAssertEqual(sut.errorMessage, localized("FEED_VIEW_CONNECTION_ERROR"), "Expect error message to be nil initially")
-        XCTAssertEqual(sut.isErrorViewVisible, true, "Expect error view to be shown initially")
+        sut.simulateLoadMoreFeed()
+        let expectation = self.expectation(description: "Expected image view to dispatch image loading from background to main thread")
+        DispatchQueue.global().async {
+            loader.completeLoadMoreFeed(lastPage: true, feedModel: [image0])
+            expectation.fulfill()
+        }
         
-        sut.simulateUserInitiatedFeedReload()
-        XCTAssertNil(sut.errorMessage, "Expect error message to be nil when reload")
-    }
-    
-    func test_errorView_dismissesErrorMessageOnTap() {
-        let (sut, loader) = makeSUT()
-        
-        sut.simulateAppearance()
-        
-        loader.completeFeedLoadingWithError(at: 0)
-        XCTAssertEqual(sut.errorMessage, localized("FEED_VIEW_CONNECTION_ERROR"), "Expect error message to be nil initially")
-        
-        sut.simulateErrorViewTap()
-        XCTAssertNil(sut.errorMessage, "Expect error message to be nil when tapped")
+        wait(for: [expectation], timeout: 1.0)
     }
     
     // MARK: Helpers
     
-    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
+    private func makeSUT(
+        selectImageHandler: @escaping (FeedImage) -> Void = { _ in },
+        file: StaticString = #file,
+        line: UInt = #line
+    ) -> (sut: ListViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
-        let sut = FeedUIComposer.feedComposedWith(feedLoaderPublisher: loader.loadPublisher, imageLoader: loader.loadPublisher)
+        let sut = FeedUIComposer.feedComposedWith(
+            feedLoaderPublisher: loader.loadPublisher,
+            imageLoader: loader.loadPublisher,
+            selectImageHandler: selectImageHandler
+        )
         
         trackMemoryLeaks(loader, file: file, line: line)
         trackMemoryLeaks(sut, file: file, line: line)
@@ -340,15 +488,4 @@ final class FeedUIIntegrationTests: XCTestCase {
     private func anyImageData() -> Data {
         UIImage.make(withColor: .red).pngData()!
     }
-    
-    func localized(_ key: String, file: StaticString = #filePath, line: UInt = #line) -> String {
-        let table = "Feed"
-        let bundle = Bundle(for: FeedPresenter.self)
-        let value = bundle.localizedString(forKey: key, value: nil, table: table)
-        if value == key {
-            XCTFail("Missing localized string for key: \(key) in table: \(table)", file: file, line: line)
-        }
-        return value
-    }
-    
 }

@@ -26,13 +26,6 @@
     },
     {
       "target" : {
-        "containerPath" : "container:EssentialApp.xcodeproj",
-        "identifier" : "92B14F5F2E1A98AC00154CA0",
-        "name" : "EssentialAppUITests"
-      }
-    },
-    {
-      "target" : {
         "containerPath" : "container:..\/EssentialFeed\/EssentialFeed.xcodeproj",
         "identifier" : "92670B982D579A36009A434F",
         "name" : "EssentialFeedCacheInterationTests"

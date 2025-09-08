@@ -18,11 +18,17 @@ jobs:
       - name: Xcode version
         run: /usr/bin/xcodebuild -version
 
-      - name: Build and Test
-        run: xcodebuild clean build test -project EssentialFeed/EssentialFeed.xcodeproj -scheme "CI" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -sdk macosx -destination "platform=macOS" ONLY_ACTIVE_ARCH=YES
+      - name: Build and Test (macOS)
+        run: |
+          xcodebuild clean build test \
+            -project EssentialFeed/EssentialFeed.xcodeproj \
+            -scheme "CI" \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
+            -destination "platform=macOS" \
+            ONLY_ACTIVE_ARCH=YES
 
   build-and-test-iOS:
-    runs-on: macos-15
+    runs-on: macos-15-xlarge
     timeout-minutes: 8
 
     steps:
@@ -34,6 +40,13 @@ jobs:
       - name: Xcode version
         run: /usr/bin/xcodebuild -version
 
-      - name: Build and Test
-         run: xcodebuild clean build test -workspace EssentialApp.xcworkspace -scheme "CI_iOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2" ONLY_ACTIVE_ARCH=YES
+      - name: Show available simulators
+        run: xcrun simctl list devices
 
+      - name: Build and Test (iOS)
+        run: |
+          xcodebuild clean build test \
+            -workspace EssentialApp.xcworkspace \
+            -scheme "CI_iOS" \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
+            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2" ONLY_ACTIVE_ARCH=YES

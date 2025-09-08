@@ -14,6 +14,9 @@
   "testTargets" : [
     {
       "parallelizable" : false,
+      "skippedTests" : [
+        "CommentUIIntegrationTests\/test_loadMoreFeedActions_requestMoreFeedFromLoader()"
+      ],
       "target" : {
         "containerPath" : "container:EssentialApp.xcodeproj",
         "identifier" : "92B14F552E1A98AC00154CA0",

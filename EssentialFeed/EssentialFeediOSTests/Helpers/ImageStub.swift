@@ -10,20 +10,25 @@ import EssentialFeediOS
 
 class ImageStub: FeedImageCellControllerDelegate {
     weak var controller: FeedImageCellController?
-    private let viewModel: FeedImageViewModel<UIImage>
+    private var image: UIImage?
+    var viewModel: FeedImageViewModel
     
     init(description: String?, location: String?, image: UIImage?) {
         self.viewModel = FeedImageViewModel(
             location: location,
-            description: description,
-            image: image,
-            isLoading: false,
-            shouldRetry: image == nil
+            description: description
         )
+        self.image = image
     }
     
     func didRequestImage() {
-        controller?.display(viewModel: viewModel)
+        controller?.display(viewModel: .init(isLoading: false))
+        
+        if let image {
+            controller?.display(image)
+        } else {
+            controller?.display(ResourceErrorViewModel(message: "any"))
+        }
     }
     
     func didCancelImageRequest() {}
