@@ -28,7 +28,7 @@ jobs:
             ONLY_ACTIVE_ARCH=YES
 
   build-and-test-iOS:
-    runs-on: macos-15
+    runs-on: macos-15-xlarge
     timeout-minutes: 8
 
     steps:
@@ -49,5 +49,4 @@ jobs:
             -workspace EssentialApp.xcworkspace \
             -scheme "CI_iOS" \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' \
-            ONLY_ACTIVE_ARCH=YES
+            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2" ONLY_ACTIVE_ARCH=YES
