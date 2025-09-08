@@ -5,8 +5,28 @@
 //  Created by Anthony on 27/7/25.
 //
 import Foundation
+import UIKit
 import Combine
+import os
+
 import EssentialFeed
+
+public extension Publisher {
+    func logElapsedTime(url: URL, logger: Logger) -> AnyPublisher<Output, Failure> {
+        var startTime = CACurrentMediaTime()
+        return handleEvents(
+            receiveSubscription: { _ in
+                logger.trace("Started loading \(url)")
+                startTime = CACurrentMediaTime()
+            },
+            receiveOutput: { _ in
+                let elapsedTime = CACurrentMediaTime() - startTime
+                logger.trace("Finished loading \(url) in \(elapsedTime) seconds")
+            }
+        )
+        .eraseToAnyPublisher()
+    }
+}
 
 public extension Paginated {
     init(items: [Item], loadMorePublisher: (() -> AnyPublisher<Self, Error>)? = nil) {

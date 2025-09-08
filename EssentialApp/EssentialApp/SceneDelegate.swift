@@ -111,6 +111,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     private func makeRemoteFeedLoader(after: FeedImage? = nil) -> AnyPublisher<[FeedImage], Error> {
         let url = FeedEndpoint.get(after: after?.id).url(baseURL: Self.baseURL)
+        
         return httpClient
             .getPublisher(for: url)
             .tryMap(FeedMapper.map)
