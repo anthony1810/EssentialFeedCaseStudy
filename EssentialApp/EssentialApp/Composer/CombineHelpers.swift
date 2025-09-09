@@ -37,6 +37,13 @@ public extension Publisher {
         )
         .eraseToAnyPublisher()
     }
+
+    func logLoadMorePage(logger: Logger, function: StaticString = #function) -> AnyPublisher<Output, Failure> where Output == ([FeedImage], FeedImage?) {
+        handleEvents(receiveOutput: { (oldItems, last) in
+            logger.trace("\(function) loaded \(oldItems.count) items, last \(last?.id.uuidString ?? "nil")")
+        })
+        .eraseToAnyPublisher()
+    }
 }
 
 public extension Paginated {
