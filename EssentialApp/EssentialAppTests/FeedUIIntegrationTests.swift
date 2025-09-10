@@ -461,6 +461,23 @@ class FeedUIIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
     
+//    func test_scrollLoadMoreView_loadsMore() {
+//        let (sut, loader) = makeSUT()
+//        let tableView = AlwaysDraggingTableView()
+//        
+//        sut.simulateAppearance()
+//        loader.completeFeedLoading()
+//            
+//        sut.simulateLoadMoreFeed(tableView: tableView)
+//        XCTAssertEqual(loader.loadMoreFeedCallCount, 1)
+//            
+//        loader.completeLoadMoreFeedWithError(at: 0)
+//        XCTAssertEqual(loader.loadMoreFeedCallCount, 1)
+//        
+//        sut.simulateScrollOnLoadMoreView(tableView: tableView)
+//        XCTAssertEqual(loader.loadMoreFeedCallCount, 2)
+//    }
+    
     // MARK: Helpers
     
     private func makeSUT(

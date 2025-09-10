@@ -78,12 +78,13 @@ public final class LoadMoreCellController: NSObject, UITableViewDataSource, UITa
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        triggerLoadMoreCallback()
-        offsetObserver = tableView.observe(\.contentOffset, options: .new) { [weak self] (tableView, _) in
-            guard tableView.isDragging else { return }
-            
-            self?.triggerLoadMoreCallback()
-        }
+        print()
+//        triggerLoadMoreCallback()
+//        offsetObserver = tableView.observe(\.contentOffset, options: .new) { [weak self] (tableView, _) in
+//            guard tableView.isDragging else { return }
+//            
+//            self?.triggerLoadMoreCallback()
+//        }
     }
     
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
