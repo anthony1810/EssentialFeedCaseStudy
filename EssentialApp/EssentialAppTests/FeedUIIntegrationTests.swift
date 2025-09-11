@@ -366,6 +366,11 @@ class FeedUIIntegrationTests: XCTestCase {
         sut.simulateFeedImageViewNotVisible(at: 0)
         sut.simulateFeedImageViewVisible(at: 0)
         XCTAssertEqual(loader.loadedImageURLs, [image0.url, image0.url, image0.url],"Expected third image URL request once after cancelling the first one.")
+        
+        sut.simulateLoadMoreFeed()
+        loader.completeLoadMoreFeed(lastPage: false, feedModel: [image0, makeImage()])
+        sut.simulateFeedImageViewVisible(at: 0)
+        XCTAssertEqual(loader.loadedImageURLs, [image0.url, image0.url, image0.url],"Expected no additional request until previous completes")
     }
     
     // MARK: - Load More Feed
