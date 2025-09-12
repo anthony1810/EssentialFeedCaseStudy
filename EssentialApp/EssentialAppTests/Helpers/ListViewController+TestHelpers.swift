@@ -43,6 +43,19 @@ extension ListViewController {
         let index = IndexPath(row: 0, section: loadMoreSection)
         delegate?.tableView?(tableView, willDisplay: view, forRowAt: index)
     }
+    
+    func simulateLoadMoreFeed(tableView: UITableView? = nil) {
+        // Loading when the cell becomes visible
+        guard let view = loadMoreCell() else { return }
+        
+        let dl = self.tableView.delegate
+        let index = IndexPath(row: 0, section: loadMoreSection)
+        dl?.tableView?(tableView ?? self.tableView, willDisplay: view, forRowAt: index)
+    }
+
+    func simulateScrollOnLoadMoreView(tableView: UITableView) {
+        tableView.setContentOffset(CGPoint(x: 0, y: 100), animated: false)
+    }
 
     
     func loadMoreCell() -> LoadMoreCell? {
@@ -202,4 +215,8 @@ extension ListViewController {
         let view = commentView(at: row)
         return view?.dateLabel.text
     }
+}
+
+class AlwaysDraggingTableView: UITableView {
+    override var isDragging: Bool { true }
 }

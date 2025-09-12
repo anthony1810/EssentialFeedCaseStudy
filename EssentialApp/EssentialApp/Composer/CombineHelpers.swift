@@ -5,8 +5,46 @@
 //  Created by Anthony on 27/7/25.
 //
 import Foundation
+import UIKit
 import Combine
+import os
+
 import EssentialFeed
+
+public extension Publisher {
+    func logElapsedTime(url: URL, logger: Logger) -> AnyPublisher<Output, Failure> {
+        var startTime = CACurrentMediaTime()
+        return handleEvents(
+            receiveSubscription: { _ in
+                logger.trace("Started loading \(url)")
+                startTime = CACurrentMediaTime()
+            },
+            receiveOutput: { _ in
+                let elapsedTime = CACurrentMediaTime() - startTime
+                logger.trace("Finished loading \(url) in \(elapsedTime) seconds")
+            }
+        )
+        .eraseToAnyPublisher()
+    }
+    
+    func logCacheMisses(url: URL, logger: Logger) -> AnyPublisher<Output, Failure> {
+        return handleEvents(
+            receiveCompletion: { completion in
+                if case .failure = completion {
+                    logger.trace("Missed Cache for \(url)")
+                }
+            }
+        )
+        .eraseToAnyPublisher()
+    }
+
+    func logLoadMorePage(logger: Logger, function: StaticString = #function) -> AnyPublisher<Output, Failure> where Output == ([FeedImage], FeedImage?) {
+        handleEvents(receiveOutput: { (oldItems, last) in
+            logger.trace("\(function) loaded \(oldItems.count) items, last \(last?.id.uuidString ?? "nil")")
+        })
+        .eraseToAnyPublisher()
+    }
+}
 
 public extension Paginated {
     init(items: [Item], loadMorePublisher: (() -> AnyPublisher<Self, Error>)? = nil) {

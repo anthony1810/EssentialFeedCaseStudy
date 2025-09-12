@@ -6,14 +6,17 @@
 //
 
 import UIKit
-import EssentialFeed
-import EssentialFeediOS
 import CoreData
 import Combine
+import os
+
+import EssentialFeed
+import EssentialFeediOS
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
+    private lazy var logger = Logger(subsystem: "com.example.EssentialApp", category: "main")
     
     private lazy var httpClient: HTTPClient = {
         let session = URLSession(configuration: .ephemeral)
@@ -22,10 +25,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }()
     
     private lazy var store: FeedStore & FeedImageDataStore = {
-        let storeURL = NSPersistentContainer.defaultDirectoryURL().appendingPathComponent("EssentialFeed.sqlite")
-        let store = try! CoreDataFeedStore(storeURL: storeURL)
-        
-        return store
+        do {
+            let storeURL = NSPersistentContainer.defaultDirectoryURL().appendingPathComponent("EssentialFeed.sqlite")
+            
+            return try CoreDataFeedStore(storeURL: storeURL)
+        } catch {
+            assertionFailure("Failed to instantiate CoreData Store with error: \(error.localizedDescription)")
+            
+            logger.fault("Failed to instantiate CoreData Store with error: \(error.localizedDescription)")
+            
+            return NullStore()
+        }
     }()
     
     private static var baseURL: URL = {
@@ -101,6 +111,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     private func makeRemoteFeedLoader(after: FeedImage? = nil) -> AnyPublisher<[FeedImage], Error> {
         let url = FeedEndpoint.get(after: after?.id).url(baseURL: Self.baseURL)
+        
         return httpClient
             .getPublisher(for: url)
             .tryMap(FeedMapper.map)
@@ -108,7 +119,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     private func makeRemoteLoadMoreLoader(last: FeedImage?) -> AnyPublisher<Paginated<FeedImage>, any Error> {
-      
         return localFeedLoader.loadPublisher()
             .zip(makeRemoteFeedLoader(after: last))
             .map { (cachedItems, newItems) in
@@ -141,6 +151,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         return localFeedImageLoader
             .loadPublisher(from: url)
+            .logCacheMisses(url: url, logger: logger)
             .fallback { [httpClient] in
                 httpClient
                     .getPublisher(for: url)
