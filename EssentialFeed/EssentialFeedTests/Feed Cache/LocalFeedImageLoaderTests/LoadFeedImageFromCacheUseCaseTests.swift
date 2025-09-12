@@ -20,7 +20,7 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let url = anyURL()
         
-        _ = sut.loadImageData(from: url, completion: { _ in })
+        _ = sut.loadImageData(from: url) {_ in }
         
         XCTAssertEqual(store.receivedMessages, [.retrieve(dataFor: url)])
     }
@@ -53,34 +53,6 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
         }
     }
     
-    func test_loadImageDataFromURL_doesNotDeliversDataAfterCancellingTask() {
-        let (sut, store) = makeSUT()
-        let url = anyURL()
-        var receivedResult: LocalFeedImageDataLoader.Result?
-        
-        let task = sut.loadImageData(from: url) { receivedResult = $0 }
-        task.cancel()
-        
-        store.completeRetrieval(with: .success(anydata()))
-        store.completeRetrieval(with: .success(.none))
-        store.completeRetrieval(with: failed())
-        store.completeRetrieval(with: notFound())
-        
-        XCTAssertNil(receivedResult)
-    }
-    
-    func test_loadImageDataFromURL_doesNotDeliversDataAfterSUTDeinit() {
-        let store = FeedImageDataStoreSpy()
-        var sut: LocalFeedImageDataLoader? = LocalFeedImageDataLoader(store: store)
-        var receivedResults = [LocalFeedImageDataLoader.Result]()
-        
-        _ = sut?.loadImageData(from: anyURL()) { receivedResults.append($0) }
-        sut = nil
-        
-        store.completeRetrieval(with: failed())
-        XCTAssertTrue(receivedResults.isEmpty)
-    }
-    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: LocalFeedImageDataLoader, store: FeedImageDataStoreSpy) {
@@ -102,6 +74,8 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
         line: UInt = #line
     ) {
         let exp = expectation(description: "Waiting for load")
+        action()
+        
         _ = sut.loadImageData(from: url, completion: { actualResult in
             switch (actualResult, expectedResult) {
             case (.success(let actualData), .success(let expectedData)):
@@ -113,8 +87,6 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
             }
             exp.fulfill()
         })
-        
-        action()
         
         wait(for: [exp], timeout: 1.0)
     }
