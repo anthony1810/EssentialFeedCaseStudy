@@ -89,7 +89,7 @@ extension FeedCache {
 
 extension FeedImageCache {
     func saveIgnoringResult(data: Data, for url: URL) {
-        save(data, for: url) { _ in }
+        try? save(data, for: url)
     }
 }
 

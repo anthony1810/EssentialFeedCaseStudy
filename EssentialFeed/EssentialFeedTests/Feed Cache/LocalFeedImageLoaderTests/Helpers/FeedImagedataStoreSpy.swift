@@ -31,7 +31,7 @@ final class FeedImageDataStoreSpy: FeedImageDataStore {
         retrivalCompletions = result
     }
     
-    func completeInsertion(with result: LocalFeedImageDataLoader.SaveResult) {
+    func completeInsertion(with result: Swift.Result<Void, Error>) {
         insertionCompletions = result
     }
 }
