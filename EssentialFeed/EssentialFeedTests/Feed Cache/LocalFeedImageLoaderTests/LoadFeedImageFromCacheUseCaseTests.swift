@@ -67,7 +67,7 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
     
     private func expect(
         _ sut: LocalFeedImageDataLoader,
-        toFinishWith expectedResult: FeedImageDataStore.RetrievalResult,
+        toFinishWith expectedResult: Swift.Result<Data?, Error>,
         from url: URL,
         when action: () -> Void,
         file: StaticString = #file,
@@ -87,11 +87,11 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
         }
     }
     
-    private func failed() -> FeedImageDataStore.RetrievalResult {
+    private func failed() -> Swift.Result<Data?, Error> {
         .failure(LocalFeedImageDataLoader.LoadError.failed)
     }
     
-    private func notFound() -> FeedImageDataStore.RetrievalResult {
+    private func notFound() -> Swift.Result<Data?, Error> {
         .failure(LocalFeedImageDataLoader.LoadError.notFound)
     }
 }

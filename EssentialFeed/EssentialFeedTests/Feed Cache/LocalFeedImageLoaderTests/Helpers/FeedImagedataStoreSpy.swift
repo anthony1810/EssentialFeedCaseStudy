@@ -14,8 +14,8 @@ final class FeedImageDataStoreSpy: FeedImageDataStore {
     }
     
     var receivedMessages: [Message] = []
-    var retrivalCompletions: FeedImageDataStore.RetrievalResult?
-    var insertionCompletions: FeedImageDataStore.InsertionResult?
+    var retrivalCompletions: Swift.Result<Data?, Error>?
+    var insertionCompletions: Swift.Result<Void, Error>?
     
     func retrieve(dataForURL url: URL) throws -> Data? {
         receivedMessages.append(.retrieve(dataFor: url))
