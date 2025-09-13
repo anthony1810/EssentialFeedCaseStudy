@@ -126,12 +126,11 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         file: StaticString = #file,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "Waiting for cache to save")
-        sut.save(items) { receivedError in
-            XCTAssertEqual(receivedError as NSError?, expectedError as NSError?, "Expected error \(String(describing: expectedError)), got \(String(describing: receivedError))", file: file, line: line)
-            exp.fulfill()
+        do {
+            try sut.save(items)
+        } catch {
+            XCTAssertEqual(error as NSError?, expectedError as NSError?, "Expected error \(String(describing: expectedError)), got \(String(describing: error))", file: file, line: line)
         }
-        wait(for: [exp], timeout: 1.0)
     }
     
     private func expect(
