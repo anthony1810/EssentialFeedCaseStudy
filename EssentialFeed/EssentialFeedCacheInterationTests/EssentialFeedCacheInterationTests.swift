@@ -139,19 +139,16 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         file: StaticString = #file,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "Waiting for cache to save")
-        sut.load { receivedResult in
-            switch (receivedResult, expectedResult) {
-            case let (.success(receivedItems), .success(expectedItems)):
-                XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
-            case let (.failure(receivedError as NSError?), .failure(expectedError as NSError?)):
-                XCTAssertEqual(receivedError, expectedError, file: file, line: line)
-            default:
-                XCTFail("Expected \(expectedResult), got \(receivedResult)", file: file, line: line)
-            }
-            exp.fulfill()
+        let receivedResult = Result { try sut.load() }
+        
+        switch (receivedResult, expectedResult) {
+        case let (.success(receivedItems), .success(expectedItems)):
+            XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
+        case let (.failure(receivedError as NSError?), .failure(expectedError as NSError?)):
+            XCTAssertEqual(receivedError, expectedError, file: file, line: line)
+        default:
+            XCTFail("Expected \(expectedResult), got \(receivedResult)", file: file, line: line)
         }
-        wait(for: [exp], timeout: 1.0)
     }
     
     func validateCache(with loader: LocalFeedLoader, file: StaticString = #file, line: UInt = #line) {

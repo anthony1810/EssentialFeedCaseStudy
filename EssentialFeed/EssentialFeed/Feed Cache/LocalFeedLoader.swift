@@ -18,17 +18,14 @@ public final class LocalFeedLoader {
         self.currentDate = currentDate
     }
     
-    public func load(completion: @escaping (LoadResult) -> Void) {
-        let result = Result { try store.retrievalCachedFeed() }
+    public func load() throws -> [FeedImage] {
         
-        switch result {
-        case .failure(let error):
-            completion(.failure(error))
-        case .success(.some((let feeds, let timestamp))) where FeedCachePolicy.isCacheValidated(with: timestamp, against: currentDate()):
-            completion(.success(feeds.toModel()))
-        case .success(.none), .success:
-            completion(.success([]))
+        if let (feed, timestamp) = try store.retrievalCachedFeed(),
+           FeedCachePolicy.isCacheValidated(with: timestamp, against: currentDate()) {
+            return feed.toModel()
         }
+        
+        return []
     }
     
     public func validate(completion: @escaping (ValidationResult) -> Void) {

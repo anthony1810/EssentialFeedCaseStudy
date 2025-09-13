@@ -32,25 +32,19 @@ class ValidateCacheUseCaseTests: XCTestCase {
         let lessThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge().adding(seconds: 1)
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
-        let expectation = expectation(description: "waiting for completion")
         store.completionRetrieval(with: .success((feed: [feed.local], timestamp: lessThanSevenDayTimestamp)))
         
-        sut.load(completion: { _ in expectation.fulfill() })
-        
-        wait(for: [expectation], timeout: 1.0)
+        _ = try? sut.load()
         
         XCTAssertFalse(store.receivedMessages.contains(.deletion))
     }
     
     func test_validate_doesNotDeleteCacheWhenCacheIsAlreadyEmpty() {
         let (sut, store) = makeSUT()
-        
-        let expectation = expectation(description: "waiting for completion")
+
         store.completionRetrieval(with: .success(.none))
         
-        sut.load(completion: { _ in expectation.fulfill() })
-        
-        wait(for: [expectation], timeout: 1.0)
+        _ = try? sut.load()
         
         XCTAssertFalse(store.receivedMessages.contains(.deletion))
     }

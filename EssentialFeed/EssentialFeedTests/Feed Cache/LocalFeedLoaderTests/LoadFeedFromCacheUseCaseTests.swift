@@ -18,7 +18,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     func test_load_requestCacheRetrieval() {
         let (sut, store) = makeSUT()
         
-        sut.load { _ in }
+        _ = try? sut.load()
         
         XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
@@ -77,12 +77,9 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let expectedError = anyNSError()
         
-        let expectation = expectation(description: "waiting for completion")
-        sut.load(completion: { _ in expectation.fulfill() })
-        
         store.completionRetrieval(with: .failure(expectedError))
         
-        wait(for: [expectation], timeout: 1.0)
+        _ = try? sut.load()
         
         XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
@@ -93,12 +90,9 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let lessThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge().adding(seconds: 1)
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
-        let expectation = expectation(description: "waiting for completion")
-        sut.load(completion: { _ in expectation.fulfill() })
-        
         store.completionRetrieval(with: .success((feed: [feed.local], timestamp: lessThanSevenDayTimestamp)))
         
-        wait(for: [expectation], timeout: 1.0)
+        _ = try? sut.load()
         
         XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
@@ -106,12 +100,9 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     func test_load_hasNoSideEffectWhenCacheIsAlreadyEmpty() {
         let (sut, store) = makeSUT()
         
-        let expectation = expectation(description: "waiting for completion")
-        sut.load(completion: { _ in expectation.fulfill() })
-        
         store.completionRetrieval(with: .success(.none))
         
-        wait(for: [expectation], timeout: 1.0)
+        _ = try? sut.load()
         
         XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
@@ -122,12 +113,9 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let lessThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge()
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
-        let expectation = expectation(description: "waiting for completion")
-        sut.load(completion: { _ in expectation.fulfill() })
-        
         store.completionRetrieval(with: .success((feed: [feed.local], timestamp: lessThanSevenDayTimestamp)))
         
-        wait(for: [expectation], timeout: 1.0)
+        _ = try? sut.load()
         
         XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
@@ -138,12 +126,9 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let moreThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge().addingTimeInterval(-1)
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
-        let expectation = expectation(description: "waiting for completion")
-        sut.load(completion: { _ in expectation.fulfill() })
-        
         store.completionRetrieval(with: .success((feed: [feed.local], timestamp: moreThanSevenDayTimestamp)))
         
-        wait(for: [expectation], timeout: 1.0)
+        _ = try? sut.load()
         
         XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
@@ -170,23 +155,18 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "Waiting for load")
         
         action()
         
-        sut.load { receivedResult in
-            switch (receivedResult, expectedResult) {
-            case let (.success(receiveFeeds), .success(expectedFeeds)):
-                XCTAssertEqual(receiveFeeds, expectedFeeds, file: file, line: line)
-            case let (.failure(receivedError as NSError?), (.failure(expectedError as NSError?))):
-                XCTAssertEqual(receivedError, expectedError, file: file, line: line)
-            default:
-                XCTFail("Got unexpected result: \(receivedResult), expected: \(expectedResult)")
-            }
-            
-            exp.fulfill()
-        }
+        let receivedResult = Result { try sut.load() }
         
-        wait(for: [exp], timeout: 1.0)
+        switch (receivedResult, expectedResult) {
+        case let (.success(receiveFeeds), .success(expectedFeeds)):
+            XCTAssertEqual(receiveFeeds, expectedFeeds, file: file, line: line)
+        case let (.failure(receivedError as NSError?), (.failure(expectedError as NSError?))):
+            XCTAssertEqual(receivedError, expectedError, file: file, line: line)
+        default:
+            XCTFail("Got unexpected result: \(receivedResult), expected: \(expectedResult)")
+        }
     }
 }
