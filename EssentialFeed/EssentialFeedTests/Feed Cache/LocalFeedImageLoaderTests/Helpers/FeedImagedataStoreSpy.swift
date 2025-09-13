@@ -27,7 +27,7 @@ final class FeedImageDataStoreSpy: FeedImageDataStore {
         try insertionCompletions?.get()
     }
     
-    func completeRetrieval(with result: FeedImageDataStore.RetrievalResult) {
+    func completeRetrieval(with result: Swift.Result<Data?, Error>) {
         retrivalCompletions = result
     }
     

@@ -22,26 +22,6 @@ extension LocalFeedImageDataLoader: FeedImageDataLoader {
         case notFound
     }
     
-    class LoadImageDataTask: FeedImageDataLoaderTask {
-        var completion: ((FeedImageDataLoader.Result) -> Void)?
-        
-        init(completion: @escaping ((FeedImageDataLoader.Result) -> Void)) {
-            self.completion = completion
-        }
-        
-        func complete(with result: FeedImageDataLoader.Result) {
-            completion?(result)
-        }
-        
-        func cancel() {
-            preventFutherCompletions()
-        }
-        
-        private func preventFutherCompletions() {
-            completion = nil
-        }
-    }
-    
     public func loadImageData(from url: URL) throws -> Data {
         do {
             if let data = try store.retrieve(dataForURL: url) {
