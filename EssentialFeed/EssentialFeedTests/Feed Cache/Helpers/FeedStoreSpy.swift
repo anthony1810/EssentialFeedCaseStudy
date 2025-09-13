@@ -49,7 +49,7 @@ final class FeedStoreSpy: FeedStore {
         insertionCompletions = result
     }
     
-    func completionRetrieval(with result: FeedStore.RetrievalResult, at index: Int = 0) {
+    func completionRetrieval(with result: Swift.Result<FeedStore.CacheFeed?, Error>, at index: Int = 0) {
         retrievalCompletions = result
     }
 }
