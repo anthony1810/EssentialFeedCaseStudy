@@ -43,32 +43,14 @@ public final class LocalFeedLoader {
             completion(.success(()))
         }
     }
-    
-    private func cacheFeeds(_ items: [FeedImage], completion: @escaping (SaveResult) -> Void) {
-        let insertionResult = Result { try self.store.insertCachedFeed(items.toLocal(), timestamp: self.currentDate())
-        }
-        
-        switch insertionResult {
-        case .success:
-            completion(nil)
-        case .failure(let error):
-            completion(error)
-        }
-    }
 }
 
 extension LocalFeedLoader: FeedCache {
     public typealias SaveResult = FeedCache.SaveResult
     
-    public func save(_ items: [FeedImage], completion: @escaping (SaveResult) -> Void) {
-        let deletionResult = Result { try store.deleteCachedFeed() }
-        
-        switch deletionResult {
-        case .success:
-            self.cacheFeeds(items, completion: completion)
-        case .failure(let error):
-            completion(error)
-        }
+    public func save(_ items: [FeedImage]) throws {
+        try store.deleteCachedFeed()
+        try self.store.insertCachedFeed(items.toLocal(), timestamp: self.currentDate())
     }
 }
 

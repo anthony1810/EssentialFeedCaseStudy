@@ -119,7 +119,7 @@ extension Publisher where Output == Data {
 
 extension FeedCache {
     func saveIgnoringCompletion(feed: [FeedImage]) {
-        self.save(feed) { _ in }
+        try? self.save(feed)
     }
 }
 

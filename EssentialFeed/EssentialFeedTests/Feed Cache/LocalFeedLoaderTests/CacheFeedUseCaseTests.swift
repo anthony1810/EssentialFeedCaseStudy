@@ -22,7 +22,7 @@ final class CacheFeedUseCaseTests: XCTestCase {
         let uniqueFeeds = [uniqueFeed(), uniqueFeed()]
         store.completeDeletion(with: .failure(anyNSError()))
         
-        sut.save(uniqueFeeds.map(\.model)) {_ in }
+        try? sut.save(uniqueFeeds.map(\.model))
         
         XCTAssertEqual(store.receivedMessages, [.deletion])
     }
@@ -34,7 +34,7 @@ final class CacheFeedUseCaseTests: XCTestCase {
         let feeds = [uniqueFeed()]
         
         store.completeDeletion(with: .success(()))
-        sut.save(feeds.map(\.model)) {_ in }
+        try? sut.save(feeds.map(\.model))
         
         XCTAssertEqual(store.receivedMessages, [.deletion, .insertion(feeds.map(\.local), currentDate)])
     }
@@ -90,17 +90,15 @@ final class CacheFeedUseCaseTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "waiting for save command to finish")
         let feeds = [uniqueFeed(), uniqueFeed()]
-        var receivedError: Error?
         
         action()
         
-        sut.save(feeds.map(\.model)) { receivedError = $0; exp.fulfill() }
-        
-        wait(for: [exp], timeout: 1.0)
-    
-        XCTAssertEqual(receivedError as NSError?, expectedError as NSError?, file: file, line: line)
+        do {
+            try sut.save(feeds.map(\.model))
+        } catch {
+            XCTAssertEqual(error as NSError?, expectedError as NSError?, file: file, line: line)
+        }
     }
 
 }
