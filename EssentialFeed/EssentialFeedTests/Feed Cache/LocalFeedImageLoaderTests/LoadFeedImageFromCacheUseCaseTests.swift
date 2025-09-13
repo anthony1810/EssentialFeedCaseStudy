@@ -20,7 +20,7 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let url = anyURL()
         
-        _ = sut.loadImageData(from: url) {_ in }
+        _ = try? sut.loadImageData(from: url)
         
         XCTAssertEqual(store.receivedMessages, [.retrieve(dataFor: url)])
     }
@@ -73,22 +73,18 @@ final class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
         file: StaticString = #file,
         line: UInt = #line
     ) {
-        let exp = expectation(description: "Waiting for load")
         action()
         
-        _ = sut.loadImageData(from: url, completion: { actualResult in
-            switch (actualResult, expectedResult) {
-            case (.success(let actualData), .success(let expectedData)):
-                XCTAssertEqual(actualData, expectedData, file: file, line: line)
-            case (.failure(let actualError as LocalFeedImageDataLoader.LoadError), .failure(let expectedError as LocalFeedImageDataLoader.LoadError)):
-                XCTAssertEqual(actualError, expectedError, file: file, line: line)
-            default:
-                XCTFail("Expected \(expectedResult), got \(actualResult) instead", file: file, line: line)
-            }
-            exp.fulfill()
-        })
+        let actualResult = Result { try sut.loadImageData(from: url) }
         
-        wait(for: [exp], timeout: 1.0)
+        switch (actualResult, expectedResult) {
+        case (.success(let actualData), .success(let expectedData)):
+            XCTAssertEqual(actualData, expectedData, file: file, line: line)
+        case (.failure(let actualError as LocalFeedImageDataLoader.LoadError), .failure(let expectedError as LocalFeedImageDataLoader.LoadError)):
+            XCTAssertEqual(actualError, expectedError, file: file, line: line)
+        default:
+            XCTFail("Expected \(expectedResult), got \(actualResult) instead", file: file, line: line)
+        }
     }
     
     private func failed() -> FeedImageDataStore.RetrievalResult {

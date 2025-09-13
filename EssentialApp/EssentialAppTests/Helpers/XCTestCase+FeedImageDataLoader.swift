@@ -19,21 +19,17 @@ extension FeedImageDataLoaderTestable {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let expectation = self.expectation(description: "wait for image data to load")
-        _ = sut.loadImageData(from: anyURL()) { actualResult in
-            switch (actualResult, expectedResult) {
-            case (.success(let actualData), .success(let expectedData)):
-                XCTAssertEqual(actualData, expectedData, file: file, line: line)
-            case (.failure(let actualError as NSError), .failure(let expectedError as NSError)):
-                XCTAssertEqual(actualError, expectedError, file: file, line: line)
-            default:
-                XCTFail("expected \(expectedResult), got \(actualResult)", file: file, line: line)
-            }
-            expectation.fulfill()
-        }
+        let actualResult = Result { try sut.loadImageData(from: anyURL()) }
         
         action()
         
-        wait(for: [expectation], timeout: 1.0)
+        switch (actualResult, expectedResult) {
+        case (.success(let actualData), .success(let expectedData)):
+            XCTAssertEqual(actualData, expectedData, file: file, line: line)
+        case (.failure(let actualError as NSError), .failure(let expectedError as NSError)):
+            XCTAssertEqual(actualError, expectedError, file: file, line: line)
+        default:
+            XCTFail("expected \(expectedResult), got \(actualResult)", file: file, line: line)
+        }
     }
 }

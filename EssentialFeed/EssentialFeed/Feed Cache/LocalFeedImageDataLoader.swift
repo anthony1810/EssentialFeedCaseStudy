@@ -42,19 +42,16 @@ extension LocalFeedImageDataLoader: FeedImageDataLoader {
         }
     }
     
-    public func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
-        
-        let task = LoadImageDataTask(completion: completion)
-        task.complete(
-            with: Swift.Result{
-                try store.retrieve(dataForURL: url)
+    public func loadImageData(from url: URL) throws -> Data {
+        do {
+            if let data = try store.retrieve(dataForURL: url) {
+                return data
             }
-            .mapError { _ in LocalFeedImageDataLoader.LoadError.failed }
-            .flatMap { data in
-                data.map { .success($0) } ?? .failure(LocalFeedImageDataLoader.LoadError.notFound)
-            })
+        } catch {
+            throw LocalFeedImageDataLoader.LoadError.failed
+        }
         
-        return task
+        throw LocalFeedImageDataLoader.LoadError.notFound
     }
 }
 
