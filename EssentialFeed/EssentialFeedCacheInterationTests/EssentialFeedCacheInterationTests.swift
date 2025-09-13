@@ -190,28 +190,21 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let saveExpectation = expectation(description: "Save expectation")
-        loader.save(data, for: url, completion: { error in
-            if case let .failure(error) = error {
-                XCTFail("Expect to save image data successfully, got error: \(error)", file: file, line: line)
-            }
-            saveExpectation.fulfill()
-        })
-        wait(for: [saveExpectation], timeout: 1.0)
+        let result = Result { try loader.save(data, for: url) }
+        if case let .failure(error) = result {
+            XCTFail("Expect to save image data successfully, got error: \(error)", file: file, line: line)
+        }
     }
     
     private func expect(_ sut: LocalFeedImageDataLoader, toLoad expectedData: Data, for url: URL, file: StaticString = #file, line: UInt = #line) {
-        let exp = expectation(description: "wait for load to complete")
-        _ = sut.loadImageData(from: url) { result in
-            switch result {
-            case let .success(loadedData):
-                XCTAssertEqual(expectedData, loadedData, file: file, line: line)
-            case let .failure(error):
-                XCTFail("Expected to load image data successfully, got error: \(error)", file: file, line: line)
-            }
-            exp.fulfill()
+
+        let result = Result { try sut.loadImageData(from: url) }
+        switch result {
+        case let .success(loadedData):
+            XCTAssertEqual(expectedData, loadedData, file: file, line: line)
+        case let .failure(error):
+            XCTFail("Expected to load image data successfully, got error: \(error)", file: file, line: line)
         }
-        wait(for: [exp], timeout: 1.0)
     }
      
    
