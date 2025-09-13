@@ -62,11 +62,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         return nc
     }()
     
-    convenience init(httpClient: HTTPClient, store: FeedStore & FeedImageDataStore) {
+    private lazy var scheduler: any Scheduler = DispatchQueue(
+        label: "com.viothun.infra.queue",
+        qos: .userInteractive,
+        attributes: .concurrent
+    )
+    
+    convenience init(
+        httpClient: HTTPClient,
+        store: FeedStore & FeedImageDataStore,
+        scheduler: any Scheduler
+    ) {
         self.init()
         
         self.httpClient = httpClient
         self.store = store
+        self.scheduler = scheduler
     }
     
     
@@ -158,6 +169,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     .tryMap(FeedImageDataMapper.map)
                     .caching(to: localFeedImageLoader, using: url)
             }
+            .subscribe(onSome: scheduler)
+            .eraseToAnyPublisher()
     }
 }
 
