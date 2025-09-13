@@ -28,6 +28,15 @@ public final class CoreDataFeedStore: FeedStore {
         }
     }
     
+    func performSync<T>(_ action: @escaping (NSManagedObjectContext) -> Result<T, Error>) throws -> T {
+        var result: Result<T, Error>!
+        context.performAndWait { [context] in
+            result = action(context)
+        }
+        
+        return try result.get()
+    }
+    
     private func cleanUpReferrencesToPersistentStores() {
         context.performAndWait {
             let coordinator = self.container.persistentStoreCoordinator
