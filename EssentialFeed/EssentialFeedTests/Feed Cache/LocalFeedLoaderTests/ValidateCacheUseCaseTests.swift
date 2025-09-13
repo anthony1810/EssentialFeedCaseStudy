@@ -19,9 +19,9 @@ class ValidateCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let expectedError = anyNSError()
         
-        sut.validate(completion: {_ in })
-        
         store.completionRetrieval(with: .failure(expectedError))
+        
+        sut.validate(completion: {_ in })
         
         XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
     }
@@ -33,9 +33,9 @@ class ValidateCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         let expectation = expectation(description: "waiting for completion")
-        sut.load(completion: { _ in expectation.fulfill() })
-        
         store.completionRetrieval(with: .success((feed: [feed.local], timestamp: lessThanSevenDayTimestamp)))
+        
+        sut.load(completion: { _ in expectation.fulfill() })
         
         wait(for: [expectation], timeout: 1.0)
         
@@ -46,9 +46,9 @@ class ValidateCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         
         let expectation = expectation(description: "waiting for completion")
-        sut.load(completion: { _ in expectation.fulfill() })
-        
         store.completionRetrieval(with: .success(.none))
+        
+        sut.load(completion: { _ in expectation.fulfill() })
         
         wait(for: [expectation], timeout: 1.0)
         
@@ -61,9 +61,8 @@ class ValidateCacheUseCaseTests: XCTestCase {
         let lessThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge()
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
-        sut.validate(completion: {_ in })
-        
         store.completionRetrieval(with: .success((feed: [feed.local], timestamp: lessThanSevenDayTimestamp)))
+        sut.validate(completion: {_ in })
         
         XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
     }
@@ -74,26 +73,10 @@ class ValidateCacheUseCaseTests: XCTestCase {
         let moreThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge().addingTimeInterval(-1)
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
+        store.completionRetrieval(with: .success((feed: [feed.local], timestamp: moreThanSevenDayTimestamp)))
         sut.validate(completion: {_ in })
         
-        store.completionRetrieval(with: .success((feed: [feed.local], timestamp: moreThanSevenDayTimestamp)))
-        
         XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
-    }
-
-    func test_validate_doesNotMessageStoreWhenSUTHasAlreadyDeallocated() {
-        let feed = uniqueFeed()
-        let fixedCurrentDate = Date()
-        let moreThanSevenDayTimestamp = fixedCurrentDate.minusMaxCacheAge().addingTimeInterval(-1)
-        let store = FeedStoreSpy()
-        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: { fixedCurrentDate })
-
-        sut?.validate(completion: {_ in })
-        sut = nil
-        
-        store.completionRetrieval(with: .success((feed: [feed.local], timestamp: moreThanSevenDayTimestamp)))
-        
-        XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
     
     func test_validateCache_failsOnDeletionErrorOfFailedRetrieval() {
@@ -171,6 +154,9 @@ class ValidateCacheUseCaseTests: XCTestCase {
     ) {
         
         let expectation = expectation(description: "Waiting for validation completion")
+        
+        action()
+        
         sut.validate(completion: { actualResult in
             switch (actualResult, expectedResult) {
             case (.success, .success):
@@ -182,8 +168,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
             }
             expectation.fulfill()
         })
-        
-        action()
+    
         wait(for: [expectation], timeout: 1.0)
         
     }

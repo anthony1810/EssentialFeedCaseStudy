@@ -104,15 +104,9 @@ final class CodableFeedStoreTests: XCTestCase, FailableFeedStoreSpecs {
         assertThatDeleteDeliversErrorWhenDeletionError(on: sut)
     }
     
-    func test_storeSideEffects_runSerially() throws {
-        let sut = makeSUT()
-       
-        assertThatSideEffectsRunSerially(on: sut)
-    }
-    
     // MARK: - Helpers
     func makeSUT(storeUrl: URL? = nil, file: StaticString = #filePath, line: UInt = #line) -> FeedStore {
-        let sut = CodableFeedStore(storeUrl: storeUrl ?? Self.testingURLSpecific)
+        let sut = CodableFeedStore(storeUrl: storeUrl ?? Self.testingURLSpecific, queue: .main)
         trackMemoryLeaks(sut, file: file, line: line)
         
         return sut

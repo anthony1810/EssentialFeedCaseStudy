@@ -71,52 +71,20 @@ extension FeedStoreSpecs where Self: XCTestCase {
         XCTAssertNil(receivedError, "Expect no error when delete an empty cache")
     }
     
-    func assertThatSideEffectsRunSerially(on sut: FeedStore, file: StaticString = #file, line: UInt = #line) {
-        var operations = [XCTestExpectation]()
-        
-        let op1 = expectation(description: "First operation")
-        sut.insertCachedFeed([uniqueFeed().local], timestamp: Date(), completion: { _ in
-            operations.append(op1)
-            op1.fulfill()
-        })
-        
-        let op2 = expectation(description: "Second operation")
-        sut.deleteCachedFeed(completion: { _ in
-            operations.append(op2)
-            op2.fulfill()
-        })
-        
-        let op3 = expectation(description: "third operation")
-        sut.insertCachedFeed([uniqueFeed().local], timestamp: Date(), completion: { _ in
-            operations.append(op3)
-            op3.fulfill()
-        })
-        
-        waitForExpectations(timeout: 5.0)
-        
-        XCTAssertEqual(operations, [op1, op2, op3], file: file, line: line)
-    }
-    
 }
 
 extension FeedStoreSpecs where Self: XCTestCase {
     func expect(_ sut: FeedStore, toReceive expectedResult: FeedStore.RetrievalResult, file: StaticString = #filePath, line: UInt = #line) {
-        let exp = expectation(description: "Waiting for completion")
         
-        sut.retrievalCachedFeed { result in
-            switch (result, expectedResult) {
-            case (.success(.none), .success(.none)): break
-            case let (.success(.some((receivedItems, receivedTimestamp))), .success(.some((expectedItems, expectedTimestamp)))):
-                XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
-                XCTAssertEqual(receivedTimestamp, expectedTimestamp, file: file, line: line)
-            case (.failure, .failure): break
-            default: XCTFail("Expect \(expectedResult) got \(result)", file: file, line: line)
-            }
-            
-            exp.fulfill()
+        let result = Result { try sut.retrievalCachedFeed() }
+        switch (result, expectedResult) {
+        case (.success(.none), .success(.none)): break
+        case let (.success(.some((receivedItems, receivedTimestamp))), .success(.some((expectedItems, expectedTimestamp)))):
+            XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
+            XCTAssertEqual(receivedTimestamp, expectedTimestamp, file: file, line: line)
+        case (.failure, .failure): break
+        default: XCTFail("Expect \(expectedResult) got \(result)", file: file, line: line)
         }
-        
-        wait(for: [exp], timeout: 1.0)
     }
     
     func expect(_ sut: FeedStore, toReceiveTwice expectedResult: FeedStore.RetrievalResult, file: StaticString = #filePath, line: UInt = #line) {
@@ -132,18 +100,12 @@ extension FeedStoreSpecs where Self: XCTestCase {
         file: StaticString = #file,
         line: UInt = #line
     ) -> Error? {
-        let exp = expectation(description: "Waiting for completion")
-        
-        var receivedError: Error?
-        sut.insertCachedFeed(items, timestamp: timestamp) {
-            if case let .failure(error) = $0 {
-                receivedError = error
-            }
-            exp.fulfill()
+        do {
+            try sut.insertCachedFeed(items, timestamp: timestamp)
+            return nil
+        } catch {
+            return error
         }
-        wait(for: [exp], timeout: 1.0)
-        
-        return receivedError
     }
     
     func insertTwice(
@@ -158,18 +120,12 @@ extension FeedStoreSpecs where Self: XCTestCase {
     }
     
     func deleteCache(from sut: FeedStore, file: StaticString = #file, line: UInt = #line) -> Error? {
-        let exp = expectation(description: "Wait for completion")
-        var receivedError: Error?
-        sut.deleteCachedFeed {
-            if case let .failure(error) = $0 {
-                receivedError = error
-            }
-            exp.fulfill()
+        do {
+            try sut.deleteCachedFeed()
+            return nil
+        } catch {
+            return error
         }
-        
-        wait(for: [exp], timeout: 1.0)
-        
-        return receivedError
     }
     
 }

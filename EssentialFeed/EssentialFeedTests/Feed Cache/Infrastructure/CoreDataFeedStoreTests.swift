@@ -58,12 +58,6 @@ final class CoreDataFeedStoreTests: XCTestCase, FeedStoreSpecs {
         assertThatDeleteDeliversSuccessOnNonEmptyCache(on: sut)
     }
     
-    func test_storeSideEffects_runSerially() throws {
-        let sut = try makeSUT()
-        
-        assertThatSideEffectsRunSerially(on: sut)
-    }
-    
     // MARK: - Helpers
     func makeSUT(file: StaticString = #file, line: UInt = #line) throws -> FeedStore {
         let storeURL = URL(fileURLWithPath: "/dev/null")

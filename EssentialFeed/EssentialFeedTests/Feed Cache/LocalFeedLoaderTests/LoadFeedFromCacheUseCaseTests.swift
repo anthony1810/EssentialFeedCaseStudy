@@ -147,23 +147,6 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         
         XCTAssertEqual(store.receivedMessages, [.retrieval])
     }
-
-    func test_load_doesNotMessageStoreWhenSUTHasAlreadyDeallocated() {
-        let fixedCurrentDate = Date()
-        let store = FeedStoreSpy()
-        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: { fixedCurrentDate })
-
-        var result: LocalFeedLoader.LoadResult?
-        sut?.load(completion: {
-            result = $0
-        })
-        sut = nil
-        
-        store.completionRetrieval(with: .success(.none))
-        
-        XCTAssertNil(result)
-    }
-    
     
     // MARK: - Helpers
     private func makeSUT(
@@ -189,6 +172,8 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     ) {
         let exp = expectation(description: "Waiting for load")
         
+        action()
+        
         sut.load { receivedResult in
             switch (receivedResult, expectedResult) {
             case let (.success(receiveFeeds), .success(expectedFeeds)):
@@ -201,8 +186,6 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
             
             exp.fulfill()
         }
-        
-        action()
         
         wait(for: [exp], timeout: 1.0)
     }

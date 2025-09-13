@@ -20,36 +20,36 @@ final class FeedStoreSpy: FeedStore {
         case retrieval
     }
     
-    var deletionCompletions = [DeletionCompletion]()
-    var insertionCompletions = [InsertionCompletion]()
-    var retrievalCompletions = [RetrievalCompletion]()
+    var deletionCompletions: Result<Void, Error>?
+    var insertionCompletions: Result<Void, Error>?
+    var retrievalCompletions: Swift.Result<CacheFeed?, Error>?
     
     var receivedMessages: [ReceivedMessage] = []
     
-    func deleteCachedFeed(completion: @escaping DeletionCompletion) {
-        deletionCompletions.append(completion)
+    func deleteCachedFeed() throws {
         receivedMessages.append(.deletion)
+        try deletionCompletions?.get()
     }
     
-    func insertCachedFeed(_ items: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
-        insertionCompletions.append(completion)
+    func insertCachedFeed(_ items: [LocalFeedImage], timestamp: Date) throws {
         receivedMessages.append(.insertion(items, timestamp))
+        try insertionCompletions?.get()
     }
     
-    func retrievalCachedFeed(completion: @escaping RetrievalCompletion) {
-        retrievalCompletions.append(completion)
+    func retrievalCachedFeed() throws -> CacheFeed? {
         receivedMessages.append(.retrieval)
+        return try retrievalCompletions?.get()
     }
     
     func completeDeletion(with result: Result<Void, Error>, at index: Int = 0) {
-        deletionCompletions[index](result)
+        deletionCompletions = result
     }
     
     func completionInsertion(with result: Result<Void, Error>, at index: Int = 0) {
-        insertionCompletions[index](result)
+        insertionCompletions = result
     }
     
     func completionRetrieval(with result: FeedStore.RetrievalResult, at index: Int = 0) {
-        retrievalCompletions[index](result)
+        retrievalCompletions = result
     }
 }
