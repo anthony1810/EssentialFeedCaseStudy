@@ -110,7 +110,7 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         line: UInt = #line
     ) throws -> LocalFeedLoader {
         let storeURL = testSpecificStoreURL()
-        let store = try CoreDataFeedStore(storeURL: storeURL)
+        let store = try CoreDataFeedStore(storeURL: storeURL, contextQueue: .main)
         let sut = LocalFeedLoader(store: store, currentDate: currentDate)
         
         trackMemoryLeaks(sut, file: file, line: line)
@@ -165,7 +165,7 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
         line: UInt = #line
     ) throws -> LocalFeedImageDataLoader {
         let storeURL = testSpecificStoreURL()
-        let store = try CoreDataFeedStore(storeURL: storeURL)
+        let store = try CoreDataFeedStore(storeURL: storeURL, contextQueue: .main)
         let sut = LocalFeedImageDataLoader(store: store)
         
         trackMemoryLeaks(sut, file: file, line: line)

@@ -9,32 +9,37 @@ import Foundation
 import CoreData
 
 public final class CoreDataFeedStore: FeedStore {
-    private let container: NSPersistentContainer
-    private let context: NSManagedObjectContext
+    private static let modelName = "FeedStore"
+    private static let model = NSManagedObjectModel.with(name: modelName, in: Bundle(for: CoreDataFeedStore.self))
     
-    public init(storeURL: URL) throws {
-        let bundle = Bundle(for: CoreDataFeedStore.self)
-        self.container = try NSPersistentContainer.load(modelName: "FeedStore", url: storeURL, in: bundle)
-        context = container.newBackgroundContext()
+    private let container: NSPersistentContainer
+    let context: NSManagedObjectContext
+    
+    public enum ContextQueue {
+        case main
+        case background
+    }
+    
+    enum StoreError: Error {
+        case modelNotFound
+        case failedToLoadPersistentContainer(Error)
+    }
+    
+    public init(storeURL: URL, contextQueue: ContextQueue = .background) throws {
+        guard let model = CoreDataFeedStore.model else {
+            throw StoreError.modelNotFound
+        }
+        
+        do {
+            container = try NSPersistentContainer.load(name: CoreDataFeedStore.modelName, model: model, url: storeURL)
+            context = contextQueue == .main ? container.viewContext : container.newBackgroundContext()
+        } catch {
+            throw StoreError.failedToLoadPersistentContainer(error)
+        }
     }
     
     deinit {
         cleanUpReferrencesToPersistentStores()
-    }
-    
-    func performAsync(_ action: @escaping (NSManagedObjectContext) -> Void) {
-        context.perform { [context] in
-            action(context)
-        }
-    }
-    
-    func performSync<T>(_ action: @escaping (NSManagedObjectContext) -> Result<T, Error>) throws -> T {
-        var result: Result<T, Error>!
-        context.performAndWait { [context] in
-            result = action(context)
-        }
-        
-        return try result.get()
     }
     
     public func perform(action: @escaping () -> Void) {
