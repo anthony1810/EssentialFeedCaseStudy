@@ -25,6 +25,10 @@ public final class CoreDataFeedStore: FeedStore {
         case failedToLoadPersistentContainer(Error)
     }
     
+    public var contextQueue: ContextQueue {
+        context == container.viewContext ? .main : .background
+    }
+    
     public init(storeURL: URL, contextQueue: ContextQueue = .background) throws {
         guard let model = CoreDataFeedStore.model else {
             throw StoreError.modelNotFound
@@ -42,7 +46,7 @@ public final class CoreDataFeedStore: FeedStore {
         cleanUpReferrencesToPersistentStores()
     }
     
-    public func perform(action: @escaping () -> Void) {
+    public func perform(_ action: @escaping () -> Void) {
         context.perform(action)
     }
     

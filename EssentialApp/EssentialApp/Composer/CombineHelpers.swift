@@ -152,6 +152,11 @@ extension Publisher {
 }
 
 extension DispatchQueue {
+    
+    static func scheduler(for store: CoreDataFeedStore) -> CoreDataFeedStoreScheduler {
+        CoreDataFeedStoreScheduler(store: store)
+    }
+    
     static var immediateWhenOnMainQueue: ImmediateWhenOnMainQueueScheduler {
         ImmediateWhenOnMainQueueScheduler()
     }
@@ -184,6 +189,39 @@ extension DispatchQueue {
         /// Performs the action at some time after the specified date, at the specified frequency, optionally taking into account tolerance if possible.
         func schedule(after date: Self.SchedulerTimeType, interval: Self.SchedulerTimeType.Stride, tolerance: Self.SchedulerTimeType.Stride, options: Self.SchedulerOptions?, _ action: @escaping () -> Void) -> any Cancellable {
             DispatchQueue.main.schedule(after: date, interval: interval, tolerance: tolerance, options: options, action)
+        }
+    }
+    
+    struct CoreDataFeedStoreScheduler: Scheduler {
+        let store: CoreDataFeedStore
+        
+        var now: SchedulerTimeType { .init(.now()) }
+        
+        var minimumTolerance: SchedulerTimeType.Stride { .zero }
+        
+        func schedule(after date: DispatchQueue.SchedulerTimeType, interval: DispatchQueue.SchedulerTimeType.Stride, tolerance: DispatchQueue.SchedulerTimeType.Stride, options: DispatchQueue.SchedulerOptions?, _ action: @escaping () -> Void) -> any Cancellable {
+            if store.contextQueue == .main, Thread.isMainThread {
+                action()
+            } else {
+                store.perform(action)
+            }
+            return AnyCancellable {}
+        }
+        
+        func schedule(after date: DispatchQueue.SchedulerTimeType, tolerance: DispatchQueue.SchedulerTimeType.Stride, options: DispatchQueue.SchedulerOptions?, _ action: @escaping () -> Void) {
+            if store.contextQueue == .main, Thread.isMainThread {
+                action()
+            } else {
+                store.perform(action)
+            }
+        }
+        
+        func schedule(options: DispatchQueue.SchedulerOptions?, _ action: @escaping () -> Void) {
+            if store.contextQueue == .main, Thread.isMainThread {
+                action()
+            } else {
+                store.perform(action)
+            }
         }
     }
 }

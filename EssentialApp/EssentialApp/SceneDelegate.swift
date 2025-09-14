@@ -62,16 +62,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         return nc
     }()
     
-    private lazy var scheduler: any Scheduler = DispatchQueue(
-        label: "com.viothun.infra.queue",
-        qos: .userInteractive,
-        attributes: .concurrent
-    )
+    private lazy var scheduler: any Scheduler = {
+        if let store = store as? CoreDataFeedStore {
+            return DispatchQueue.scheduler(for: store)
+        }
+        
+        return DispatchQueue(
+            label: "com.viothun.infra.queue",
+            qos: .userInteractive,
+            attributes: .concurrent
+        )
+    }()
     
     convenience init(
         httpClient: HTTPClient,
-        store: FeedStore & FeedImageDataStore,
-        scheduler: any Scheduler
+        store: FeedStore & FeedImageDataStore
     ) {
         self.init()
         

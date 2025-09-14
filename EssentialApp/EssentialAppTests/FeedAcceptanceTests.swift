@@ -85,7 +85,7 @@ final class FeedAcceptanceTests: XCTestCase {
     
     // MARK: - Helpers
     private func enteringBackground(with store: CoreDataFeedStore) {
-        let sut = SceneDelegate(httpClient: HTTPClientStub.offline, store: store, scheduler: DispatchQueue.immediateWhenOnMainQueue)
+        let sut = SceneDelegate(httpClient: HTTPClientStub.offline, store: store)
         sut.sceneWillResignActive(UIApplication.shared.connectedScenes.first!)
     }
     
@@ -93,7 +93,7 @@ final class FeedAcceptanceTests: XCTestCase {
         httpClient: HTTPClientStub = .offline,
         store: CoreDataFeedStore
     ) -> ListViewController {
-        let sut = SceneDelegate(httpClient: httpClient, store: store, scheduler: DispatchQueue.immediateWhenOnMainQueue)
+        let sut = SceneDelegate(httpClient: httpClient, store: store)
         sut.window = UIWindow()
         sut.configureWindow()
         
