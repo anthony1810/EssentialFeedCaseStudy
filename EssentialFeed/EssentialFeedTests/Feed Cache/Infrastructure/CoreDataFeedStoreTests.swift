@@ -74,10 +74,10 @@ final class CoreDataFeedStoreTests: XCTestCase, FeedStoreSpecs {
         trackMemoryLeaks(sut, file: file, line: line)
 
         let expect = expectation(description: "wait for load")
-        sut.perform(action: {
+        sut.perform {
             action(sut)
             expect.fulfill()
-        })
+        }
         wait(for: [expect], timeout: 0.1)
 
         return sut
