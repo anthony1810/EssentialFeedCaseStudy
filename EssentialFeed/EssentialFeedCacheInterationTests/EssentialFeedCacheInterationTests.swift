@@ -152,16 +152,11 @@ final class EssentialFeedCacheInterationTests: XCTestCase {
     }
     
     func validateCache(with loader: LocalFeedLoader, file: StaticString = #file, line: UInt = #line) {
-        
-        let saveExp = expectation(description: "Save expectation")
-        loader.validate { completion in
-            if case let .failure(error) = completion {
-                XCTFail("Validation failed with error: \(error)", file: file, line: line)
-            }
-            saveExp.fulfill()
+        do {
+            try loader.validate()
+        } catch {
+            XCTFail("Validation failed with error: \(error)", file: file, line: line)
         }
-        
-        wait(for: [saveExp], timeout: 1.0)
     }
     
     // MARK: - FeedImageLoader Helpers

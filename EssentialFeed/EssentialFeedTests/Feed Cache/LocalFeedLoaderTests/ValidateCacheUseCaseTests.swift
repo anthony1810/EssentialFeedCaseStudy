@@ -21,7 +21,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         
         store.completionRetrieval(with: .failure(expectedError))
         
-        sut.validate(completion: {_ in })
+        try? sut.validate()
         
         XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
     }
@@ -56,7 +56,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         store.completionRetrieval(with: .success((feed: [feed.local], timestamp: lessThanSevenDayTimestamp)))
-        sut.validate(completion: {_ in })
+        try? sut.validate()
         
         XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
     }
@@ -68,7 +68,7 @@ class ValidateCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
         
         store.completionRetrieval(with: .success((feed: [feed.local], timestamp: moreThanSevenDayTimestamp)))
-        sut.validate(completion: {_ in })
+        try? sut.validate()
         
         XCTAssertEqual(store.receivedMessages, [.retrieval, .deletion])
     }
@@ -147,23 +147,16 @@ class ValidateCacheUseCaseTests: XCTestCase {
         line: UInt = #line
     ) {
         
-        let expectation = expectation(description: "Waiting for validation completion")
-        
         action()
         
-        sut.validate(completion: { actualResult in
-            switch (actualResult, expectedResult) {
-            case (.success, .success):
-                break
-            case let (.failure(receivedError as NSError), .failure(actualError as NSError)):
-                XCTAssertEqual(receivedError, actualError, file: file, line: line)
-            default:
-                XCTFail("Expect result \(expectedResult), got result \(actualResult)", file: file, line: line)
-            }
-            expectation.fulfill()
-        })
-    
-        wait(for: [expectation], timeout: 1.0)
-        
+        let actualResult = Result { try sut.validate() }
+        switch (actualResult, expectedResult) {
+        case (.success, .success):
+            break
+        case let (.failure(receivedError as NSError), .failure(actualError as NSError)):
+            XCTAssertEqual(receivedError, actualError, file: file, line: line)
+        default:
+            XCTFail("Expect result \(expectedResult), got result \(actualResult)", file: file, line: line)
+        }
     }
 }

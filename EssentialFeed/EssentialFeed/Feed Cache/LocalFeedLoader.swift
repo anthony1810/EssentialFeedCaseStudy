@@ -28,16 +28,17 @@ public final class LocalFeedLoader {
         return []
     }
     
-    public func validate(completion: @escaping (ValidationResult) -> Void) {
-        let result = Result { try store.retrievalCachedFeed() }
-        
-        switch result {
-        case .failure:
-            completion(Result { try store.deleteCachedFeed() } )
-        case .success(.some((_, let timestamp))) where FeedCachePolicy.isCacheValidated(with: timestamp, against: currentDate()) == false:
-            completion(Result { try store.deleteCachedFeed() })
-        case .success(.none), .success:
-            completion(.success(()))
+    public func validate() throws {
+        do {
+            guard let cacheFeed = try store.retrievalCachedFeed() else {
+                return
+            }
+            
+            if FeedCachePolicy.isCacheValidated(with: cacheFeed.timestamp, against: currentDate()) == false {
+                try store.deleteCachedFeed()
+            }
+        } catch {
+            try store.deleteCachedFeed()
         }
     }
 }
