@@ -34,7 +34,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             
             logger.fault("Failed to instantiate CoreData Store with error: \(error.localizedDescription)")
             
-            return NullStore()
+            return InMemoryFeedStore()
         }
     }()
     
