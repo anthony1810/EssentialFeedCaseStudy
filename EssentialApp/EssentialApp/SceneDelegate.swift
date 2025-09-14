@@ -108,6 +108,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .caching(to: localFeedLoader)
             .fallback(to: localFeedLoader.loadPublisher)
             .map(makeFirstPage)
+            .subscribe(onSome: scheduler)
             .eraseToAnyPublisher()
     }
     
@@ -140,6 +141,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 (cachedItems + newItems, newItems.last)
             }
             .map(makePage)
+            .subscribe(onSome: scheduler)
             .caching(to: localFeedLoader)
     }
     
