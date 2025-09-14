@@ -41,7 +41,6 @@
 		92B14FE72E1AAE9E00154CA0 /* EssentialFeediOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92B14FE42E1AAE9E00154CA0 /* EssentialFeediOS.framework */; };
 		92B14FE82E1AAE9E00154CA0 /* EssentialFeediOS.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 92B14FE42E1AAE9E00154CA0 /* EssentialFeediOS.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		92D6613B2E36520000EBF461 /* CombineHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92D661392E3651A300EBF461 /* CombineHelpers.swift */; };
-		92F2C9CA2E6F1B780007E059 /* NullStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F2C9C92E6F1B710007E059 /* NullStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -114,7 +113,6 @@
 		92B14FE32E1AAE9E00154CA0 /* EssentialFeed.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = EssentialFeed.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		92B14FE42E1AAE9E00154CA0 /* EssentialFeediOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = EssentialFeediOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		92D661392E3651A300EBF461 /* CombineHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineHelpers.swift; sourceTree = "<group>"; };
-		92F2C9C92E6F1B710007E059 /* NullStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NullStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -183,7 +181,6 @@
 		924B26882E2C9D0300908320 /* EssentialApp */ = {
 			isa = PBXGroup;
 			children = (
-				92F2C9C92E6F1B710007E059 /* NullStore.swift */,
 				9210CEC42E31CB9D00B1FEA5 /* Composer */,
 				924B267E2E2C9D0300908320 /* AppDelegate.swift */,
 				924B26872E2C9D0300908320 /* SceneDelegate.swift */,
@@ -377,7 +374,6 @@
 			files = (
 				924B26892E2C9D0300908320 /* AppDelegate.swift in Sources */,
 				924B268C2E2C9D0300908320 /* SceneDelegate.swift in Sources */,
-				92F2C9CA2E6F1B780007E059 /* NullStore.swift in Sources */,
 				9210CEC52E31CB9D00B1FEA5 /* FeedUIComposer.swift in Sources */,
 				925ED4CB2E56109C005FD693 /* CommensViewAdapter.swift in Sources */,
 				92A40E282E518AEF003BCE52 /* CommentUIComposer.swift in Sources */,
