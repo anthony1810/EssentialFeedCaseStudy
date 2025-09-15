@@ -43,10 +43,17 @@ jobs:
       - name: Show available simulators
         run: xcrun simctl list devices
 
+      - name: Install iOS 18.2 Simulator
+        run: |
+          sudo xcodebuild -downloadPlatform iOS
+          sudo xcodebuild -runFirstLaunch
+          # Install specific simulator runtime
+          sudo xcrun simctl runtime add "iOS 18.2"
+
       - name: Build and Test (iOS)
         run: |
           xcodebuild clean build test \
             -workspace EssentialApp.xcworkspace \
             -scheme "CI_iOS" \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.4" ONLY_ACTIVE_ARCH=YES
+            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2" ONLY_ACTIVE_ARCH=YES
