@@ -22,40 +22,16 @@ extension LocalFeedImageDataLoader: FeedImageDataLoader {
         case notFound
     }
     
-    class LoadImageDataTask: FeedImageDataLoaderTask {
-        var completion: ((FeedImageDataLoader.Result) -> Void)?
-        
-        init(completion: @escaping ((FeedImageDataLoader.Result) -> Void)) {
-            self.completion = completion
+    public func loadImageData(from url: URL) throws -> Data {
+        do {
+            if let data = try store.retrieve(dataForURL: url) {
+                return data
+            }
+        } catch {
+            throw LocalFeedImageDataLoader.LoadError.failed
         }
         
-        func complete(with result: FeedImageDataLoader.Result) {
-            completion?(result)
-        }
-        
-        func cancel() {
-            preventFutherCompletions()
-        }
-        
-        private func preventFutherCompletions() {
-            completion = nil
-        }
-    }
-    
-    public func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
-        
-        let task = LoadImageDataTask(completion: completion)
-        store.retrieve(dataForURL: url) { [weak self] result in
-            guard self != nil else { return }
-            
-            task.complete(with: result
-                .mapError { _ in LocalFeedImageDataLoader.LoadError.failed }
-                .flatMap { data in
-                    data.map { .success($0) } ?? .failure(LocalFeedImageDataLoader.LoadError.notFound)
-                })
-        }
-        
-        return task
+        throw LocalFeedImageDataLoader.LoadError.notFound
     }
 }
 
@@ -66,13 +42,11 @@ extension LocalFeedImageDataLoader: FeedImageCache {
         case failed
     }
     
-    public typealias SaveResult = FeedImageCache.SaveResult
-    
-    public func save(_ data: Data, for url: URL, completion: @escaping (SaveResult) -> Void) {
-        store.insert(data, for: url, completion: { [weak self] result in
-            guard self != nil else { return }
-            
-            completion(result.mapError { _ in SaveError.failed })
-        })
+    public func save(_ data: Data, for url: URL) throws {
+        do {
+            try store.insert(data, for: url)
+        } catch {
+            throw SaveError.failed
+        }
     }
 }

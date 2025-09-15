@@ -34,7 +34,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             
             logger.fault("Failed to instantiate CoreData Store with error: \(error.localizedDescription)")
             
-            return NullStore()
+            return InMemoryFeedStore()
         }
     }()
     
@@ -62,11 +62,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         return nc
     }()
     
-    convenience init(httpClient: HTTPClient, store: FeedStore & FeedImageDataStore) {
+    private lazy var scheduler: any Scheduler = {
+        if let store = store as? CoreDataFeedStore {
+            return DispatchQueue.scheduler(for: store)
+        }
+        
+        return DispatchQueue(
+            label: "com.viothun.infra.queue",
+            qos: .userInteractive,
+            attributes: .concurrent
+        )
+    }()
+    
+    convenience init(
+        httpClient: HTTPClient,
+        store: FeedStore & FeedImageDataStore
+    ) {
         self.init()
         
         self.httpClient = httpClient
         self.store = store
+        self.scheduler = scheduler
     }
     
     
@@ -79,7 +95,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func sceneWillResignActive(_ scene: UIScene) {
-        localFeedLoader.validate { _ in }
+        do {
+            try localFeedLoader.validate()
+        } catch {
+            logger.log("Failed to validate cache with error: \(error.localizedDescription)")
+        }
     }
     
     func configureWindow() {
@@ -90,9 +110,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     private func makeRemoteFeedLoaderWithLocalFallback() -> AnyPublisher<Paginated<FeedImage>, Error> {
        makeRemoteFeedLoader()
+            .receive(onSome: scheduler)
             .caching(to: localFeedLoader)
             .fallback(to: localFeedLoader.loadPublisher)
             .map(makeFirstPage)
+            .subscribe(onSome: scheduler)
             .eraseToAnyPublisher()
     }
     
@@ -125,6 +147,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 (cachedItems + newItems, newItems.last)
             }
             .map(makePage)
+            .subscribe(onSome: scheduler)
+            .receive(onSome: scheduler)
             .caching(to: localFeedLoader)
     }
     
@@ -158,6 +182,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     .tryMap(FeedImageDataMapper.map)
                     .caching(to: localFeedImageLoader, using: url)
             }
+            .subscribe(onSome: scheduler)
+            .eraseToAnyPublisher()
     }
 }
 

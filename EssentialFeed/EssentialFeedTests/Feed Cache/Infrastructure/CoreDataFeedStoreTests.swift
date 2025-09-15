@@ -5,71 +5,81 @@
 //  Created by Anthony on 7/2/25.
 //
 
+import EssentialFeed
 import Foundation
 import XCTest
-import EssentialFeed
 
 final class CoreDataFeedStoreTests: XCTestCase, FeedStoreSpecs {
     func test_retrieve_deliversEmptyCacheOnEmptyCache() throws {
-        let sut = try makeSUT()
-        
-        assertThatRetrieveDeliversEmptyCacheOnEmptyCache(on: sut)
+        try makeSUT { [weak self] sut in
+            self?.assertThatRetrieveDeliversEmptyCacheOnEmptyCache(on: sut)
+        }
     }
-    
+
     func test_retrieveTwice_deliversSameEmptyCacheOnEmptyCache() throws {
-        let sut = try makeSUT()
-        
-        assertThatRetrieveHasNoSideEffectOnDeliversEmptyCache(on: sut)
+       try makeSUT { [weak self] sut in
+            self?.assertThatRetrieveHasNoSideEffectOnDeliversEmptyCache(on: sut)
+        }
     }
-    
+
     func test_retrieve_deliversNonEmptyCacheOnNonEmptyCache() throws {
-        let sut = try makeSUT()
-        
-        assertThatRetrieveDeliversFoundCacheOnNonEmptyCache(on: sut)
+        try makeSUT { [weak self] sut in
+            self?.assertThatRetrieveDeliversFoundCacheOnNonEmptyCache(on: sut)
+        }
     }
-    
+
     func test_retrieve_deliversFoundCacheHasNoSideEffects() throws {
-        let sut = try makeSUT()
-        
-        assertThatRetrieveHasNoSideEffectOnDeliversFoundCache(on: sut)
+        try makeSUT() { [weak self] sut in
+            self?.assertThatRetrieveHasNoSideEffectOnDeliversFoundCache(on: sut)
+        }
     }
-    
+
     func test_insert_overridesExistingCacheOnNonEmptyCache() throws {
-        let sut = try makeSUT()
-        
-        assertThatInsertOverridesExistingCacheOnNonEmptyCache(on: sut)
+        try makeSUT { [weak self] sut in
+            self?.assertThatInsertOverridesExistingCacheOnNonEmptyCache(on: sut)
+        }
     }
-    
-    func test_insert_overridesExistingCacheOnNonEmptyCacheHasNoSideEffect() throws {
-        let sut = try makeSUT()
-        
-        assertThatInsertHasNoSideEffectOverridesExistingCacheOnNonEmptyCache(on: sut)
+
+    func test_insert_overridesExistingCacheOnNonEmptyCacheHasNoSideEffect()
+        throws
+    {
+        try makeSUT() { [weak self] sut in
+            self?.assertThatInsertHasNoSideEffectOverridesExistingCacheOnNonEmptyCache(
+                on: sut
+            )
+        }
     }
-    
+
     func test_delete_deliversSuccessOnEmptyCache() throws {
-        let sut = try makeSUT()
-        
-        assertThatDeleteDeliversSuccessOnNonEmptyCache(on: sut)
+        try makeSUT { [weak self] sut in
+            self?.assertThatDeleteDeliversSuccessOnNonEmptyCache(on: sut)
+        }
     }
-    
+
     func test_delete_deliversSuccessOnNonEmptyCache() throws {
-        let sut = try makeSUT()
-        
-        assertThatDeleteDeliversSuccessOnNonEmptyCache(on: sut)
+        try makeSUT { [weak self] sut in
+            self?.assertThatDeleteDeliversSuccessOnNonEmptyCache(on: sut)
+        }
     }
-    
-    func test_storeSideEffects_runSerially() throws {
-        let sut = try makeSUT()
-        
-        assertThatSideEffectsRunSerially(on: sut)
-    }
-    
+
     // MARK: - Helpers
-    func makeSUT(file: StaticString = #file, line: UInt = #line) throws -> FeedStore {
+    @discardableResult
+    func makeSUT(
+        action: @escaping (CoreDataFeedStore) -> Void,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) throws -> CoreDataFeedStore {
         let storeURL = URL(fileURLWithPath: "/dev/null")
         let sut = try CoreDataFeedStore(storeURL: storeURL)
         trackMemoryLeaks(sut, file: file, line: line)
-        
+
+        let expect = expectation(description: "wait for load")
+        sut.perform {
+            action(sut)
+            expect.fulfill()
+        }
+        wait(for: [expect], timeout: 0.1)
+
         return sut
     }
 }

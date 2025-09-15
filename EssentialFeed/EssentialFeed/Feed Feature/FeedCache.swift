@@ -8,5 +8,5 @@ import Foundation
 
 public protocol FeedCache {
     typealias SaveResult = Error?
-    func save(_ items: [FeedImage], completion: @escaping (SaveResult) -> Void)
+    func save(_ items: [FeedImage]) throws
 }

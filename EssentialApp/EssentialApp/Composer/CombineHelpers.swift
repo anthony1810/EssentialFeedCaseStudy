@@ -74,7 +74,9 @@ public extension LocalFeedLoader {
     
     func loadPublisher() -> Publisher {
         Deferred {
-            Future(self.load)
+            Future { completion in
+                completion(Result{try self.load()})
+            }
         }.eraseToAnyPublisher()
     }
 }
@@ -83,13 +85,11 @@ public extension FeedImageDataLoader {
     typealias Publisher = AnyPublisher<Data, Swift.Error>
     
     func loadPublisher(from url: URL) -> Publisher {
-        var task: FeedImageDataLoaderTask?
         return Deferred {
             Future { promise in
-                task = self.loadImageData(from: url, completion: promise)
+                promise(Result{ try self.loadImageData(from: url) })
             }
         }
-        .handleEvents(receiveCancel: { task?.cancel() })
         .eraseToAnyPublisher()
     }
 }
@@ -121,13 +121,13 @@ extension Publisher where Output == Data {
 
 extension FeedCache {
     func saveIgnoringCompletion(feed: [FeedImage]) {
-        self.save(feed) { _ in }
+        try? self.save(feed)
     }
 }
 
 extension FeedImageCache {
     func saveIgnoringResult(data: Data, for url: URL) {
-        save(data, for: url) { _ in }
+        try? save(data, for: url)
     }
 }
 
@@ -141,9 +141,22 @@ extension Publisher {
     func dispatchOnMainQueueIfNeeded() -> AnyPublisher<Output, Failure> {
         receive(on: DispatchQueue.immediateWhenOnMainQueue).eraseToAnyPublisher()
     }
+    
+    func subscribe(onSome scheduler: some Scheduler) -> AnyPublisher<Output, Failure> {
+        subscribe(on: scheduler).eraseToAnyPublisher()
+    }
+    
+    func receive(onSome scheduler: some Scheduler) -> AnyPublisher<Output, Failure> {
+        receive(on: scheduler).eraseToAnyPublisher()
+    }
 }
 
 extension DispatchQueue {
+    
+    static func scheduler(for store: CoreDataFeedStore) -> CoreDataFeedStoreScheduler {
+        CoreDataFeedStoreScheduler(store: store)
+    }
+    
     static var immediateWhenOnMainQueue: ImmediateWhenOnMainQueueScheduler {
         ImmediateWhenOnMainQueueScheduler()
     }
@@ -176,6 +189,39 @@ extension DispatchQueue {
         /// Performs the action at some time after the specified date, at the specified frequency, optionally taking into account tolerance if possible.
         func schedule(after date: Self.SchedulerTimeType, interval: Self.SchedulerTimeType.Stride, tolerance: Self.SchedulerTimeType.Stride, options: Self.SchedulerOptions?, _ action: @escaping () -> Void) -> any Cancellable {
             DispatchQueue.main.schedule(after: date, interval: interval, tolerance: tolerance, options: options, action)
+        }
+    }
+    
+    struct CoreDataFeedStoreScheduler: Scheduler {
+        let store: CoreDataFeedStore
+        
+        var now: SchedulerTimeType { .init(.now()) }
+        
+        var minimumTolerance: SchedulerTimeType.Stride { .zero }
+        
+        func schedule(after date: DispatchQueue.SchedulerTimeType, interval: DispatchQueue.SchedulerTimeType.Stride, tolerance: DispatchQueue.SchedulerTimeType.Stride, options: DispatchQueue.SchedulerOptions?, _ action: @escaping () -> Void) -> any Cancellable {
+            if store.contextQueue == .main, Thread.isMainThread {
+                action()
+            } else {
+                store.perform(action)
+            }
+            return AnyCancellable {}
+        }
+        
+        func schedule(after date: DispatchQueue.SchedulerTimeType, tolerance: DispatchQueue.SchedulerTimeType.Stride, options: DispatchQueue.SchedulerOptions?, _ action: @escaping () -> Void) {
+            if store.contextQueue == .main, Thread.isMainThread {
+                action()
+            } else {
+                store.perform(action)
+            }
+        }
+        
+        func schedule(options: DispatchQueue.SchedulerOptions?, _ action: @escaping () -> Void) {
+            if store.contextQueue == .main, Thread.isMainThread {
+                action()
+            } else {
+                store.perform(action)
+            }
         }
     }
 }

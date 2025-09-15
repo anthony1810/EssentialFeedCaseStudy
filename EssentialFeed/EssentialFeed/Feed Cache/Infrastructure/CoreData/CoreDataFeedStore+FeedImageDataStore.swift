@@ -8,21 +8,13 @@ import Foundation
 import CoreData
 
 extension CoreDataFeedStore: FeedImageDataStore {
-    public func retrieve(dataForURL url: URL, completion: @escaping (Result<Data?, any Error>) -> Void) {
-        perform { context in
-            completion(Result{
-                try ManagedFeedImage.data(with: url, in: context)
-            })
-        }
+    public func retrieve(dataForURL url: URL) throws -> Data? {
+        try ManagedFeedImage.first(with: url, in: context)?.data
     }
     
-    public func insert(_ data: Data, for url: URL, completion: @escaping (InsertionResult) -> Void) {
-        perform { context in
-            completion(Result {
-                try ManagedFeedImage.first(with: url, in: context)
-                    .map { $0.data = data }
-                    .map (context.save)
-            })
-        }
+    public func insert(_ data: Data, for url: URL) throws {
+        try ManagedFeedImage.first(with: url, in: context)
+            .map { $0.data = data }
+            .map (context.save)
     }
 }
