@@ -40,20 +40,17 @@ jobs:
       - name: Xcode version
         run: /usr/bin/xcodebuild -version
 
-      - name: Show available simulators
-        run: xcrun simctl list devices
-
-      - name: Install iOS 18.2 Simulator
+      - name: Check and use available iOS version
         run: |
-          sudo xcodebuild -downloadPlatform iOS
-          sudo xcodebuild -runFirstLaunch
-          # Install specific simulator runtime
-          sudo xcrun simctl runtime add "iOS 18.2"
-
+          echo "Available iOS simulators:"
+          xcrun simctl list devices | grep -E "(iOS|iPhone)"
+          echo "Using available iOS version instead of downloading"
+        
       - name: Build and Test (iOS)
         run: |
+          # Use an available version (18.4, 18.5, or 18.6)
           xcodebuild clean build test \
             -workspace EssentialApp.xcworkspace \
             -scheme "CI_iOS" \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2" ONLY_ACTIVE_ARCH=YES
+            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.4" ONLY_ACTIVE_ARCH=YES
