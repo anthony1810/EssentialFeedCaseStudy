@@ -11,7 +11,7 @@ EssentialFeed is a modular iOS application built with Clean Architecture princip
 
 ![Swift](https://img.shields.io/badge/-Swift-orange?style=flat&logo=Swift&logoColor=white)
 ![Xcode](https://img.shields.io/badge/-Xcode-blue?style=flat&logo=Xcode&logoColor=white)
-![SwiftUI](https://img.shields.io/badge/-SwiftUI-lightblue?style=flat&logo=Swift&logoColor=white)
+![UIKit](https://img.shields.io/badge/-UIKit-lightblue?style=flat&logo=Apple&logoColor=white)
 ![Combine](https://img.shields.io/badge/-Combine-purple?style=flat&logo=Apple&logoColor=white)
 ![Core Data](https://img.shields.io/badge/-Core%20Data-green?style=flat&logo=Apple&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/-GitHub%20Actions-black?style=flat&logo=GitHub&logoColor=white)
