@@ -49,4 +49,4 @@ jobs:
             -workspace EssentialApp.xcworkspace \
             -scheme "CI_iOS" \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2" ONLY_ACTIVE_ARCH=YES
+            -destination "platform=iOS Simulator,name=iPhone 16 Pro" ONLY_ACTIVE_ARCH=YES
