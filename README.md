@@ -7,6 +7,16 @@
 
 EssentialFeed is a modular iOS application built with Clean Architecture principles and Test-Driven Development (TDD). The app displays a feed of images with comments functionality, demonstrating best practices for iOS development including offline-first architecture, caching strategies, and comprehensive testing.
 
+### Languages and Tools:
+
+![Swift](https://img.shields.io/badge/-Swift-orange?style=flat&logo=Swift&logoColor=white)
+![Xcode](https://img.shields.io/badge/-Xcode-blue?style=flat&logo=Xcode&logoColor=white)
+![SwiftUI](https://img.shields.io/badge/-SwiftUI-lightblue?style=flat&logo=Swift&logoColor=white)
+![Combine](https://img.shields.io/badge/-Combine-purple?style=flat&logo=Apple&logoColor=white)
+![Core Data](https://img.shields.io/badge/-Core%20Data-green?style=flat&logo=Apple&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/-GitHub%20Actions-black?style=flat&logo=GitHub&logoColor=white)
+![XCTest](https://img.shields.io/badge/-XCTest-grey?style=flat&logo=Apple&logoColor=white)
+
 ## Architecture
 
 ### 🏗️ Clean Architecture Layers
