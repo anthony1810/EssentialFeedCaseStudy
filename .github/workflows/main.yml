@@ -45,6 +45,15 @@ jobs:
           echo "Available iOS simulators:"
           xcrun simctl list devices | grep -E "(iOS|iPhone)"
           echo "Using available iOS version instead of downloading"
+
+      - name: Boot iOS Simulator
+        run: |
+          # Boot the specific simulator
+          xcrun simctl boot "9F13B89D-34C6-45A5-9209-6DAC3E11D89B"
+          # Wait for it to be ready
+          sleep 10
+          # Verify it's booted
+          xcrun simctl list devices | grep Booted
         
       - name: Build and Test (iOS)
         run: |
